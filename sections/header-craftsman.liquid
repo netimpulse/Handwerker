@@ -1,14 +1,15 @@
 <!-- Craftsman Sticky Header Section -->
+<header-craftsman>
 <header
-  id="shopify-section-{{ section.id }}"
-  class="header-craftsman color-scheme--{{ section.settings.color_scheme }}"
+  data-section-id="{{ section.id }}"
+  class="header-craftsman color-{{ section.settings.color_scheme }}"
   data-sticky="{{ section.settings.sticky_header }}"
   data-transparent="{{ section.settings.transparent_mode }}"
   role="banner"
 >
   <!-- Top Bar -->
   {% if section.settings.topbar_show %}
-    <div class="header-craftsman__topbar" style="--topbar-bg: {{ section.settings.topbar_bg | default: 'var(--color-background)' }};">
+    <div class="header-craftsman__topbar" style="--topbar-bg: {{ section.settings.topbar_bg | default: 'rgb(var(--color-background))' }};">
       <div class="header-craftsman__topbar-content">
         <!-- Left side: Emergency badge + Operating hours -->
         <div class="header-craftsman__topbar-left">
@@ -198,28 +199,33 @@
     </div>
   </div>
 </header>
+</header-craftsman>
 
 <style>
   #shopify-section-{{ section.id }} {
-    --header-bg: var(--color-background);
-    --header-text: var(--color-foreground);
-    --header-link: var(--color-primary);
+    --header-bg: rgb(var(--color-background));
+    --header-text: rgb(var(--color-foreground));
+    --header-link: rgb(var(--color-button));
     --topbar-height: 36px;
     --main-header-height: 70px;
     --total-header-height: 106px;
   }
 
-  #shopify-section-{{ section.id }}[data-sticky="true"] {
+  {% if section.settings.sticky_header %}
+  #shopify-section-{{ section.id }} {
     position: sticky;
     top: 0;
     z-index: 100;
+  }
+  #shopify-section-{{ section.id }}.shopify-section-header-sticky .header-craftsman {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
+  {% endif %}
 
   /* Top Bar */
   .header-craftsman__topbar {
     background-color: var(--topbar-bg);
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid rgb(var(--color-border));
     font-size: 13px;
     height: var(--topbar-height);
     display: flex;
@@ -249,7 +255,7 @@
   }
 
   .header-craftsman__emergency-badge {
-    background-color: var(--color-primary);
+    background-color: rgb(var(--color-button));
     color: white;
     padding: 4px 8px;
     border-radius: 4px;
@@ -261,7 +267,7 @@
 
   .header-craftsman__hours {
     font-weight: 500;
-    color: var(--color-foreground);
+    color: rgb(var(--color-foreground));
   }
 
   .header-craftsman__contact-link {
@@ -309,7 +315,7 @@
   /* Main Header */
   .header-craftsman__main {
     background-color: var(--header-bg);
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid rgb(var(--color-border));
     height: var(--main-header-height);
     display: flex;
     align-items: center;
@@ -396,21 +402,21 @@
   }
 
   .header-craftsman__cta-button--filled {
-    background-color: var(--color-primary);
+    background-color: rgb(var(--color-button));
     color: white;
   }
 
   .header-craftsman__cta-button--filled:hover {
-    background-color: var(--color-primary-dark);
+    background-color: rgba(var(--color-foreground), 0.85);
   }
 
   .header-craftsman__cta-button--outline {
-    border: 2px solid var(--color-primary);
-    color: var(--color-primary);
+    border: 2px solid rgb(var(--color-button));
+    color: rgb(var(--color-button));
   }
 
   .header-craftsman__cta-button--outline:hover {
-    background-color: var(--color-primary);
+    background-color: rgb(var(--color-button));
     color: white;
   }
 
@@ -479,7 +485,7 @@
     right: 0;
     bottom: 0;
     background-color: var(--header-bg);
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid rgb(var(--color-border));
     z-index: 99;
     overflow-y: auto;
     animation: slideDown 0.3s ease-out;
@@ -517,7 +523,7 @@
     color: var(--header-text);
     text-decoration: none;
     font-weight: 500;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid rgb(var(--color-border));
   }
 
   .header-craftsman__drawer-nav-link:last-child {

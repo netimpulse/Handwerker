@@ -1,9 +1,6 @@
 {%- style -%}
   #shopify-section-{{ section.id }} {
-    --color-background: var(--color-background-1);
-    --color-text: var(--color-text);
-    --color-text-secondary: var(--color-text-secondary);
-    --color-border: var(--color-border);
+
   }
 
   #shopify-section-{{ section.id }} .section-container {
@@ -18,13 +15,13 @@
 
   #shopify-section-{{ section.id }} .section-heading {
     margin: 0 0 0.5rem 0;
-    color: var(--color-text);
+    color: rgb(var(--color-foreground));
     word-break: break-word;
   }
 
   #shopify-section-{{ section.id }} .section-subheading {
     margin: 0;
-    color: var(--color-text-secondary);
+    color: rgba(var(--color-foreground), 0.7);
     font-size: clamp(0.875rem, 2vw, 1.125rem);
     line-height: 1.5;
   }
@@ -69,9 +66,9 @@
     #shopify-section-{{ section.id }} .carousel-btn {
       width: 2.5rem;
       height: 2.5rem;
-      border: 1px solid var(--color-border);
-      background: var(--color-background);
-      color: var(--color-text);
+      border: 1px solid rgb(var(--color-border));
+      background: rgb(var(--color-background));
+      color: rgb(var(--color-foreground));
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -82,8 +79,8 @@
     }
 
     #shopify-section-{{ section.id }} .carousel-btn:hover {
-      background: var(--color-text);
-      color: var(--color-background);
+      background: rgb(var(--color-foreground));
+      color: rgb(var(--color-background));
     }
 
     #shopify-section-{{ section.id }} .carousel-btn:focus-visible {
@@ -157,14 +154,14 @@
 
   {% if section.settings.card_style == 'photo-top' %}
     #shopify-section-{{ section.id }} .team-member {
-      background: var(--color-background);
-      border: 1px solid var(--color-border);
+      background: rgb(var(--color-background));
+      border: 1px solid rgb(var(--color-border));
     }
 
     #shopify-section-{{ section.id }} .member-photo-wrapper {
       width: 100%;
       overflow: hidden;
-      background: var(--color-border);
+      background: rgb(var(--color-border));
     }
 
     {% if section.settings.image_aspect_ratio == '1:1' %}
@@ -195,14 +192,14 @@
   {% elsif section.settings.card_style == 'photo-left' %}
     #shopify-section-{{ section.id }} .team-member {
       display: flex;
-      background: var(--color-background);
-      border: 1px solid var(--color-border);
+      background: rgb(var(--color-background));
+      border: 1px solid rgb(var(--color-border));
     }
 
     #shopify-section-{{ section.id }} .member-photo-wrapper {
       flex: 0 0 40%;
       overflow: hidden;
-      background: var(--color-border);
+      background: rgb(var(--color-border));
     }
 
     {% if section.settings.image_aspect_ratio == '1:1' %}
@@ -237,7 +234,7 @@
   {% elsif section.settings.card_style == 'overlay' %}
     #shopify-section-{{ section.id }} .team-member {
       position: relative;
-      background: var(--color-border);
+      background: rgb(var(--color-border));
     }
 
     #shopify-section-{{ section.id }} .member-photo-wrapper {
@@ -289,7 +286,7 @@
     margin: 0 0 0.25rem 0;
     font-size: 1.125rem;
     font-weight: 700;
-    color: {% if section.settings.card_style == 'overlay' %}white{% else %}var(--color-text){% endif %};
+    color: {% if section.settings.card_style == 'overlay' %}white{% else %}rgb(var(--color-foreground)){% endif %};
     line-height: 1.3;
     word-break: break-word;
   }
@@ -298,7 +295,7 @@
     margin: 0 0 0.75rem 0;
     font-size: 0.875rem;
     font-weight: 500;
-    color: {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.9){% else %}var(--color-text-secondary){% endif %};
+    color: {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.9){% else %}rgba(var(--color-foreground), 0.7){% endif %};
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -306,8 +303,8 @@
   #shopify-section-{{ section.id }} .member-badge {
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background: var(--color-text);
-    color: var(--color-background);
+    background: rgb(var(--color-foreground));
+    color: rgb(var(--color-background));
     font-size: 0.75rem;
     font-weight: 600;
     border-radius: 2px;
@@ -318,7 +315,7 @@
     margin: 0 0 1rem 0;
     font-size: 0.875rem;
     line-height: 1.5;
-    color: {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.9){% else %}var(--color-text-secondary){% endif %};
+    color: {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.9){% else %}rgba(var(--color-foreground), 0.7){% endif %};
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -333,8 +330,8 @@
   #shopify-section-{{ section.id }} .specialty-tag {
     display: inline-block;
     padding: 0.25rem 0.5rem;
-    background: {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.2){% else %}var(--color-border){% endif %};
-    color: {% if section.settings.card_style == 'overlay' %}white{% else %}var(--color-text-secondary){% endif %};
+    background: {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.2){% else %}rgb(var(--color-border)){% endif %};
+    color: {% if section.settings.card_style == 'overlay' %}white{% else %}rgba(var(--color-foreground), 0.7){% endif %};
     border-radius: 2px;
     margin-right: 0.5rem;
     margin-bottom: 0.5rem;
@@ -349,7 +346,7 @@
 
   #shopify-section-{{ section.id }} .contact-link {
     font-size: 0.875rem;
-    color: {% if section.settings.card_style == 'overlay' %}white{% else %}var(--color-text){% endif %};
+    color: {% if section.settings.card_style == 'overlay' %}white{% else %}rgb(var(--color-foreground)){% endif %};
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -378,16 +375,16 @@
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    border: 1px solid {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.3){% else %}var(--color-border){% endif %};
+    border: 1px solid {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.3){% else %}rgb(var(--color-border)){% endif %};
     border-radius: 50%;
-    color: {% if section.settings.card_style == 'overlay' %}white{% else %}var(--color-text){% endif %};
+    color: {% if section.settings.card_style == 'overlay' %}white{% else %}rgb(var(--color-foreground)){% endif %};
     text-decoration: none;
     transition: all 0.2s ease;
   }
 
   #shopify-section-{{ section.id }} .social-link:hover {
-    background: {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.2){% else %}var(--color-text){% endif %};
-    {% if section.settings.card_style != 'overlay' %}color: var(--color-background);{% endif %}
+    background: {% if section.settings.card_style == 'overlay' %}rgba(255, 255, 255, 0.2){% else %}rgb(var(--color-foreground)){% endif %};
+    {% if section.settings.card_style != 'overlay' %}color: rgb(var(--color-background));{% endif %}
   }
 
   #shopify-section-{{ section.id }} .social-link:focus-visible {
@@ -401,8 +398,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-border);
-    color: var(--color-text-secondary);
+    background: rgb(var(--color-border));
+    color: rgba(var(--color-foreground), 0.7);
     font-size: 2.5rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -416,7 +413,8 @@
   }
 {%- endstyle -%}
 
-<div class="section-container color-scheme--{{ section.settings.color_scheme }}">
+<team-members>
+<div class="section-container color-{{ section.settings.color_scheme }}">
   <div class="heading-wrapper">
     <{{ section.settings.heading_level }} class="section-heading">{{ section.settings.heading }}</{{ section.settings.heading_level }}>
     {% if section.settings.subheading != blank %}
@@ -523,11 +521,12 @@
       </div>
     {% endif %}
   {% else %}
-    <p style="text-align: center; color: var(--color-text-secondary); padding: 2rem;">
+    <p style="text-align: center; color: rgba(var(--color-foreground), 0.7); padding: 2rem;">
       Add team member blocks to display your team.
     </p>
   {% endif %}
 </div>
+</team-members>
 
 <script type="module">
   class TeamMembers extends HTMLElement {

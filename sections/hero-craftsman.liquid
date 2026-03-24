@@ -1,7 +1,8 @@
 <!-- Craftsman Hero Section -->
+<hero-craftsman>
 <section
-  id="shopify-section-{{ section.id }}"
-  class="hero-craftsman color-scheme--{{ section.settings.color_scheme }}"
+  data-section-id="{{ section.id }}"
+  class="hero-craftsman color-{{ section.settings.color_scheme }}"
   data-bg-type="{{ section.settings.bg_type }}"
   style="--hero-height: {% if section.settings.height == 'viewport' %}100vh{% elsif section.settings.height == 'large' %}600px{% elsif section.settings.height == 'medium' %}400px{% else %}{{ section.settings.height_custom }}px{% endif %}; --hero-overlay-color: {{ section.settings.overlay_color }}; --hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; --hero-text-color: {{ section.settings.text_color }};"
 >
@@ -123,10 +124,11 @@
     </div>
   {% endif %}
 </section>
+</hero-craftsman>
 
 <style>
   #shopify-section-{{ section.id }} {
-    --hero-bg-color: var(--color-background);
+    --hero-bg-color: rgb(var(--color-background));
   }
 
   .hero-craftsman {
@@ -320,13 +322,13 @@
   }
 
   .hero-craftsman__button--filled {
-    background-color: var(--color-primary);
+    background-color: rgb(var(--color-button));
     color: white;
   }
 
   .hero-craftsman__button--filled:hover,
   .hero-craftsman__button--filled:focus {
-    background-color: var(--color-primary-dark);
+    background-color: rgba(var(--color-foreground), 0.85);
     transform: translateY(-2px);
   }
 

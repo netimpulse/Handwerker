@@ -4,7 +4,8 @@
   newsletter signup, social links, and dynamic payment icons
 {%- endcomment -%}
 
-<footer id="shopify-section-{{ section.id }}" class="footer-craftsman color-scheme--{{ section.settings.color_scheme }}">
+<footer-craftsman>
+<footer class="footer-craftsman color-{{ section.settings.color_scheme }}">
   {%- if section.settings.show_top_border -%}
     <div class="footer-craftsman__divider"></div>
   {%- endif -%}
@@ -255,7 +256,7 @@
     <div class="footer-craftsman__bottom-content">
       <div class="footer-craftsman__copyright">
         {%- assign year = 'now' | date: '%Y' -%}
-        <p>{{ section.settings.copyright_text | replace: '{{ year }}', year }}</p>
+        <p>{% assign year_tag = '{{ year }}' %}{{ section.settings.copyright_text | replace: year_tag, year }}</p>
       </div>
 
       {%- if section.settings.show_payment_icons -%}
@@ -295,22 +296,23 @@
     </button>
   {%- endif -%}
 </footer>
+</footer-craftsman>
 
 <style>
   #shopify-section-{{ section.id }} {
     --color-scheme-background: rgb(var(--color-background));
-    --color-scheme-text: rgb(var(--color-text));
-    --color-scheme-accent: rgb(var(--color-accent));
+    --color-scheme-text: rgb(rgb(var(--color-foreground)));
+    --color-scheme-accent: rgb(rgb(var(--color-button)));
     --color-scheme-border: rgb(var(--color-border));
 
-    background-color: var(--color-scheme-background);
-    color: var(--color-scheme-text);
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
   }
 
   .footer-craftsman {
     position: relative;
-    background-color: var(--color-scheme-background);
-    color: var(--color-scheme-text);
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
   }
 
   .footer-craftsman__divider {
@@ -382,7 +384,7 @@
   }
 
   .footer-craftsman__menu-link {
-    color: var(--color-scheme-text);
+    color: rgb(var(--color-foreground));
     text-decoration: none;
     transition: opacity 0.2s ease;
   }
@@ -390,13 +392,13 @@
   .footer-craftsman__menu-link:hover,
   .footer-craftsman__menu-link:focus-visible {
     opacity: 0.7;
-    outline: 2px solid var(--color-scheme-accent);
+    outline: 2px solid rgb(var(--color-button));
     outline-offset: 2px;
   }
 
   .footer-craftsman__empty-message {
     font-size: 0.9rem;
-    color: var(--color-scheme-accent);
+    color: rgb(var(--color-button));
   }
 
   /* Contact */
@@ -422,20 +424,20 @@
     justify-content: center;
     width: 24px;
     height: 24px;
-    color: var(--color-scheme-accent);
+    color: rgb(var(--color-button));
     margin-top: 2px;
   }
 
   .footer-craftsman__contact-link {
-    color: var(--color-scheme-text);
+    color: rgb(var(--color-foreground));
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
   .footer-craftsman__contact-link:hover,
   .footer-craftsman__contact-link:focus-visible {
-    color: var(--color-scheme-accent);
-    outline: 2px solid var(--color-scheme-accent);
+    color: rgb(var(--color-button));
+    outline: 2px solid rgb(var(--color-button));
     outline-offset: 2px;
   }
 
@@ -451,10 +453,10 @@
     gap: 0.5rem;
     align-items: center;
     padding: 0.75rem;
-    background-color: rgba(var(--color-accent), 0.1);
+    background-color: rgba(rgb(var(--color-button)), 0.1);
     border-radius: 4px;
     font-size: 0.85rem;
-    color: var(--color-scheme-accent);
+    color: rgb(var(--color-button));
   }
 
   .footer-craftsman__emergency svg {
@@ -477,9 +479,9 @@
     flex: 1;
     min-width: 0;
     padding: 0.75rem;
-    border: 1px solid var(--color-scheme-border);
-    background-color: var(--color-scheme-background);
-    color: var(--color-scheme-text);
+    border: 1px solid rgba(var(--color-foreground), 0.15);
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
     border-radius: 4px;
     font-family: inherit;
     font-size: 0.9rem;
@@ -487,19 +489,19 @@
   }
 
   .footer-craftsman__input::placeholder {
-    color: rgba(var(--color-text), 0.5);
+    color: rgba(rgb(var(--color-foreground)), 0.5);
   }
 
   .footer-craftsman__input:focus {
-    outline: 2px solid var(--color-scheme-accent);
+    outline: 2px solid rgb(var(--color-button));
     outline-offset: -2px;
-    border-color: var(--color-scheme-accent);
+    border-color: rgb(var(--color-button));
   }
 
   .footer-craftsman__button {
     padding: 0.75rem;
-    background-color: var(--color-scheme-accent);
-    color: var(--color-scheme-background);
+    background-color: rgb(var(--color-button));
+    color: rgb(var(--color-background));
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -513,7 +515,7 @@
   .footer-craftsman__button:hover,
   .footer-craftsman__button:focus-visible {
     opacity: 0.85;
-    outline: 2px solid var(--color-scheme-text);
+    outline: 2px solid rgb(var(--color-foreground));
     outline-offset: 2px;
   }
 
@@ -533,7 +535,7 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    color: var(--color-scheme-accent);
+    color: rgb(var(--color-button));
     text-decoration: none;
     border-radius: 4px;
     border: 2px solid transparent;
@@ -542,10 +544,10 @@
 
   .footer-craftsman__social-link:hover,
   .footer-craftsman__social-link:focus-visible {
-    color: var(--color-scheme-background);
-    background-color: var(--color-scheme-accent);
-    border-color: var(--color-scheme-accent);
-    outline: 2px solid var(--color-scheme-text);
+    color: rgb(var(--color-background));
+    background-color: rgb(var(--color-button));
+    border-color: rgb(var(--color-button));
+    outline: 2px solid rgb(var(--color-foreground));
     outline-offset: 2px;
   }
 
@@ -556,8 +558,8 @@
 
   /* Bottom Bar */
   .footer-craftsman__bottom {
-    border-top: 1px solid var(--color-scheme-border);
-    background-color: rgba(var(--color-accent), 0.02);
+    border-top: 1px solid rgba(var(--color-foreground), 0.15);
+    background-color: rgba(rgb(var(--color-button)), 0.02);
     padding: {{ section.settings.padding_bottom }}px {{ section.settings.padding_horizontal }}px;
   }
 
@@ -619,7 +621,7 @@
   }
 
   .footer-craftsman__legal-link {
-    color: var(--color-scheme-text);
+    color: rgb(var(--color-foreground));
     text-decoration: none;
     font-size: 0.85rem;
     transition: color 0.2s ease;
@@ -627,8 +629,8 @@
 
   .footer-craftsman__legal-link:hover,
   .footer-craftsman__legal-link:focus-visible {
-    color: var(--color-scheme-accent);
-    outline: 2px solid var(--color-scheme-accent);
+    color: rgb(var(--color-button));
+    outline: 2px solid rgb(var(--color-button));
     outline-offset: 2px;
   }
 
@@ -645,8 +647,8 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background-color: var(--color-scheme-accent);
-    color: var(--color-scheme-background);
+    background-color: rgb(var(--color-button));
+    color: rgb(var(--color-background));
     border: none;
     cursor: pointer;
     display: flex;
@@ -661,7 +663,7 @@
   .footer-craftsman__back-to-top:focus-visible {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    outline: 2px solid var(--color-scheme-text);
+    outline: 2px solid rgb(var(--color-foreground));
     outline-offset: 2px;
   }
 

@@ -3,7 +3,8 @@
   Bold emergency/contact banner with customizable layout and styling
 {% endcomment %}
 
-<section id="shopify-section-{{ section.id }}" class="cta-banner color-scheme--{{ section.settings.color_scheme }}">
+<cta-contact-banner>
+<section class="cta-banner color-{{ section.settings.color_scheme }}">
   {% if section.settings.layout != 'minimal' %}
     <div class="cta-banner__background-wrapper">
       {% if section.settings.background_type == 'image' and section.settings.background_image %}
@@ -118,19 +119,20 @@
     {% endif %}
   </div>
 </section>
+</cta-contact-banner>
 
 <style>
 #shopify-section-{{ section.id }} {
-  --cta-text-color: var(--color-base-text);
-  --cta-accent: var(--color-primary);
+  --cta-text-color: rgb(var(--color-foreground));
+  --cta-accent: rgb(var(--color-button));
 }
 
 #shopify-section-{{ section.id }}[data-color-scheme="accent-1"] {
-  --cta-text-color: var(--color-accent-1-text);
+  --cta-text-color: rgb(var(--color-button-text));
 }
 
 #shopify-section-{{ section.id }}[data-color-scheme="accent-2"] {
-  --cta-text-color: var(--color-accent-2-text);
+  --cta-text-color: rgb(var(--color-button-text));
 }
 
 .cta-banner {
@@ -353,7 +355,7 @@
 .cta-banner__phone:focus {
   outline: none;
   border-color: white;
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+  box-shadow: 0 0 0 3px rgba(var(--color-button), 0.3);
 }
 
 .cta-banner__phone-icon {
@@ -415,7 +417,7 @@
 }
 
 .cta-banner__button--filled:focus {
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+  box-shadow: 0 0 0 3px rgba(var(--color-button), 0.3);
 }
 
 .cta-banner__button--outline {

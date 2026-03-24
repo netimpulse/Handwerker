@@ -1,9 +1,6 @@
 {%- style -%}
   #shopify-section-{{ section.id }} {
-    --color-background: var(--color-background-1);
-    --color-text: var(--color-text);
-    --color-text-secondary: var(--color-text-secondary);
-    --color-border: var(--color-border);
+
   }
 
   #shopify-section-{{ section.id }} .section-container {
@@ -18,13 +15,13 @@
 
   #shopify-section-{{ section.id }} .section-heading {
     margin: 0 0 0.5rem 0;
-    color: var(--color-text);
+    color: rgb(var(--color-foreground));
     word-break: break-word;
   }
 
   #shopify-section-{{ section.id }} .section-subheading {
     margin: 0;
-    color: var(--color-text-secondary);
+    color: rgba(var(--color-foreground), 0.7);
     font-size: clamp(0.875rem, 2vw, 1.125rem);
     line-height: 1.5;
   }
@@ -39,9 +36,9 @@
 
   #shopify-section-{{ section.id }} .filter-button {
     padding: 0.5rem 1rem;
-    border: 1px solid var(--color-border);
-    background: var(--color-background);
-    color: var(--color-text);
+    border: 1px solid rgb(var(--color-border));
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
     font-size: 0.875rem;
     border-radius: 4px;
     cursor: pointer;
@@ -50,12 +47,12 @@
   }
 
   #shopify-section-{{ section.id }} .filter-button:hover {
-    border-color: var(--color-text);
+    border-color: rgb(var(--color-foreground));
   }
 
   #shopify-section-{{ section.id }} .filter-button[aria-pressed="true"] {
-    background: var(--color-text);
-    color: var(--color-background);
+    background: rgb(var(--color-foreground));
+    color: rgb(var(--color-background));
   }
 
   #shopify-section-{{ section.id }} .projects-grid {
@@ -132,7 +129,7 @@
     overflow: hidden;
     border-radius: {{ section.settings.corner_radius }}px;
     cursor: pointer;
-    background: var(--color-background);
+    background: rgb(var(--color-background));
   }
 
   {% if section.settings.image_aspect_ratio == '1:1' %}
@@ -211,7 +208,7 @@
     margin: 0.5rem 0 0 0;
     font-size: 1rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: rgb(var(--color-foreground));
     line-height: 1.3;
     word-break: break-word;
   }
@@ -224,15 +221,15 @@
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    background: var(--color-background);
-    color: var(--color-text-secondary);
+    background: rgb(var(--color-background));
+    color: rgba(var(--color-foreground), 0.7);
     border-radius: 2px;
   }
 
   #shopify-section-{{ section.id }} .project-description {
     margin: 0.5rem 0;
     font-size: 0.875rem;
-    color: var(--color-text-secondary);
+    color: rgba(var(--color-foreground), 0.7);
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -243,12 +240,12 @@
   #shopify-section-{{ section.id }} .project-link {
     display: inline-block;
     margin-top: 0.75rem;
-    color: var(--color-text);
+    color: rgb(var(--color-foreground));
     text-decoration: none;
     font-weight: 500;
     font-size: 0.875rem;
     padding-bottom: 0.25rem;
-    border-bottom: 1px solid var(--color-text);
+    border-bottom: 1px solid rgb(var(--color-foreground));
     transition: opacity 0.2s ease;
   }
 
@@ -323,8 +320,8 @@
   #shopify-section-{{ section.id }} .load-more-button {
     display: inline-block;
     padding: 0.75rem 2rem;
-    background: var(--color-text);
-    color: var(--color-background);
+    background: rgb(var(--color-foreground));
+    color: rgb(var(--color-background));
     border: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -338,18 +335,18 @@
   }
 
   #shopify-section-{{ section.id }} .load-more-button:focus-visible {
-    outline: 2px solid var(--color-text);
+    outline: 2px solid rgb(var(--color-foreground));
     outline-offset: 2px;
   }
 
   #shopify-section-{{ section.id }} .view-all-link {
     display: inline-block;
     margin-top: 1.5rem;
-    color: var(--color-text);
+    color: rgb(var(--color-foreground));
     text-decoration: none;
     font-weight: 500;
     padding-bottom: 0.25rem;
-    border-bottom: 1px solid var(--color-text);
+    border-bottom: 1px solid rgb(var(--color-foreground));
     transition: opacity 0.2s ease;
   }
 
@@ -363,8 +360,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-border);
-    color: var(--color-text-secondary);
+    background: rgb(var(--color-border));
+    color: rgba(var(--color-foreground), 0.7);
     font-size: 3rem;
   }
 
@@ -376,7 +373,8 @@
   }
 {%- endstyle -%}
 
-<div class="section-container color-scheme--{{ section.settings.color_scheme }}">
+<project-gallery>
+<div class="section-container color-{{ section.settings.color_scheme }}">
   <div class="heading-wrapper">
     <{{ section.settings.heading_level }} class="section-heading">{{ section.settings.heading }}</{{ section.settings.heading_level }}>
     {% if section.settings.subheading != blank %}
@@ -472,11 +470,12 @@
       </dialog>
     {% endif %}
   {% else %}
-    <p style="text-align: center; color: var(--color-text-secondary); padding: 2rem;">
+    <p style="text-align: center; color: rgba(var(--color-foreground), 0.7); padding: 2rem;">
       Add project blocks to display your work.
     </p>
   {% endif %}
 </div>
+</project-gallery>
 
 <script type="module">
   class ProjectGallery extends HTMLElement {

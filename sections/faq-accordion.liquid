@@ -3,7 +3,8 @@
   Professional Q&A section with smooth animations, keyboard navigation, and optional search
 {% endcomment %}
 
-<section id="shopify-section-{{ section.id }}" class="faq-accordion color-scheme--{{ section.settings.color_scheme }}">
+<faq-accordion>
+<section class="faq-accordion color-{{ section.settings.color_scheme }}">
   <div class="faq-accordion__container">
     {% comment %} Section Heading {% endcomment %}
     {% if section.settings.heading != blank %}
@@ -123,26 +124,27 @@
     {% endif %}
   </div>
 </section>
+</faq-accordion>
 
 <style>
 #shopify-section-{{ section.id }} {
-  --faq-text-color: var(--color-base-text);
-  --faq-bg-color: var(--color-base-background);
-  --faq-border-color: var(--color-border);
-  --faq-hover-bg: var(--color-base-hover);
-  --faq-accent: var(--color-primary);
+  --faq-text-color: rgb(var(--color-foreground));
+  --faq-bg-color: rgb(var(--color-background));
+  --faq-border-color: rgb(var(--color-border));
+  --faq-hover-bg: rgba(var(--color-foreground), 0.08);
+  --faq-accent: rgb(var(--color-button));
 }
 
 #shopify-section-{{ section.id }}[data-color-scheme="accent-1"] {
-  --faq-bg-color: var(--color-accent-1-background);
-  --faq-text-color: var(--color-accent-1-text);
-  --faq-border-color: var(--color-accent-1-border);
+  --faq-bg-color: rgb(var(--color-button));
+  --faq-text-color: rgb(var(--color-button-text));
+  --faq-border-color: rgba(var(--color-foreground), 0.15);
 }
 
 #shopify-section-{{ section.id }}[data-color-scheme="accent-2"] {
-  --faq-bg-color: var(--color-accent-2-background);
-  --faq-text-color: var(--color-accent-2-text);
-  --faq-border-color: var(--color-accent-2-border);
+  --faq-bg-color: rgba(var(--color-button), 0.8);
+  --faq-text-color: rgb(var(--color-button-text));
+  --faq-border-color: rgba(var(--color-foreground), 0.15);
 }
 
 .faq-accordion {
@@ -204,7 +206,7 @@
 .faq-accordion__search-input:focus {
   outline: none;
   border-color: var(--faq-accent);
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--color-button), 0.1);
 }
 
 .faq-accordion__search-icon {
@@ -243,7 +245,7 @@
 
 .faq-accordion__category-btn--active {
   background-color: var(--faq-accent);
-  color: var(--color-inverse-text);
+  color: rgb(var(--color-background));
   border-color: var(--faq-accent);
 }
 
@@ -401,7 +403,7 @@
 .faq-accordion__placeholder {
   padding: 3rem 1.5rem;
   text-align: center;
-  color: var(--color-base-text);
+  color: rgb(var(--color-foreground));
   opacity: 0.6;
 }
 
@@ -423,7 +425,7 @@
   display: inline-block;
   padding: 0.75rem 1.75rem;
   background-color: var(--faq-accent);
-  color: var(--color-inverse-text);
+  color: rgb(var(--color-background));
   border-radius: 0.375rem;
   text-decoration: none;
   font-weight: 600;
