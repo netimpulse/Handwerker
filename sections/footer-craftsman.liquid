@@ -255,8 +255,8 @@
   <div class="footer-craftsman__bottom">
     <div class="footer-craftsman__bottom-content">
       <div class="footer-craftsman__copyright">
-        {%- assign year = 'now' | date: '%Y' -%}
-        <p>{% assign year_tag = '{{ year }}' %}{{ section.settings.copyright_text | replace: year_tag, year }}</p>
+        {%- assign current_year = 'now' | date: '%Y' -%}
+        <p>{{ section.settings.copyright_text | replace: '[year]', current_year | replace: '[shop]', shop.name }}</p>
       </div>
 
       {%- if section.settings.show_payment_icons -%}
@@ -902,7 +902,7 @@
       "type": "text",
       "id": "copyright_text",
       "label": "Copyright text",
-      "default": "© {{ year }} {{ shop.name }}. All rights reserved.",
+      "default": "© [year] Firmenname. All rights reserved.",
       "info": "Use {{ year }} for current year"
     },
     {
