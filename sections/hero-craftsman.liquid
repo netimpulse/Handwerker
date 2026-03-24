@@ -1,0 +1,813 @@
+<!-- Craftsman Hero Section -->
+<section
+  id="shopify-section-{{ section.id }}"
+  class="hero-craftsman"
+  data-bg-type="{{ section.settings.bg_type }}"
+  style="--hero-height: {% if section.settings.height == 'viewport' %}100vh{% elsif section.settings.height == 'large' %}600px{% elsif section.settings.height == 'medium' %}400px{% else %}{{ section.settings.height_custom }}px{% endif %}; --hero-overlay-color: {{ section.settings.overlay_color }}; --hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; --hero-text-color: {{ section.settings.text_color }};"
+>
+  <!-- Background Layer -->
+  <div class="hero-craftsman__bg">
+    {% case section.settings.bg_type %}
+      {% when 'image' %}
+        {% if section.settings.bg_image != blank %}
+          <img
+            src="{{ section.settings.bg_image | image_url: width: 1920 }}"
+            alt="{{ section.settings.headline }}"
+            class="hero-craftsman__bg-image"
+            {% if section.settings.lazy_load == false %}loading="eager"{% else %}loading="lazy"{% endif %}
+            width="1920"
+            height="auto"
+            {% if section.settings.bg_focal_point %}style="object-position: {{ section.settings.bg_focal_point }}"{% endif %}
+            sizes="(max-width: 768px) 100vw, 100vw"
+            srcset="{{ section.settings.bg_image | image_url: width: 480 }} 480w, {{ section.settings.bg_image | image_url: width: 768 }} 768w, {{ section.settings.bg_image | image_url: width: 1024 }} 1024w, {{ section.settings.bg_image | image_url: width: 1920 }} 1920w"
+          />
+        {% endif %}
+      {% when 'video' %}
+        {% if section.settings.bg_video != blank %}
+          <video
+            class="hero-craftsman__bg-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+          >
+            <source src="{{ section.settings.bg_video | video_tag }}" type="video/mp4" />
+          </video>
+        {% endif %}
+      {% when 'color' %}
+        <div
+          class="hero-craftsman__bg-color"
+          style="background-color: {{ section.settings.bg_color }};"
+        ></div>
+    {% endcase %}
+  </div>
+
+  <!-- Overlay -->
+  {% if section.settings.overlay_enabled %}
+    <div class="hero-craftsman__overlay"></div>
+  {% endif %}
+
+  <!-- Content -->
+  <div class="hero-craftsman__content" data-h-align="{{ section.settings.content_h_align }}" data-v-align="{{ section.settings.content_v_align }}">
+    <div class="hero-craftsman__content-inner">
+      <!-- Badge -->
+      {% if section.settings.badge_text != blank %}
+        <span class="hero-craftsman__badge">
+          {{ section.settings.badge_text }}
+        </span>
+      {% endif %}
+
+      <!-- Headline -->
+      {% if section.settings.headline != blank %}
+        {% assign h_tag = section.settings.headline_tag | default: 'h1' %}
+        {% case h_tag %}
+          {% when 'h1' %}
+            <h1 class="hero-craftsman__headline">{{ section.settings.headline }}</h1>
+          {% when 'h2' %}
+            <h2 class="hero-craftsman__headline">{{ section.settings.headline }}</h2>
+          {% when 'h3' %}
+            <h3 class="hero-craftsman__headline">{{ section.settings.headline }}</h3>
+          {% when 'h4' %}
+            <h4 class="hero-craftsman__headline">{{ section.settings.headline }}</h4>
+          {% when 'h5' %}
+            <h5 class="hero-craftsman__headline">{{ section.settings.headline }}</h5>
+          {% when 'h6' %}
+            <h6 class="hero-craftsman__headline">{{ section.settings.headline }}</h6>
+        {% endcase %}
+      {% endif %}
+
+      <!-- Subheadline -->
+      {% if section.settings.subheadline != blank %}
+        <p class="hero-craftsman__subheadline">{{ section.settings.subheadline }}</p>
+      {% endif %}
+
+      <!-- Description -->
+      {% if section.settings.description != blank %}
+        <div class="hero-craftsman__description">
+          {{ section.settings.description }}
+        </div>
+      {% endif %}
+
+      <!-- CTA Buttons -->
+      {% if section.settings.cta_button_1_text != blank or section.settings.cta_button_2_text != blank %}
+        <div class="hero-craftsman__buttons">
+          {% if section.settings.cta_button_1_text != blank %}
+            <a
+              href="{{ section.settings.cta_button_1_link }}"
+              class="hero-craftsman__button hero-craftsman__button--{{ section.settings.cta_button_1_style }}"
+            >
+              {{ section.settings.cta_button_1_text }}
+            </a>
+          {% endif %}
+
+          {% if section.settings.cta_button_2_text != blank %}
+            <a
+              href="{{ section.settings.cta_button_2_link }}"
+              class="hero-craftsman__button hero-craftsman__button--{{ section.settings.cta_button_2_style }}"
+            >
+              {{ section.settings.cta_button_2_text }}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  {% if section.settings.scroll_indicator %}
+    <div class="hero-craftsman__scroll-indicator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
+  {% endif %}
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --hero-bg-color: var(--color-background);
+  }
+
+  .hero-craftsman {
+    position: relative;
+    width: 100%;
+    height: var(--hero-height, 100vh);
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-craftsman__bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .hero-craftsman__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .hero-craftsman__bg-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-craftsman__bg-color {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-craftsman__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--hero-overlay-color, #000);
+    opacity: var(--hero-overlay-opacity, 0.3);
+    z-index: 1;
+  }
+
+  .hero-craftsman__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 900px;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--hero-text-color, white);
+  }
+
+  /* Horizontal alignment */
+  .hero-craftsman__content[data-h-align="left"] {
+    text-align: left;
+    padding-left: 60px;
+  }
+
+  .hero-craftsman__content[data-h-align="center"] {
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hero-craftsman__content[data-h-align="right"] {
+    text-align: right;
+    padding-right: 60px;
+  }
+
+  /* Vertical alignment */
+  .hero-craftsman[data-v-align="top"] {
+    justify-content: flex-start;
+    padding-top: 80px;
+  }
+
+  .hero-craftsman[data-v-align="center"] {
+    justify-content: center;
+  }
+
+  .hero-craftsman[data-v-align="bottom"] {
+    justify-content: flex-end;
+    padding-bottom: 80px;
+  }
+
+  .hero-craftsman__content-inner {
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Badge */
+  .hero-craftsman__badge {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: inherit;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Headline */
+  .hero-craftsman__headline {
+    margin: 0 0 20px 0;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-size: clamp(32px, 8vw, 72px);
+  }
+
+  /* Subheadline */
+  .hero-craftsman__subheadline {
+    margin: 0 0 20px 0;
+    font-size: clamp(18px, 4vw, 28px);
+    font-weight: 500;
+    line-height: 1.4;
+    opacity: 0.95;
+  }
+
+  /* Description */
+  .hero-craftsman__description {
+    margin: 0 0 30px 0;
+    font-size: clamp(15px, 2vw, 18px);
+    line-height: 1.6;
+    opacity: 0.9;
+    max-width: 600px;
+  }
+
+  .hero-craftsman__content[data-h-align="left"] .hero-craftsman__description,
+  .hero-craftsman__content[data-h-align="right"] .hero-craftsman__description {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Buttons Container */
+  .hero-craftsman__buttons {
+    display: flex;
+    gap: 16px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-craftsman__content[data-h-align="left"] .hero-craftsman__buttons {
+    justify-content: flex-start;
+  }
+
+  .hero-craftsman__content[data-h-align="right"] .hero-craftsman__buttons {
+    justify-content: flex-end;
+  }
+
+  /* Button Styles */
+  .hero-craftsman__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 40px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    border: 2px solid transparent;
+  }
+
+  .hero-craftsman__button--filled {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+  .hero-craftsman__button--filled:hover,
+  .hero-craftsman__button--filled:focus {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .hero-craftsman__button--outline {
+    background-color: transparent;
+    color: white;
+    border-color: white;
+  }
+
+  .hero-craftsman__button--outline:hover,
+  .hero-craftsman__button--outline:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Scroll Indicator */
+  .hero-craftsman__scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    animation: bounce 2s infinite;
+  }
+
+  .hero-craftsman__scroll-indicator svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateX(-50%) translateY(0);
+    }
+    50% {
+      transform: translateX(-50%) translateY(8px);
+    }
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .hero-craftsman {
+      --hero-height: {% if section.settings.height == 'viewport' %}100vh{% elsif section.settings.height == 'large' %}450px{% elsif section.settings.height == 'medium' %}300px{% else %}{{ section.settings.height_custom }}px{% endif %};
+    }
+
+    .hero-craftsman__content {
+      padding: 30px 16px;
+      max-width: 100%;
+    }
+
+    .hero-craftsman__content[data-h-align="left"] {
+      padding-left: 30px;
+      text-align: center;
+    }
+
+    .hero-craftsman__content[data-h-align="right"] {
+      padding-right: 30px;
+      text-align: center;
+    }
+
+    .hero-craftsman__headline {
+      font-size: clamp(24px, 7vw, 42px);
+    }
+
+    .hero-craftsman__subheadline {
+      font-size: clamp(16px, 4vw, 22px);
+    }
+
+    .hero-craftsman__description {
+      font-size: clamp(14px, 2vw, 16px);
+    }
+
+    .hero-craftsman__buttons {
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .hero-craftsman__button {
+      width: 100%;
+    }
+
+    .hero-craftsman__scroll-indicator {
+      bottom: 20px;
+    }
+  }
+
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-craftsman__content-inner,
+    .hero-craftsman__button,
+    .hero-craftsman__scroll-indicator {
+      animation: none;
+      transition: none;
+    }
+
+    .hero-craftsman__bg-video {
+      display: none;
+    }
+  }
+
+  /* Tablet adjustments */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .hero-craftsman__headline {
+      font-size: clamp(36px, 7vw, 56px);
+    }
+
+    .hero-craftsman__subheadline {
+      font-size: clamp(18px, 4vw, 24px);
+    }
+  }
+</style>
+
+<script>
+  class HeroCraftsman extends HTMLElement {
+    connectedCallback() {
+      const videoElement = this.querySelector('.hero-craftsman__bg-video');
+
+      if (videoElement) {
+        // Respect prefers-reduced-motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReducedMotion) {
+          videoElement.style.display = 'none';
+        } else {
+          // Ensure video plays if not paused by browser autoplay policy
+          videoElement.play().catch(() => {
+            // Autoplay blocked, video will not play
+          });
+        }
+      }
+
+      // Smooth scroll on scroll indicator click
+      const scrollIndicator = this.querySelector('.hero-craftsman__scroll-indicator');
+      if (scrollIndicator) {
+        scrollIndicator.addEventListener('click', this.scrollToNext.bind(this));
+      }
+
+      // Handle shopify:section:load for Theme Editor
+      this.addEventListener('shopify:section:load', () => {
+        this.connectedCallback();
+      });
+
+      this.addEventListener('shopify:section:unload', () => {
+        if (videoElement) {
+          videoElement.pause();
+        }
+      });
+    }
+
+    scrollToNext() {
+      const nextSection = this.nextElementSibling;
+      if (nextSection) {
+        nextSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+
+  if (!customElements.get('hero-craftsman')) {
+    customElements.define('hero-craftsman', HeroCraftsman);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Craftsman Hero",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "select",
+      "id": "bg_type",
+      "label": "Background type",
+      "options": [
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "video",
+          "label": "Video"
+        },
+        {
+          "value": "color",
+          "label": "Solid color"
+        }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "text",
+      "id": "bg_focal_point",
+      "label": "Image focal point (CSS object-position)",
+      "info": "e.g., 'center top' or 'left center'",
+      "default": "center"
+    },
+    {
+      "type": "video",
+      "id": "bg_video",
+      "label": "Background video (Shopify-hosted)"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Overlay Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_enabled",
+      "label": "Enable overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Height Settings"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Section height",
+      "options": [
+        {
+          "value": "viewport",
+          "label": "Full viewport (100vh)"
+        },
+        {
+          "value": "large",
+          "label": "Large (600px)"
+        },
+        {
+          "value": "medium",
+          "label": "Medium (400px)"
+        },
+        {
+          "value": "custom",
+          "label": "Custom height"
+        }
+      ],
+      "default": "viewport"
+    },
+    {
+      "type": "range",
+      "id": "height_custom",
+      "min": 200,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Custom height",
+      "default": 500
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text (optional)"
+    },
+    {
+      "type": "textarea",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Premium Craftsmanship & Professional Services",
+      "placeholder": "Enter your headline"
+    },
+    {
+      "type": "select",
+      "id": "headline_tag",
+      "label": "Headline tag",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "text",
+      "id": "subheadline",
+      "label": "Subheadline",
+      "default": "We bring quality, reliability, and expertise to every project"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>From carpentry to plumbing, electrical work to home renovation—we deliver exceptional craftsmanship with attention to detail.</p>"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Content Alignment"
+    },
+    {
+      "type": "select",
+      "id": "content_h_align",
+      "label": "Horizontal alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_v_align",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Primary CTA Button"
+    },
+    {
+      "type": "text",
+      "id": "cta_button_1_text",
+      "label": "Button text",
+      "default": "Get Started"
+    },
+    {
+      "type": "url",
+      "id": "cta_button_1_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "cta_button_1_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "filled",
+          "label": "Filled"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "header",
+      "content": "Secondary CTA Button"
+    },
+    {
+      "type": "text",
+      "id": "cta_button_2_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "cta_button_2_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "cta_button_2_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "filled",
+          "label": "Filled"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "header",
+      "content": "Additional Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "scroll_indicator",
+      "label": "Show scroll-down indicator",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy load background image",
+      "info": "Disable for above-the-fold hero sections",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Craftsman Hero"
+    }
+  ]
+}
+{% endschema %}

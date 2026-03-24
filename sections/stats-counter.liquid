@@ -1,0 +1,691 @@
+{%- comment -%}
+  stats-counter.liquid
+  Animated statistics/numbers counter section with IntersectionObserver
+  Triggered on scroll with smooth count-up animation
+{%- endcomment -%}
+
+<section id="shopify-section-{{ section.id }}" class="stats-counter">
+  {%- if section.settings.background_image -%}
+    <div class="stats-counter__background">
+      <img
+        src="{{ section.settings.background_image | image_url: width: 1920 }}"
+        alt=""
+        class="stats-counter__background-image"
+        loading="lazy"
+      />
+      {%- if section.settings.background_overlay_opacity > 0 -%}
+        <div
+          class="stats-counter__overlay"
+          style="background-color: {{ section.settings.background_overlay_color }}; opacity: {{ section.settings.background_overlay_opacity | divided_by: 100.0 }}"
+        ></div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="stats-counter__content">
+    {%- if section.settings.show_heading -%}
+      <header class="stats-counter__header">
+        {%- if section.settings.heading -%}
+          <h2
+            class="stats-counter__heading"
+            style="text-align: {{ section.settings.heading_alignment }}"
+          >
+            {{ section.settings.heading }}
+          </h2>
+        {%- endif -%}
+        {%- if section.settings.subheading -%}
+          <p
+            class="stats-counter__subheading"
+            style="text-align: {{ section.settings.heading_alignment }}"
+          >
+            {{ section.settings.subheading }}
+          </p>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    <div class="stats-counter__grid stats-counter__grid--{{ section.settings.layout }}">
+      {%- for block in section.blocks -%}
+        <div
+          class="stats-counter__item"
+          data-animate="number"
+          {{ block.shopify_attributes }}
+        >
+          {%- if section.settings.show_icons and block.settings.icon -%}
+            <div class="stats-counter__icon">
+              <img
+                src="{{ block.settings.icon | image_url: width: 100 }}"
+                alt=""
+                loading="lazy"
+              />
+            </div>
+          {%- endif -%}
+
+          <div class="stats-counter__number-wrapper">
+            <span
+              class="stats-counter__number stats-counter__number--{{ section.settings.number_size }}"
+              data-target="{{ block.settings.number }}"
+              data-prefix="{{ block.settings.prefix | escape }}"
+              data-suffix="{{ block.settings.suffix | escape }}"
+            >
+              {{ block.settings.number | times: 1 }}
+            </span>
+          </div>
+
+          {%- if block.settings.label -%}
+            <h3 class="stats-counter__label">{{ block.settings.label }}</h3>
+          {%- endif -%}
+
+          {%- if block.settings.description -%}
+            <p class="stats-counter__description">{{ block.settings.description }}</p>
+          {%- endif -%}
+
+          {%- if section.settings.show_dividers and forloop.index < section.blocks.size -%}
+            <div class="stats-counter__divider"></div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --color-scheme-background: rgb(var(--color-background));
+    --color-scheme-text: rgb(var(--color-text));
+    --color-scheme-accent: rgb(var(--color-accent));
+    --color-scheme-border: rgb(var(--color-border));
+  }
+
+  .stats-counter {
+    position: relative;
+    background-color: var(--color-scheme-background);
+    color: var(--color-scheme-text);
+    overflow: hidden;
+  }
+
+  .stats-counter__background {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .stats-counter__background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .stats-counter__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-scheme-background);
+  }
+
+  .stats-counter__content {
+    position: relative;
+    z-index: 2;
+    padding: {{ section.settings.padding_top }}px 20px {{ section.settings.padding_bottom }}px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .stats-counter__header {
+    margin-bottom: 3rem;
+  }
+
+  .stats-counter__heading {
+    margin: 0 0 1rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .stats-counter__subheading {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.8;
+  }
+
+  /* Grid Layouts */
+  .stats-counter__grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .stats-counter__grid--bar {
+    grid-template-columns: 1fr;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    scroll-snap-type: x mandatory;
+  }
+
+  .stats-counter__grid--grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-counter__grid--grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stats-counter__grid--grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stats-counter__grid--centered {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Items */
+  .stats-counter__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .stats-counter__grid--bar .stats-counter__item {
+    flex: 1 1 200px;
+    min-width: 200px;
+  }
+
+  /* Icon */
+  .stats-counter__icon {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    background-color: rgba(var(--color-accent), 0.1);
+  }
+
+  .stats-counter__icon img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+  }
+
+  /* Number */
+  .stats-counter__number-wrapper {
+    margin: 1rem 0;
+  }
+
+  .stats-counter__number {
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stats-counter__number--small {
+    font-size: 2rem;
+  }
+
+  .stats-counter__number--medium {
+    font-size: 3rem;
+  }
+
+  .stats-counter__number--large {
+    font-size: 4rem;
+  }
+
+  .stats-counter__number--xl {
+    font-size: 5rem;
+  }
+
+  .stats-counter__number::before {
+    content: attr(data-prefix);
+  }
+
+  .stats-counter__number::after {
+    content: attr(data-suffix);
+  }
+
+  /* Label & Description */
+  .stats-counter__label {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .stats-counter__description {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.7;
+  }
+
+  /* Divider */
+  .stats-counter__divider {
+    width: 60%;
+    height: 2px;
+    background-color: var(--color-scheme-border);
+    margin: 1.5rem auto;
+    opacity: 0.3;
+  }
+
+  .stats-counter__grid--bar .stats-counter__divider {
+    display: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .stats-counter__heading {
+      font-size: 2rem;
+    }
+
+    .stats-counter__grid--grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats-counter__grid--grid-3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats-counter__number--xl {
+      font-size: 3.5rem;
+    }
+
+    .stats-counter__number--large {
+      font-size: 3rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-counter__content {
+      padding: {{ section.settings.padding_top | divided_by: 1.5 | ceil }}px 15px {{ section.settings.padding_bottom | divided_by: 1.5 | ceil }}px;
+    }
+
+    .stats-counter__header {
+      margin-bottom: 2rem;
+    }
+
+    .stats-counter__heading {
+      font-size: 1.5rem;
+    }
+
+    .stats-counter__subheading {
+      font-size: 1rem;
+    }
+
+    .stats-counter__grid--grid-4,
+    .stats-counter__grid--grid-3,
+    .stats-counter__grid--grid-2 {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-counter__grid--bar {
+      flex-direction: column;
+    }
+
+    .stats-counter__grid--bar .stats-counter__item {
+      flex: 1 1 auto;
+      min-width: auto;
+      scroll-snap-type: none;
+    }
+
+    .stats-counter__icon {
+      width: 60px;
+      height: 60px;
+    }
+
+    .stats-counter__number--xl {
+      font-size: 2.5rem;
+    }
+
+    .stats-counter__number--large {
+      font-size: 2rem;
+    }
+
+    .stats-counter__number--medium {
+      font-size: 1.75rem;
+    }
+
+    .stats-counter__number--small {
+      font-size: 1.5rem;
+    }
+
+    .stats-counter__label {
+      font-size: 1rem;
+    }
+
+    .stats-counter__divider {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stats-counter__number {
+      transition: none;
+    }
+  }
+</style>
+
+<script type="module">
+  class StatsCounter extends HTMLElement {
+    connectedCallback() {
+      this.animationDuration = parseInt(this.dataset.duration) || 2000;
+      this.preferReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      this.setupIntersectionObserver();
+    }
+
+    setupIntersectionObserver() {
+      const items = this.querySelectorAll('[data-animate="number"]');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !entry.target.dataset.counted) {
+            entry.target.dataset.counted = 'true';
+
+            const numberElement = entry.target.querySelector('.stats-counter__number');
+            this.animateNumber(numberElement);
+          }
+        });
+      }, {
+        threshold: 0.2
+      });
+
+      items.forEach(item => observer.observe(item));
+    }
+
+    animateNumber(element) {
+      const targetValue = parseFloat(element.dataset.target);
+      const prefix = element.dataset.prefix || '';
+      const suffix = element.dataset.suffix || '';
+      const isDecimal = targetValue % 1 !== 0;
+      const decimalPlaces = isDecimal ? 2 : 0;
+
+      if (this.preferReducedMotion) {
+        // Show final value immediately
+        element.textContent = prefix + this.formatNumber(targetValue, decimalPlaces) + suffix;
+        return;
+      }
+
+      const startTime = performance.now();
+      const startValue = 0;
+
+      const animate = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / this.animationDuration, 1);
+
+        // Easing function: ease-out-cubic
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+        const currentValue = startValue + (targetValue - startValue) * easeProgress;
+
+        element.textContent = prefix + this.formatNumber(currentValue, decimalPlaces) + suffix;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    }
+
+    formatNumber(num, decimalPlaces = 0) {
+      const fixed = num.toFixed(decimalPlaces);
+      const parts = fixed.split('.');
+
+      // Add thousand separators
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+      return decimalPlaces > 0 ? parts.join('.') : parts[0];
+    }
+  }
+
+  customElements.define('stats-counter', StatsCounter);
+</script>
+
+{% schema %}
+{
+  "name": "Stats Counter",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show heading section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "By The Numbers"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "placeholder": "Optional subheading text"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "bar",
+          "label": "Horizontal bar"
+        },
+        {
+          "value": "grid-2",
+          "label": "2 columns"
+        },
+        {
+          "value": "grid-3",
+          "label": "3 columns"
+        },
+        {
+          "value": "grid-4",
+          "label": "4 columns"
+        },
+        {
+          "value": "centered",
+          "label": "Centered large"
+        }
+      ],
+      "default": "grid-3"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "background_overlay_color",
+      "label": "Background overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "background_overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "label": "Background overlay opacity",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 1000,
+      "max": 4000,
+      "step": 500,
+      "unit": "ms",
+      "label": "Animation duration",
+      "default": 2000
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dividers",
+      "label": "Show dividers between items",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "number_size",
+      "label": "Number size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "Extra large"
+        }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icons",
+      "label": "Show icons",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Statistic",
+      "settings": [
+        {
+          "type": "number",
+          "id": "number",
+          "label": "Number",
+          "default": 100
+        },
+        {
+          "type": "text",
+          "id": "prefix",
+          "label": "Prefix (e.g. €, $)",
+          "placeholder": "Optional"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Suffix (e.g. %, +)",
+          "placeholder": "Optional"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Statistic Label"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "placeholder": "Optional short description"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Stats Counter",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": {
+            "number": 500,
+            "suffix": "+",
+            "label": "Projects Completed"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": 20,
+            "label": "Years Experience"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": 98,
+            "suffix": "%",
+            "label": "Client Satisfaction"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

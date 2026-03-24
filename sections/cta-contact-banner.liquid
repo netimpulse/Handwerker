@@ -1,0 +1,911 @@
+{% comment %}
+  CTA Contact Banner Section
+  Bold emergency/contact banner with customizable layout and styling
+{% endcomment %}
+
+<section id="shopify-section-{{ section.id }}" class="cta-banner">
+  {% if section.settings.layout != 'minimal' %}
+    <div class="cta-banner__background-wrapper">
+      {% if section.settings.background_type == 'image' and section.settings.background_image %}
+        <img
+          src="{{ section.settings.background_image | image_url: width: 1920 }}"
+          alt=""
+          class="cta-banner__background-image"
+          loading="lazy"
+          role="presentation"
+        >
+      {% elsif section.settings.background_type == 'gradient' and section.settings.background_gradient != blank %}
+        <div
+          class="cta-banner__background-gradient"
+          style="background: {{ section.settings.background_gradient }}"
+        ></div>
+      {% else %}
+        <div
+          class="cta-banner__background-color"
+          style="background-color: {{ section.settings.background_color }}"
+        ></div>
+      {% endif %}
+
+      {% if section.settings.overlay_color != blank %}
+        <div
+          class="cta-banner__overlay"
+          style="background-color: {{ section.settings.overlay_color }}; opacity: {{ section.settings.overlay_opacity | times: 0.01 }}"
+        ></div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="cta-banner__container cta-banner__container--{{ section.settings.layout }}">
+    <div class="cta-banner__content">
+      {% comment %} Emergency Badge {% endcomment %}
+      {% if section.settings.emergency_mode %}
+        <div class="cta-banner__emergency-badge">
+          <span class="cta-banner__emergency-pulse"></span>
+          {{ section.settings.emergency_badge_text }}
+        </div>
+      {% endif %}
+
+      {% comment %} Heading {% endcomment %}
+      {% if section.settings.heading != blank %}
+        {% assign heading_tag = section.settings.heading_tag | default: 'h2' %}
+        <{{ heading_tag }} class="cta-banner__heading">
+          {{ section.settings.heading }}
+        </{{ heading_tag }}>
+      {% endif %}
+
+      {% comment %} Description {% endcomment %}
+      {% if section.settings.description != blank %}
+        <div class="cta-banner__description">
+          {{ section.settings.description }}
+        </div>
+      {% endif %}
+
+      {% comment %} Operating Hours {% endcomment %}
+      {% if section.settings.show_operating_hours and section.settings.operating_hours != blank %}
+        <div class="cta-banner__operating-hours">
+          <strong>{{ 'sections.cta_banner.hours' | t: _locale: 'en' | default: 'Hours:' }}</strong>
+          <p>{{ section.settings.operating_hours }}</p>
+        </div>
+      {% endif %}
+
+      {% comment %} Phone Number {% endcomment %}
+      {% if section.settings.show_phone and section.settings.phone_number != blank %}
+        <div class="cta-banner__phone-wrapper">
+          <a href="tel:{{ section.settings.phone_number | strip }}" class="cta-banner__phone">
+            <svg class="cta-banner__phone-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <span class="cta-banner__phone-number">{{ section.settings.phone_number }}</span>
+          </a>
+        </div>
+      {% endif %}
+
+      {% comment %} Buttons {% endcomment %}
+      {% if section.settings.button_1_text != blank or section.settings.button_2_text != blank %}
+        <div class="cta-banner__buttons">
+          {% if section.settings.button_1_text != blank %}
+            <a
+              href="{{ section.settings.button_1_link }}"
+              class="cta-banner__button cta-banner__button--{{ section.settings.button_1_style }}"
+            >
+              {{ section.settings.button_1_text }}
+            </a>
+          {% endif %}
+
+          {% if section.settings.button_2_text != blank %}
+            <a
+              href="{{ section.settings.button_2_link }}"
+              class="cta-banner__button cta-banner__button--{{ section.settings.button_2_style }}"
+            >
+              {{ section.settings.button_2_text }}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Split Layout Image {% endcomment %}
+    {% if section.settings.layout == 'split' and section.settings.split_image %}
+      <div class="cta-banner__image-wrapper">
+        <img
+          src="{{ section.settings.split_image | image_url: width: 600 }}"
+          alt=""
+          class="cta-banner__image"
+          loading="lazy"
+          role="presentation"
+        >
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+#shopify-section-{{ section.id }} {
+  --cta-text-color: var(--color-base-text);
+  --cta-accent: var(--color-primary);
+}
+
+#shopify-section-{{ section.id }}[data-color-scheme="accent-1"] {
+  --cta-text-color: var(--color-accent-1-text);
+}
+
+#shopify-section-{{ section.id }}[data-color-scheme="accent-2"] {
+  --cta-text-color: var(--color-accent-2-text);
+}
+
+.cta-banner {
+  position: relative;
+  padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px 0;
+  overflow: hidden;
+  {% if section.settings.layout == 'minimal' %}
+    background-color: {{ section.settings.background_color }};
+  {% else %}
+    background-color: {{ section.settings.background_color }};
+  {% endif %}
+}
+
+{% comment %} Full Width Toggle {% endcomment %}
+{% if section.settings.full_width %}
+  .cta-banner {
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .cta-banner__container {
+    max-width: 100%;
+  }
+{% endif %}
+
+.cta-banner__background-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.cta-banner__background-image,
+.cta-banner__background-gradient,
+.cta-banner__background-color {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cta-banner__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cta-banner__container {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+@media (min-width: 750px) {
+  .cta-banner__container {
+    padding: 3rem 2rem;
+  }
+}
+
+{% comment %} Layout Variants {% endcomment %}
+.cta-banner__container--centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cta-banner__container--split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (max-width: 749px) {
+  .cta-banner__container--split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cta-banner__container--minimal {
+  padding: 1.5rem 1.5rem;
+}
+
+@media (min-width: 750px) {
+  .cta-banner__container--minimal {
+    padding: 2rem;
+  }
+}
+
+.cta-banner__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 100%;
+}
+
+{% comment %} Emergency Badge {% endcomment %}
+.cta-banner__emergency-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.cta-banner__container--centered .cta-banner__emergency-badge {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-banner__emergency-pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  animation: cta-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-banner__emergency-pulse {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
+@keyframes cta-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+{% comment %} Heading {% endcomment %}
+.cta-banner__heading {
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
+  color: {{ section.settings.text_color | default: 'var(--cta-text-color)' }};
+}
+
+{% comment %} Description {% endcomment %}
+.cta-banner__description {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: {{ section.settings.text_color | default: 'var(--cta-text-color)' }};
+  opacity: 0.95;
+}
+
+{% comment %} Operating Hours {% endcomment %}
+.cta-banner__operating-hours {
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-left: 3px solid var(--cta-accent);
+  border-radius: 0.375rem;
+  font-size: 0.9375rem;
+  width: fit-content;
+}
+
+.cta-banner__operating-hours strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.cta-banner__operating-hours p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cta-banner__container--centered .cta-banner__operating-hours {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+{% comment %} Phone Wrapper {% endcomment %}
+.cta-banner__phone-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.cta-banner__phone {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--cta-accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.cta-banner__phone:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cta-banner__phone:focus {
+  outline: none;
+  border-color: white;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.cta-banner__phone-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.cta-banner__phone-number {
+  letter-spacing: 0.05em;
+}
+
+.cta-banner__container--centered .cta-banner__phone-wrapper {
+  justify-content: center;
+}
+
+{% comment %} Buttons {% endcomment %}
+.cta-banner__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 749px) {
+  .cta-banner__buttons {
+    flex-direction: column;
+  }
+}
+
+.cta-banner__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cta-banner__button:focus {
+  outline: none;
+}
+
+.cta-banner__button--filled {
+  background-color: var(--cta-accent);
+  color: white;
+  border-color: var(--cta-accent);
+}
+
+.cta-banner__button--filled:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.cta-banner__button--filled:focus {
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.cta-banner__button--outline {
+  background-color: transparent;
+  color: {{ section.settings.text_color | default: 'var(--cta-text-color)' }};
+  border-color: {{ section.settings.text_color | default: 'var(--cta-text-color)' }};
+}
+
+.cta-banner__button--outline:hover {
+  background-color: {{ section.settings.text_color | default: 'var(--cta-text-color)' }};
+  color: white;
+}
+
+.cta-banner__button--outline:focus {
+  outline: 2px solid {{ section.settings.text_color | default: 'var(--cta-text-color)' }};
+  outline-offset: 2px;
+}
+
+.cta-banner__container--centered .cta-banner__buttons {
+  justify-content: center;
+}
+
+{% comment %} Image Wrapper (Split Layout) {% endcomment %}
+.cta-banner__image-wrapper {
+  overflow: hidden;
+  border-radius: {{ section.settings.corner_radius }}px;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+}
+
+.cta-banner__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+{% comment %} Responsive Text Alignment {% endcomment %}
+{% if section.settings.text_alignment == 'center' %}
+  .cta-banner__content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .cta-banner__description,
+  .cta-banner__heading {
+    text-align: center;
+  }
+{% elsif section.settings.text_alignment == 'right' %}
+  .cta-banner__content {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .cta-banner__description,
+  .cta-banner__heading {
+    text-align: right;
+  }
+
+  .cta-banner__buttons {
+    justify-content: flex-end;
+  }
+{% endif %}
+
+{% comment %} Mobile Adjustments {% endcomment %}
+@media (max-width: 749px) {
+  .cta-banner__phone {
+    font-size: 1.125rem;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .cta-banner__heading {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .cta-banner__button {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9375rem;
+  }
+}
+
+{% comment %} High Contrast Mode {% endcomment %}
+@media (prefers-contrast: more) {
+  .cta-banner__button--outline {
+    border-width: 3px;
+  }
+
+  .cta-banner__emergency-badge {
+    border: 2px solid #ef4444;
+  }
+}
+
+{% comment %} Minimal Layout Specific {% endcomment %}
+.cta-banner__container--minimal .cta-banner__content {
+  gap: 0.5rem;
+}
+
+.cta-banner__container--minimal .cta-banner__heading {
+  font-size: 1.5rem;
+}
+
+.cta-banner__container--minimal .cta-banner__description {
+  font-size: 0.9375rem;
+}
+</style>
+
+<script>
+class CtaContactBanner extends HTMLElement {
+  connectedCallback() {
+    this.container = this.querySelector('.cta-banner__container');
+    this.phoneLink = this.querySelector('.cta-banner__phone');
+
+    if (this.phoneLink) {
+      this.setupPhoneLink();
+    }
+
+    this.observeReduced();
+  }
+
+  setupPhoneLink() {
+    this.phoneLink.addEventListener('click', () => {
+      this.trackPhoneInteraction();
+    });
+  }
+
+  trackPhoneInteraction() {
+    if (window.gtag) {
+      gtag('event', 'phone_click', {
+        section_id: this.closest('section')?.id || 'unknown',
+        phone_number: this.phoneLink.href.replace('tel:', '')
+      });
+    }
+  }
+
+  observeReduced() {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if (mediaQuery.matches) {
+      this.style.setProperty('--animation-duration', '0s');
+    }
+
+    mediaQuery.addEventListener('change', (e) => {
+      this.style.setProperty('--animation-duration', e.matches ? '0s' : '2s');
+    });
+  }
+}
+
+customElements.define('cta-contact-banner', CtaContactBanner);
+
+document.addEventListener('shopify:section:load', () => {
+  const banners = document.querySelectorAll('cta-contact-banner');
+  banners.forEach(banner => {
+    if (!customElements.get('cta-contact-banner')) {
+      customElements.define('cta-contact-banner', CtaContactBanner);
+    }
+  });
+});
+</script>
+
+<style>
+cta-contact-banner {
+  display: block;
+}
+</style>
+
+{% schema %}
+{
+  "name": "CTA Contact Banner",
+  "class": "shopify-section--cta-contact-banner",
+  "tag": "section",
+  "attribute": "data-section-type",
+  "templates": ["index", "page"],
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "options": [
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        },
+        {
+          "value": "accent-1",
+          "label": "Accent 1"
+        },
+        {
+          "value": "accent-2",
+          "label": "Accent 2"
+        }
+      ],
+      "default": "background-1"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Need Immediate Assistance?"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading HTML Tag",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Contact us today for professional service. Our team is ready to assist.</p>"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color Override (Optional)"
+    },
+    {
+      "type": "header",
+      "content": "Phone Contact"
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Phone Number",
+      "default": "+1 (555) 123-4567",
+      "placeholder": "+1 (555) 123-4567"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone",
+      "label": "Show Phone Number",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "operating_hours",
+      "label": "Operating Hours",
+      "placeholder": "Mon-Fri: 8am-6pm, Sat: 9am-2pm",
+      "default": "Mon-Fri: 8am-6pm, Sat: 9am-2pm"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_operating_hours",
+      "label": "Show Operating Hours",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "button_1_text",
+      "label": "Button 1 Text",
+      "default": "Schedule Service"
+    },
+    {
+      "type": "url",
+      "id": "button_1_link",
+      "label": "Button 1 Link"
+    },
+    {
+      "type": "select",
+      "id": "button_1_style",
+      "label": "Button 1 Style",
+      "options": [
+        {
+          "value": "filled",
+          "label": "Filled"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "text",
+      "id": "button_2_text",
+      "label": "Button 2 Text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Button 2 Link"
+    },
+    {
+      "type": "select",
+      "id": "button_2_style",
+      "label": "Button 2 Style",
+      "options": [
+        {
+          "value": "filled",
+          "label": "Filled"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "centered",
+          "label": "Centered"
+        },
+        {
+          "value": "split",
+          "label": "Split (Image Right)"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        }
+      ],
+      "default": "centered"
+    },
+    {
+      "type": "image_picker",
+      "id": "split_image",
+      "label": "Side Image (for Split Layout)"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "select",
+      "id": "background_type",
+      "label": "Background Type",
+      "options": [
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "color"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f3f4f6"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "background_gradient",
+      "label": "Background Gradient (CSS)",
+      "placeholder": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "default": ""
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity (%)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Emergency Mode"
+    },
+    {
+      "type": "checkbox",
+      "id": "emergency_mode",
+      "label": "Enable Emergency/Notdienst Mode",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "emergency_badge_text",
+      "label": "Emergency Badge Text",
+      "default": "24/7 Notdienst"
+    },
+    {
+      "type": "header",
+      "content": "Spacing & Style"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner Radius (px)",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top (px)",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom (px)",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "CTA Contact Banner"
+    }
+  ]
+}
+{% endschema %}

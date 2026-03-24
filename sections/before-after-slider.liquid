@@ -1,0 +1,851 @@
+{% comment %}
+  Shopify Online Store 2.0 Section: Before/After Slider
+  An interactive image comparison slider with drag, touch, and keyboard support
+  Perfect for showcasing transformations and project results
+{% endcomment %}
+
+<div id="shopify-section-{{ section.id }}" class="before-after-slider" data-color-scheme="{{ section.settings.color_scheme }}">
+  <div class="before-after-slider__container" style="
+    --padding-top: {{ section.settings.padding_top }}px;
+    --padding-bottom: {{ section.settings.padding_bottom }}px;
+    --max-width: {% if section.settings.max_width == 'full' %}100%{% else %}1200px{% endif %};
+  ">
+    {% comment %} Section Header {% endcomment %}
+    {% if section.settings.heading != blank %}
+      <div class="before-after-slider__header">
+        {% case section.settings.heading_tag %}
+          {% when 'h1' %}
+            <h1 class="before-after-slider__title">{{ section.settings.heading }}</h1>
+          {% when 'h2' %}
+            <h2 class="before-after-slider__title">{{ section.settings.heading }}</h2>
+          {% when 'h3' %}
+            <h3 class="before-after-slider__title">{{ section.settings.heading }}</h3>
+          {% else %}
+            <h2 class="before-after-slider__title">{{ section.settings.heading }}</h2>
+        {% endcase %}
+
+        {% if section.settings.description != blank %}
+          <div class="before-after-slider__description rte">
+            {{ section.settings.description }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% comment %} Comparisons Grid {% endcomment %}
+    <div class="before-after-slider__content" data-layout="{{ section.settings.layout }}">
+      {% if section.settings.layout == 'single' %}
+        <div class="before-after-slider__single">
+          {% for block in section.blocks %}
+            {% if block.type == 'comparison' %}
+              {% include 'before-after-comparison' with
+                block: block,
+                section_id: section.id,
+                handle_style: section.settings.handle_style,
+                start_position: section.settings.start_position,
+                before_label: section.settings.before_label,
+                after_label: section.settings.after_label,
+                show_labels: section.settings.show_labels,
+                corner_radius: section.settings.corner_radius
+              %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="before-after-slider__grid" data-layout="{{ section.settings.layout }}">
+          {% for block in section.blocks %}
+            {% if block.type == 'comparison' %}
+              {% include 'before-after-comparison' with
+                block: block,
+                section_id: section.id,
+                handle_style: section.settings.handle_style,
+                start_position: section.settings.start_position,
+                before_label: section.settings.before_label,
+                after_label: section.settings.after_label,
+                show_labels: section.settings.show_labels,
+                corner_radius: section.settings.corner_radius
+              %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if section.blocks.size == 0 %}
+        <div class="before-after-slider__placeholder">
+          <p>Add comparison blocks to display before and after images</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% comment %} Before/After Comparison Include {% endcomment %}
+{% capture 'before-after-comparison' %}
+  <div class="before-after-slider__item" data-block-id="{{ block.id }}">
+    <before-after-slider
+      role="slider"
+      aria-label="Image comparison slider"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="{{ start_position }}"
+      tabindex="0"
+      data-start-position="{{ start_position }}"
+      data-handle-style="{{ handle_style }}"
+      data-show-labels="{{ show_labels }}"
+      class="before-after-slider__wrapper"
+      style="--aspect-ratio: {% if block.settings.aspect_ratio == 'auto' %}auto{% else %}{{ block.settings.aspect_ratio }}{% endif %}; --corner-radius: {{ corner_radius }}px;"
+    >
+      {% if block.settings.before_image %}
+        <img
+          class="before-after-slider__image before-after-slider__image--before"
+          src="{{ block.settings.before_image | image_url: width: 1200 }}"
+          alt="Before"
+          loading="lazy"
+          width="1200"
+          height="600"
+        >
+      {% else %}
+        <div class="before-after-slider__image before-after-slider__image--placeholder">
+          <span>Before image</span>
+        </div>
+      {% endif %}
+
+      {% if block.settings.after_image %}
+        <img
+          class="before-after-slider__image before-after-slider__image--after"
+          src="{{ block.settings.after_image | image_url: width: 1200 }}"
+          alt="After"
+          loading="lazy"
+          width="1200"
+          height="600"
+        >
+      {% else %}
+        <div class="before-after-slider__image before-after-slider__image--placeholder">
+          <span>After image</span>
+        </div>
+      {% endif %}
+
+      <div class="before-after-slider__reveal"></div>
+
+      {% if show_labels != 'never' %}
+        <div class="before-after-slider__label before-after-slider__label--before" aria-hidden="true">
+          {{ before_label }}
+        </div>
+        <div class="before-after-slider__label before-after-slider__label--after" aria-hidden="true">
+          {{ after_label }}
+        </div>
+      {% endif %}
+
+      <div class="before-after-slider__handle" aria-hidden="true">
+        {% case handle_style %}
+          {% when 'circle' %}
+            <svg class="before-after-slider__handle-icon" viewBox="0 0 100 100" fill="currentColor">
+              <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="3" fill="none"/>
+              <circle cx="50" cy="50" r="8" fill="currentColor"/>
+              <line x1="50" y1="20" x2="50" y2="80" stroke="currentColor" stroke-width="2"/>
+              <line x1="20" y1="50" x2="80" y2="50" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          {% when 'arrows' %}
+            <svg class="before-after-slider__handle-icon" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
+              <polyline points="30,50 10,50 20,40"></polyline>
+              <polyline points="30,50 10,50 20,60"></polyline>
+              <polyline points="70,50 90,50 80,40"></polyline>
+              <polyline points="70,50 90,50 80,60"></polyline>
+            </svg>
+          {% else %}
+            <div class="before-after-slider__handle-line"></div>
+        {% endcase %}
+      </div>
+    </before-after-slider>
+
+    {% if block.settings.caption != blank %}
+      <p class="before-after-slider__caption">{{ block.settings.caption }}</p>
+    {% endif %}
+  </div>
+{% endcapture %}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --color-base-background-1: var(--color-base-background-1, #ffffff);
+    --color-base-text: var(--color-base-text, #000000);
+    --color-border: var(--color-border, #e5e5e5);
+    --color-accent: var(--color-accent, #f3a460);
+  }
+
+  #shopify-section-{{ section.id }} *,
+  #shopify-section-{{ section.id }} *::before,
+  #shopify-section-{{ section.id }} *::after {
+    box-sizing: border-box;
+  }
+
+  .before-after-slider {
+    background-color: var(--color-base-background-1);
+    color: var(--color-base-text);
+  }
+
+  .before-after-slider__container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--padding-top) 1.5rem var(--padding-bottom);
+  }
+
+  .before-after-slider__header {
+    text-align: {{ section.settings.heading_alignment }};
+    margin-bottom: 3rem;
+  }
+
+  .before-after-slider__title {
+    margin: 0 0 1rem;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-base-text);
+  }
+
+  .before-after-slider__description {
+    margin: 0;
+    font-size: 1.0625rem;
+    color: rgba(var(--color-base-text), 0.7);
+    line-height: 1.6;
+    max-width: 600px;
+    {% if section.settings.heading_alignment == 'center' %}
+      margin-left: auto;
+      margin-right: auto;
+    {% endif %}
+  }
+
+  .before-after-slider__description p {
+    margin: 0;
+  }
+
+  {% comment %} Grid Layouts {% endcomment %}
+  .before-after-slider__grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+
+  .before-after-slider__grid[data-layout="grid-2"] {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+
+  .before-after-slider__grid[data-layout="grid-3"] {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    .before-after-slider__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  {% comment %} Item & Wrapper {% endcomment %}
+  .before-after-slider__item {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .before-after-slider__wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--aspect-ratio, 16 / 9);
+    overflow: hidden;
+    border-radius: var(--corner-radius);
+    background-color: #f0f0f0;
+    cursor: ew-resize;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .before-after-slider__wrapper:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  {% comment %} Images {% endcomment %}
+  .before-after-slider__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .before-after-slider__image--before {
+    z-index: 1;
+  }
+
+  .before-after-slider__image--after {
+    z-index: 0;
+  }
+
+  .before-after-slider__image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e5e5e5 0%, #f0f0f0 100%);
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  {% comment %} Reveal Clip Path {% endcomment %}
+  .before-after-slider__reveal {
+    position: absolute;
+    inset: 0;
+    width: 50%;
+    background: transparent;
+    pointer-events: none;
+    z-index: 2;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  {% comment %} Labels {% endcomment %}
+  .before-after-slider__label {
+    position: absolute;
+    top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 3;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .before-after-slider__label--before {
+    left: 1rem;
+  }
+
+  .before-after-slider__label--after {
+    right: 1rem;
+  }
+
+  .before-after-slider__wrapper[data-show-labels="on-hover"] .before-after-slider__label {
+    opacity: 0;
+  }
+
+  .before-after-slider__wrapper[data-show-labels="on-hover"]:hover .before-after-slider__label,
+  .before-after-slider__wrapper[data-show-labels="on-hover"]:focus-visible .before-after-slider__label {
+    opacity: 1;
+  }
+
+  {% comment %} Handle Base Styles {% endcomment %}
+  .before-after-slider__handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 52px;
+    height: 52px;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4;
+    cursor: grab;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .before-after-slider__wrapper:active .before-after-slider__handle {
+    cursor: grabbing;
+  }
+
+  .before-after-slider__handle:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .before-after-slider__handle-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-accent);
+  }
+
+  .before-after-slider__handle-line {
+    width: 4px;
+    height: 28px;
+    background-color: var(--color-accent);
+    border-radius: 2px;
+    box-shadow: -8px 0 0 -4px var(--color-accent), 8px 0 0 -4px var(--color-accent);
+  }
+
+  {% comment %} Caption {% endcomment %}
+  .before-after-slider__caption {
+    margin: 0;
+    font-size: 0.875rem;
+    color: rgba(var(--color-base-text), 0.7);
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .before-after-slider__placeholder {
+    text-align: center;
+    padding: 4rem 1.5rem;
+    border: 2px dashed var(--color-border);
+    border-radius: 12px;
+    color: rgba(var(--color-base-text), 0.5);
+    background-color: rgba(var(--color-accent), 0.05);
+  }
+
+  {% comment %} Reduced Motion {% endcomment %}
+  @media (prefers-reduced-motion: reduce) {
+    .before-after-slider__label,
+    .before-after-slider__handle {
+      transition: none !important;
+    }
+  }
+
+  {% comment %} Mobile Responsive {% endcomment %}
+  @media (max-width: 640px) {
+    .before-after-slider__container {
+      padding: calc(var(--padding-top) * 0.75) 1rem calc(var(--padding-bottom) * 0.75);
+    }
+
+    .before-after-slider__header {
+      margin-bottom: 2rem;
+    }
+
+    .before-after-slider__label {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+      top: 0.75rem;
+    }
+
+    .before-after-slider__label--before {
+      left: 0.75rem;
+    }
+
+    .before-after-slider__label--after {
+      right: 0.75rem;
+    }
+
+    .before-after-slider__handle {
+      width: 44px;
+      height: 44px;
+    }
+
+    .before-after-slider__handle-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .before-after-slider__handle-line {
+      height: 24px;
+    }
+  }
+</style>
+
+<script type="module">
+  class BeforeAfterSlider extends HTMLElement {
+    connectedCallback() {
+      this.isDragging = false;
+      this.startX = 0;
+      this.initialPosition = parseInt(this.dataset.startPosition) || 50;
+      this.currentPosition = this.initialPosition;
+
+      this.init();
+      this.setupEventListeners();
+    }
+
+    init() {
+      this.reveal = this.querySelector('.before-after-slider__reveal');
+      this.handle = this.querySelector('.before-after-slider__handle');
+      this.beforeImage = this.querySelector('.before-after-slider__image--before');
+
+      if (!this.reveal || !this.handle) return;
+
+      this.setPosition(this.currentPosition);
+      this.updateAriaAttributes();
+    }
+
+    setupEventListeners() {
+      this.addEventListener('mousedown', this.onMouseDown.bind(this));
+      this.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
+      document.addEventListener('mousemove', this.onMouseMove.bind(this));
+      document.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: true });
+      document.addEventListener('mouseup', this.onMouseUp.bind(this));
+      document.addEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
+      this.addEventListener('keydown', this.onKeyDown.bind(this));
+
+      document.addEventListener('shopify:section:load', this.handleSectionLoad.bind(this));
+    }
+
+    onMouseDown(e) {
+      if (e.target === this.handle || this.handle.contains(e.target)) {
+        this.isDragging = true;
+        this.startX = e.clientX;
+        this.handle.style.cursor = 'grabbing';
+      }
+    }
+
+    onTouchStart(e) {
+      if (e.target === this.handle || this.handle.contains(e.target)) {
+        this.isDragging = true;
+        this.startX = e.touches[0].clientX;
+      }
+    }
+
+    onMouseMove(e) {
+      if (!this.isDragging) return;
+      this.updatePositionFromEvent(e.clientX);
+    }
+
+    onTouchMove(e) {
+      if (!this.isDragging) return;
+      this.updatePositionFromEvent(e.touches[0].clientX);
+    }
+
+    onMouseUp() {
+      this.isDragging = false;
+      this.handle.style.cursor = 'grab';
+    }
+
+    onTouchEnd() {
+      this.isDragging = false;
+    }
+
+    onKeyDown(e) {
+      if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+
+      e.preventDefault();
+      const step = 2;
+      const direction = e.key === 'ArrowRight' ? step : -step;
+      const newPosition = Math.max(0, Math.min(100, this.currentPosition + direction));
+
+      this.currentPosition = newPosition;
+      this.setPosition(newPosition);
+      this.updateAriaAttributes();
+    }
+
+    updatePositionFromEvent(clientX) {
+      const rect = this.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+
+      this.currentPosition = percentage;
+      this.setPosition(percentage);
+      this.updateAriaAttributes();
+    }
+
+    setPosition(percentage) {
+      if (!this.reveal) return;
+
+      this.reveal.style.width = `${percentage}%`;
+
+      if (this.handle) {
+        this.handle.style.left = `${percentage}%`;
+      }
+    }
+
+    updateAriaAttributes() {
+      this.setAttribute('aria-valuenow', Math.round(this.currentPosition));
+    }
+
+    handleSectionLoad(e) {
+      if (e.detail.section.id === this.closest('div[id^="shopify-section-"]').id) {
+        this.init();
+      }
+    }
+  }
+
+  customElements.define('before-after-slider', BeforeAfterSlider);
+</script>
+
+{% schema %}
+{
+  "name": "Before/After Slider",
+  "description": "Interactive image comparison slider to showcase transformations and project results",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "background-1",
+      "options": [
+        {
+          "label": "Background 1",
+          "value": "background-1"
+        },
+        {
+          "label": "Background 2",
+          "value": "background-2"
+        },
+        {
+          "label": "Inverse",
+          "value": "inverse"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Project Showcase"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading Tag",
+      "default": "h2",
+      "options": [
+        {
+          "label": "H1",
+          "value": "h1"
+        },
+        {
+          "label": "H2",
+          "value": "h2"
+        },
+        {
+          "label": "H3",
+          "value": "h3"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading Alignment",
+      "default": "center",
+      "options": [
+        {
+          "label": "Left",
+          "value": "left"
+        },
+        {
+          "label": "Center",
+          "value": "center"
+        },
+        {
+          "label": "Right",
+          "value": "right"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Drag the slider to compare before and after images of our work.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "single",
+      "options": [
+        {
+          "label": "Single Large",
+          "value": "single"
+        },
+        {
+          "label": "Grid - 2 Columns",
+          "value": "grid-2"
+        },
+        {
+          "label": "Grid - 3 Columns",
+          "value": "grid-3"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Slider Settings"
+    },
+    {
+      "type": "select",
+      "id": "handle_style",
+      "label": "Handle Style",
+      "default": "line",
+      "options": [
+        {
+          "label": "Line",
+          "value": "line"
+        },
+        {
+          "label": "Circle",
+          "value": "circle"
+        },
+        {
+          "label": "Arrows",
+          "value": "arrows"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "start_position",
+      "label": "Start Position (%)",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "before_label",
+      "label": "Before Label",
+      "default": "Before"
+    },
+    {
+      "type": "text",
+      "id": "after_label",
+      "label": "After Label",
+      "default": "After"
+    },
+    {
+      "type": "select",
+      "id": "show_labels",
+      "label": "Show Labels",
+      "default": "always",
+      "options": [
+        {
+          "label": "Always",
+          "value": "always"
+        },
+        {
+          "label": "On Hover",
+          "value": "on-hover"
+        },
+        {
+          "label": "Never",
+          "value": "never"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner Radius (px)",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "Max Width",
+      "default": "contained",
+      "options": [
+        {
+          "label": "Full Width",
+          "value": "full"
+        },
+        {
+          "label": "Contained",
+          "value": "contained"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "comparison",
+      "name": "Comparison",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "before_image",
+          "label": "Before Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "after_image",
+          "label": "After Image"
+        },
+        {
+          "type": "select",
+          "id": "aspect_ratio",
+          "label": "Aspect Ratio",
+          "default": "16/9",
+          "options": [
+            {
+              "label": "1:1 (Square)",
+              "value": "1/1"
+            },
+            {
+              "label": "4:3",
+              "value": "4/3"
+            },
+            {
+              "label": "16:9 (Widescreen)",
+              "value": "16/9"
+            },
+            {
+              "label": "3:2",
+              "value": "3/2"
+            },
+            {
+              "label": "Auto",
+              "value": "auto"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption (Optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before/After Slider",
+      "blocks": [
+        {
+          "type": "comparison",
+          "settings": {
+            "caption": "Kitchen Renovation Project"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

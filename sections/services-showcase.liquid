@@ -1,0 +1,1045 @@
+{% comment %}
+  Shopify Online Store 2.0 Section: Services Showcase
+  A responsive, interactive services showcase for craftsmen/tradespeople
+  Features: Multiple layout variants, hover effects, card styles, carousel support
+{% endcomment %}
+
+<div id="shopify-section-{{ section.id }}" class="services-showcase" data-color-scheme="{{ section.settings.color_scheme }}">
+  <div class="services-showcase__container" style="
+    --padding-top: {{ section.settings.padding_top }}px;
+    --padding-bottom: {{ section.settings.padding_bottom }}px;
+    --max-width: {% if section.settings.max_width == 'full' %}100%{% else %}1200px{% endif %};
+  ">
+    {% comment %} Section Header {% endcomment %}
+    {% if section.settings.heading != blank %}
+      <div class="services-showcase__header">
+        {% case section.settings.heading_tag %}
+          {% when 'h1' %}
+            <h1 class="services-showcase__title">{{ section.settings.heading }}</h1>
+          {% when 'h2' %}
+            <h2 class="services-showcase__title">{{ section.settings.heading }}</h2>
+          {% when 'h3' %}
+            <h3 class="services-showcase__title">{{ section.settings.heading }}</h3>
+          {% else %}
+            <h2 class="services-showcase__title">{{ section.settings.heading }}</h2>
+        {% endcase %}
+
+        {% if section.settings.subheading != blank %}
+          <p class="services-showcase__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% comment %} Services Container {% endcomment %}
+    <div class="services-showcase__content" data-layout="{{ section.settings.layout }}" data-animation="{{ section.settings.animation_on_scroll }}">
+      {% if section.settings.layout == 'carousel' %}
+        <div class="services-showcase__carousel-wrapper">
+          <div class="services-showcase__carousel" role="region" aria-label="Services carousel">
+            {% for block in section.blocks %}
+              {% if block.type == 'service' %}
+                <div class="services-showcase__carousel-item">
+                  {% include 'service-card' with
+                    block: block,
+                    section_id: section.id,
+                    card_style: section.settings.card_style,
+                    corner_radius: section.settings.corner_radius,
+                    equal_height: section.settings.equal_height_cards,
+                    link_style: section.settings.link_style
+                  %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <button class="services-showcase__carousel-button services-showcase__carousel-button--prev" aria-label="Previous slide">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button class="services-showcase__carousel-button services-showcase__carousel-button--next" aria-label="Next slide">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+          <div class="services-showcase__carousel-dots" role="tablist" aria-label="Slide selector"></div>
+        </div>
+      {% else %}
+        <div class="services-showcase__grid" data-card-style="{{ section.settings.card_style }}">
+          {% for block in section.blocks %}
+            {% if block.type == 'service' %}
+              {% include 'service-card' with
+                block: block,
+                section_id: section.id,
+                card_style: section.settings.card_style,
+                corner_radius: section.settings.corner_radius,
+                equal_height: section.settings.equal_height_cards,
+                link_style: section.settings.link_style
+              %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if section.blocks.size == 0 %}
+        <div class="services-showcase__placeholder">
+          <p>Add service blocks to display your services</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% comment %} Service Card Include {% endcomment %}
+{% capture 'service-card' %}
+  <div class="services-showcase__card" data-block-id="{{ block.id }}">
+    {% if block.settings.background_image %}
+      <div class="services-showcase__card-background" style="background-image: url('{{ block.settings.background_image | image_url: width: 800 }}')"></div>
+    {% endif %}
+
+    <div class="services-showcase__card-content">
+      {% if block.settings.show_icon and block.settings.image %}
+        <div class="services-showcase__card-icon">
+          <img
+            src="{{ block.settings.image | image_url: width: 80 }}"
+            alt="{{ block.settings.title }}"
+            loading="lazy"
+            width="80"
+            height="80"
+          >
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_title and block.settings.title != blank %}
+        <h3 class="services-showcase__card-title">{{ block.settings.title }}</h3>
+      {% endif %}
+
+      {% if block.settings.show_description and block.settings.description != blank %}
+        <div class="services-showcase__card-description rte">
+          {{ block.settings.description }}
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_badge and block.settings.badge_text != blank %}
+        <div class="services-showcase__card-badge" style="background-color: {{ block.settings.badge_color }};">
+          {{ block.settings.badge_text }}
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_link and block.settings.link_url != blank %}
+        {% case link_style %}
+          {% when 'button' %}
+            <a href="{{ block.settings.link_url }}" class="services-showcase__card-button">
+              {{ block.settings.link_text | default: 'Learn more' }}
+            </a>
+          {% when 'text-link' %}
+            <a href="{{ block.settings.link_url }}" class="services-showcase__card-link">
+              {{ block.settings.link_text | default: 'Learn more' }}
+            </a>
+          {% when 'full-card' %}
+            <a href="{{ block.settings.link_url }}" class="services-showcase__card-link-full" tabindex="-1" aria-hidden="true"></a>
+        {% endcase %}
+      {% endif %}
+    </div>
+  </div>
+{% endcapture %}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --color-base-background-1: var(--color-base-background-1, #ffffff);
+    --color-base-text: var(--color-base-text, #000000);
+    --color-border: var(--color-border, #e5e5e5);
+    --color-button-background: var(--color-button-background, #000000);
+    --color-button-text: var(--color-button-text, #ffffff);
+    --color-accent: var(--color-accent, #f3a460);
+  }
+
+  #shopify-section-{{ section.id }} *,
+  #shopify-section-{{ section.id }} *::before,
+  #shopify-section-{{ section.id }} *::after {
+    box-sizing: border-box;
+  }
+
+  .services-showcase {
+    background-color: var(--color-base-background-1);
+    color: var(--color-base-text);
+  }
+
+  .services-showcase__container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--padding-top) 1.5rem var(--padding-bottom);
+  }
+
+  .services-showcase__header {
+    text-align: {{ section.settings.heading_alignment }};
+    margin-bottom: 3rem;
+  }
+
+  .services-showcase__title {
+    margin: 0 0 1rem;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-base-text);
+  }
+
+  .services-showcase__subheading {
+    margin: 0;
+    font-size: 1.0625rem;
+    color: rgba(var(--color-base-text), 0.7);
+    line-height: 1.6;
+    max-width: 600px;
+    {% if section.settings.heading_alignment == 'center' %}
+      margin-left: auto;
+      margin-right: auto;
+    {% endif %}
+  }
+
+  .services-showcase__content {
+    position: relative;
+  }
+
+  {% comment %} Grid Layouts {% endcomment %}
+  .services-showcase__grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .services-showcase__content[data-layout="grid-2"] .services-showcase__grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+
+  .services-showcase__content[data-layout="grid-3"] .services-showcase__grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+
+  .services-showcase__content[data-layout="grid-4"] .services-showcase__grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .services-showcase__content[data-layout="list"] .services-showcase__grid {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 768px) {
+    .services-showcase__content[data-layout="grid-2"] .services-showcase__grid,
+    .services-showcase__content[data-layout="grid-3"] .services-showcase__grid,
+    .services-showcase__content[data-layout="grid-4"] .services-showcase__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  {% comment %} Card Base Styles {% endcomment %}
+  .services-showcase__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: {{ section.settings.corner_radius }}px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background-color: var(--color-base-background-1);
+    border: 1px solid transparent;
+  }
+
+  {% if section.settings.equal_height_cards %}
+    .services-showcase__grid .services-showcase__card {
+      height: 100%;
+    }
+  {% endif %}
+
+  .services-showcase__card-background {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.08;
+    z-index: 0;
+  }
+
+  .services-showcase__card-content {
+    position: relative;
+    z-index: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+  }
+
+  {% comment %} Card Style Variants {% endcomment %}
+  .services-showcase__grid[data-card-style="elevated"] .services-showcase__card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .services-showcase__grid[data-card-style="elevated"] .services-showcase__card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+  }
+
+  .services-showcase__grid[data-card-style="bordered"] .services-showcase__card {
+    border-color: var(--color-border);
+  }
+
+  .services-showcase__grid[data-card-style="bordered"] .services-showcase__card:hover {
+    border-color: var(--color-accent);
+  }
+
+  .services-showcase__grid[data-card-style="flat"] .services-showcase__card {
+    background-color: rgba(var(--color-accent), 0.05);
+  }
+
+  .services-showcase__grid[data-card-style="flat"] .services-showcase__card:hover {
+    background-color: rgba(var(--color-accent), 0.1);
+  }
+
+  .services-showcase__grid[data-card-style="glass"] .services-showcase__card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .services-showcase__grid[data-card-style="glass"] .services-showcase__card:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  {% comment %} Card Elements {% endcomment %}
+  .services-showcase__card-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--color-accent), 0.1);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .services-showcase__card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .services-showcase__card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .services-showcase__card-description {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: rgba(var(--color-base-text), 0.75);
+    flex: 1;
+  }
+
+  .services-showcase__card-description p {
+    margin: 0;
+  }
+
+  .services-showcase__card-description ul,
+  .services-showcase__card-description ol {
+    margin: 0.5rem 0 0 1.25rem;
+    padding: 0;
+  }
+
+  .services-showcase__card-description li {
+    margin: 0.25rem 0;
+  }
+
+  .services-showcase__card-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    color: white;
+    width: fit-content;
+  }
+
+  .services-showcase__card-button,
+  .services-showcase__card-link {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .services-showcase__card-button {
+    background-color: var(--color-button-background);
+    color: var(--color-button-text);
+    border: 1px solid var(--color-button-background);
+    width: fit-content;
+    margin-top: auto;
+  }
+
+  .services-showcase__card-button:hover,
+  .services-showcase__card-button:focus-visible {
+    opacity: 0.85;
+  }
+
+  .services-showcase__card-button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .services-showcase__card-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    width: fit-content;
+    padding: 0;
+    position: relative;
+  }
+
+  .services-showcase__card-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-accent);
+    transition: width 0.3s ease;
+  }
+
+  .services-showcase__card-link:hover::after,
+  .services-showcase__card-link:focus-visible::after {
+    width: 100%;
+  }
+
+  .services-showcase__card-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .services-showcase__card-link-full {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+  }
+
+  .services-showcase__card-link-full:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  {% comment %} Carousel Styles {% endcomment %}
+  .services-showcase__carousel-wrapper {
+    position: relative;
+  }
+
+  .services-showcase__carousel {
+    display: grid;
+    gap: 1.5rem;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(320px, 1fr);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    padding: 0.5rem 0;
+    margin-bottom: 2rem;
+  }
+
+  .services-showcase__carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .services-showcase__carousel-item {
+    scroll-snap-align: start;
+  }
+
+  .services-showcase__carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-base-background-1);
+    color: var(--color-base-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 2;
+    padding: 0;
+  }
+
+  .services-showcase__carousel-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .services-showcase__carousel-button:hover,
+  .services-showcase__carousel-button:focus-visible {
+    background-color: var(--color-button-background);
+    color: var(--color-button-text);
+    border-color: var(--color-button-background);
+  }
+
+  .services-showcase__carousel-button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .services-showcase__carousel-button--prev {
+    left: -60px;
+  }
+
+  .services-showcase__carousel-button--next {
+    right: -60px;
+  }
+
+  .services-showcase__carousel-dots {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .services-showcase__carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--color-border);
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .services-showcase__carousel-dot:hover {
+    border-color: var(--color-accent);
+  }
+
+  .services-showcase__carousel-dot[aria-selected="true"] {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  {% comment %} Animations {% endcomment %}
+  @media (prefers-reduced-motion: no-preference) {
+    .services-showcase__content[data-animation="fade-up"] .services-showcase__card {
+      opacity: 0;
+      animation: services-fade-up 0.6s ease forwards;
+    }
+
+    .services-showcase__content[data-animation="fade-in"] .services-showcase__card {
+      opacity: 0;
+      animation: services-fade-in 0.6s ease forwards;
+    }
+
+    @keyframes services-fade-up {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+    }
+
+    @keyframes services-fade-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .services-showcase__card,
+    .services-showcase__carousel {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  .services-showcase__placeholder {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    border: 2px dashed var(--color-border);
+    border-radius: 12px;
+    color: rgba(var(--color-base-text), 0.5);
+    background-color: rgba(var(--color-accent), 0.05);
+  }
+
+  @media (max-width: 640px) {
+    .services-showcase__container {
+      padding: calc(var(--padding-top) * 0.75) 1rem calc(var(--padding-bottom) * 0.75);
+    }
+
+    .services-showcase__header {
+      margin-bottom: 2rem;
+    }
+
+    .services-showcase__grid {
+      gap: 1.5rem;
+    }
+
+    .services-showcase__card-content {
+      padding: 1.5rem;
+    }
+
+    .services-showcase__carousel-button--prev {
+      left: -40px;
+    }
+
+    .services-showcase__carousel-button--next {
+      right: -40px;
+    }
+  }
+</style>
+
+<script type="module">
+  class ServicesShowcase extends HTMLElement {
+    connectedCallback() {
+      this.initCarousel();
+      this.initAnimations();
+    }
+
+    initCarousel() {
+      const carousel = this.querySelector('.services-showcase__carousel');
+      if (!carousel) return;
+
+      const prevBtn = this.querySelector('.services-showcase__carousel-button--prev');
+      const nextBtn = this.querySelector('.services-showcase__carousel-button--next');
+      const dotsContainer = this.querySelector('.services-showcase__carousel-dots');
+      const items = this.querySelectorAll('.services-showcase__carousel-item');
+
+      if (!items.length) return;
+
+      const createDots = () => {
+        items.forEach((_, index) => {
+          const dot = document.createElement('button');
+          dot.className = 'services-showcase__carousel-dot';
+          dot.setAttribute('role', 'tab');
+          dot.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+          dot.addEventListener('click', () => {
+            const itemWidth = items[0].offsetWidth + 24;
+            carousel.scrollLeft = index * itemWidth;
+            updateDots();
+          });
+          dotsContainer.appendChild(dot);
+        });
+      };
+
+      const updateDots = () => {
+        const scrollLeft = carousel.scrollLeft;
+        const itemWidth = items[0].offsetWidth + 24;
+        const activeIndex = Math.round(scrollLeft / itemWidth);
+
+        this.querySelectorAll('.services-showcase__carousel-dot').forEach((dot, index) => {
+          dot.setAttribute('aria-selected', index === activeIndex ? 'true' : 'false');
+        });
+      };
+
+      const scroll = (direction) => {
+        const itemWidth = items[0].offsetWidth + 24;
+        const scrollAmount = itemWidth * (direction === 'next' ? 1 : -1);
+        carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      };
+
+      if (prevBtn) prevBtn.addEventListener('click', () => scroll('prev'));
+      if (nextBtn) nextBtn.addEventListener('click', () => scroll('next'));
+      carousel.addEventListener('scroll', updateDots);
+
+      createDots();
+      updateDots();
+    }
+
+    initAnimations() {
+      const content = this.querySelector('.services-showcase__content');
+      if (!content || !content.dataset.animation || content.dataset.animation === 'none') return;
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.animationDelay = `${Array.from(entry.target.parentElement.children).indexOf(entry.target) * 0.1}s`;
+          }
+        });
+      }, { threshold: 0.1 });
+
+      this.querySelectorAll('.services-showcase__card').forEach(card => {
+        observer.observe(card);
+      });
+    }
+  }
+
+  customElements.define('services-showcase', ServicesShowcase);
+
+  document.addEventListener('shopify:section:load', (event) => {
+    if (event.detail.section.id === '{{ section.id }}') {
+      const element = event.target.querySelector('services-showcase');
+      if (element && element.connectedCallback) {
+        element.connectedCallback();
+      }
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Services Showcase",
+  "description": "Display your services in an interactive showcase with multiple layout options",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "background-1",
+      "options": [
+        {
+          "label": "Background 1",
+          "value": "background-1"
+        },
+        {
+          "label": "Background 2",
+          "value": "background-2"
+        },
+        {
+          "label": "Inverse",
+          "value": "inverse"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Services"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading Tag",
+      "default": "h2",
+      "options": [
+        {
+          "label": "H1",
+          "value": "h1"
+        },
+        {
+          "label": "H2",
+          "value": "h2"
+        },
+        {
+          "label": "H3",
+          "value": "h3"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading Alignment",
+      "default": "left",
+      "options": [
+        {
+          "label": "Left",
+          "value": "left"
+        },
+        {
+          "label": "Center",
+          "value": "center"
+        },
+        {
+          "label": "Right",
+          "value": "right"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Expert craftsmanship and quality workmanship"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "grid-3",
+      "options": [
+        {
+          "label": "Grid - 2 Columns",
+          "value": "grid-2"
+        },
+        {
+          "label": "Grid - 3 Columns",
+          "value": "grid-3"
+        },
+        {
+          "label": "Grid - 4 Columns",
+          "value": "grid-4"
+        },
+        {
+          "label": "List",
+          "value": "list"
+        },
+        {
+          "label": "Carousel",
+          "value": "carousel"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card Style",
+      "default": "elevated",
+      "options": [
+        {
+          "label": "Elevated",
+          "value": "elevated"
+        },
+        {
+          "label": "Bordered",
+          "value": "bordered"
+        },
+        {
+          "label": "Flat",
+          "value": "flat"
+        },
+        {
+          "label": "Glass",
+          "value": "glass"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner Radius (px)",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "equal_height_cards",
+      "label": "Equal Height Cards",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "link_style",
+      "label": "Link Style",
+      "default": "button",
+      "options": [
+        {
+          "label": "Button",
+          "value": "button"
+        },
+        {
+          "label": "Text Link",
+          "value": "text-link"
+        },
+        {
+          "label": "Full Card Link",
+          "value": "full-card"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "animation_on_scroll",
+      "label": "Animation on Scroll",
+      "default": "none",
+      "options": [
+        {
+          "label": "None",
+          "value": "none"
+        },
+        {
+          "label": "Fade Up",
+          "value": "fade-up"
+        },
+        {
+          "label": "Fade In",
+          "value": "fade-in"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "Max Width",
+      "default": "contained",
+      "options": [
+        {
+          "label": "Full Width",
+          "value": "full"
+        },
+        {
+          "label": "Contained",
+          "value": "contained"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service",
+      "name": "Service",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Service Icon"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_icon",
+          "label": "Show Icon",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Service Title"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_title",
+          "label": "Show Title",
+          "default": true
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Describe your service and what makes it special.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_description",
+          "label": "Show Description",
+          "default": true
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link Text",
+          "default": "Learn More"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_link",
+          "label": "Show Link",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge Text"
+        },
+        {
+          "type": "color",
+          "id": "badge_color",
+          "label": "Badge Color",
+          "default": "#f3a460"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_badge",
+          "label": "Show Badge",
+          "default": false
+        },
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image (Optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Services Showcase",
+      "blocks": [
+        {
+          "type": "service",
+          "settings": {
+            "title": "Carpentry",
+            "description": "<p>Expert woodworking and carpentry services for residential and commercial projects.</p>"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "title": "Plumbing",
+            "description": "<p>Professional plumbing installation, repair, and maintenance services.</p>"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "title": "Electrical",
+            "description": "<p>Licensed electrician services for all your electrical needs.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
