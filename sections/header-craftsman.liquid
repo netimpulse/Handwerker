@@ -3,7 +3,7 @@
 <header
   data-section-id="{{ section.id }}"
   class="header-craftsman color-{{ section.settings.color_scheme }}"
-  data-sticky="{{ section.settings.sticky_header }}"
+  data-sticky="{{ section.settings.sticky_mode }}"
   data-transparent="{{ section.settings.transparent_mode }}"
   role="banner"
 >
@@ -77,7 +77,7 @@
                         </svg>
                       {% when 'twitter' %}
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                          <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                          <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417a9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                         </svg>
                       {% when 'youtube' %}
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -142,8 +142,56 @@
         {% endif %}
       </nav>
 
-      <!-- Right side: CTA + Mobile Toggle -->
+      <!-- Right side: Actions (Icons + CTA) -->
       <div class="header-craftsman__actions">
+        <!-- Header Icons Container -->
+        <div class="header-craftsman__icons">
+          <!-- Search Icon -->
+          {%- if section.settings.show_search -%}
+            <details-modal class="header__search">
+              <details>
+                <summary class="header-craftsman__icon" aria-label="{{ 'general.search.search' | t }}" role="button">
+                  <svg class="icon icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                  </svg>
+                </summary>
+                <div class="header__search-modal" role="dialog" aria-label="{{ 'general.search.search' | t }}">
+                  {% render 'header-search', input_id: 'Search-In-Modal-Craftsman' %}
+                </div>
+              </details>
+            </details-modal>
+          {%- endif -%}
+
+          <!-- Cart Icon (Custom Toolbox Style) -->
+          {%- if section.settings.show_cart -%}
+            <a href="{{ routes.cart_url }}" class="header-craftsman__icon header-craftsman__icon--cart" id="cart-icon-bubble">
+              <svg class="icon icon-cart-craftsman" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 01-8 0"/>
+              </svg>
+              {%- if cart.item_count > 0 -%}
+                <div class="header-craftsman__cart-count-bubble">
+                  <span aria-hidden="true">{{ cart.item_count }}</span>
+                  <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+                </div>
+              {%- endif -%}
+            </a>
+          {%- endif -%}
+
+          <!-- Account Icon -->
+          {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
+            <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header-craftsman__icon" aria-label="{{ 'customer.account_fallback' | t }}">
+              <svg class="icon icon-account" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M20 21a8 8 0 10-16 0"/>
+              </svg>
+            </a>
+          {%- endif -%}
+        </div>
+
+        <!-- CTA Button -->
         {% if section.settings.cta_button_show %}
           <a
             href="{{ section.settings.cta_button_link }}"
@@ -153,6 +201,7 @@
           </a>
         {% endif %}
 
+        <!-- Mobile Menu Toggle -->
         <button
           class="header-craftsman__menu-toggle"
           aria-label="Toggle navigation menu"
@@ -174,6 +223,52 @@
     hidden
   >
     <div class="header-craftsman__drawer-content">
+      <!-- Mobile Icons Row -->
+      <div class="header-craftsman__drawer-icons">
+        <!-- Mobile Search Icon -->
+        {%- if section.settings.show_search -%}
+          <details-modal class="header__search">
+            <details>
+              <summary class="header-craftsman__icon" aria-label="{{ 'general.search.search' | t }}" role="button">
+                <svg class="icon icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+              </summary>
+              <div class="header__search-modal" role="dialog" aria-label="{{ 'general.search.search' | t }}">
+                {% render 'header-search', input_id: 'Search-In-Drawer-Craftsman' %}
+              </div>
+            </details>
+          </details-modal>
+        {%- endif -%}
+
+        <!-- Mobile Cart Icon -->
+        {%- if section.settings.show_cart -%}
+          <a href="{{ routes.cart_url }}" class="header-craftsman__icon header-craftsman__icon--cart" aria-label="Cart">
+            <svg class="icon icon-cart-craftsman" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            {%- if cart.item_count > 0 -%}
+              <div class="header-craftsman__cart-count-bubble">
+                <span aria-hidden="true">{{ cart.item_count }}</span>
+              </div>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+
+        <!-- Mobile Account Icon -->
+        {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
+          <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header-craftsman__icon" aria-label="{{ 'customer.account_fallback' | t }}">
+            <svg class="icon icon-account" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M20 21a8 8 0 10-16 0"/>
+            </svg>
+          </a>
+        {%- endif -%}
+      </div>
+
       <nav class="header-craftsman__drawer-nav">
         {% if section.settings.menu != blank %}
           {% for link in linklists[section.settings.menu].links %}
@@ -211,13 +306,28 @@
     --total-header-height: 106px;
   }
 
-  {% if section.settings.sticky_header %}
+  /* Sticky Header Modes */
+  {% if section.settings.sticky_mode == 'always' %}
   #shopify-section-{{ section.id }} {
     position: sticky;
     top: 0;
     z-index: 100;
   }
-  #shopify-section-{{ section.id }}.shopify-section-header-sticky .header-craftsman {
+  #shopify-section-{{ section.id }}.header-sticky--active .header-craftsman {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  {% elsif section.settings.sticky_mode == 'on-scroll' %}
+  #shopify-section-{{ section.id }} {
+    z-index: 100;
+  }
+  #shopify-section-{{ section.id }}.header-sticky--active {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+  #shopify-section-{{ section.id }}.header-sticky--active .header-craftsman {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   {% endif %}
@@ -384,6 +494,59 @@
     width: 100%;
   }
 
+  /* Header Icons */
+  .header-craftsman__icons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-craftsman__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: var(--header-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: opacity 0.2s;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .header-craftsman__icon:hover {
+    opacity: 0.7;
+  }
+
+  .header-craftsman__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .header-craftsman__icon--cart {
+    position: relative;
+  }
+
+  .header-craftsman__cart-count-bubble {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(var(--color-button));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* Actions Container */
   .header-craftsman__actions {
     display: flex;
     align-items: center;
@@ -510,6 +673,14 @@
     padding: 20px;
   }
 
+  .header-craftsman__drawer-icons {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgb(var(--color-border));
+  }
+
   .header-craftsman__drawer-nav {
     display: flex;
     flex-direction: column;
@@ -533,6 +704,37 @@
   .header-craftsman__drawer-cta-button {
     width: 100%;
     text-align: center;
+  }
+
+  /* Search Modal Styles */
+  .header__search {
+    --details-content-max-width: none;
+  }
+
+  .header__search-modal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--header-bg);
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 4px;
+    padding: 16px;
+    min-width: 300px;
+    z-index: 101;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Accessibility */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   /* Mobile Responsive */
@@ -571,12 +773,23 @@
     .header-craftsman__drawer-content {
       flex: 1;
     }
+
+    .header__search-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .header-craftsman__nav-link::after,
     .header-craftsman__contact-link,
     .header-craftsman__social-link,
+    .header-craftsman__icon,
     .header-craftsman__menu-toggle-icon,
     .header-craftsman__cta-button {
       transition: none;
@@ -587,9 +800,15 @@
 <script>
   class HeaderCraftsman extends HTMLElement {
     connectedCallback() {
+      this.header = this.querySelector('[role="banner"]');
+      this.sectionId = this.header?.dataset.sectionId || '';
       this.menuToggle = this.querySelector('[aria-controls]');
-      this.drawer = this.getElementById(`mobile-menu-${this.dataset.sectionId || ''}`);
+      this.drawer = document.getElementById(`mobile-menu-${this.sectionId}`);
       this.linksInDrawer = this.drawer?.querySelectorAll('.header-craftsman__drawer-nav-link') || [];
+      this.stickyMode = this.header?.dataset.sticky || 'none';
+      this.stickyThreshold = 100;
+      this.lastScrollY = 0;
+      this.isScrollingUp = false;
 
       if (this.menuToggle) {
         this.menuToggle.addEventListener('click', () => this.toggleDrawer());
@@ -607,21 +826,45 @@
         }
       });
 
+      // Setup sticky on scroll logic
+      if (this.stickyMode === 'on-scroll') {
+        this.setupScrollListener();
+      }
+
       // Handle shopify:section:unload
       this.addEventListener('shopify:section:unload', () => {
         this.cleanup();
       });
     }
 
-    getId() {
-      return this.id.replace('shopify-section-', '');
-    }
+    setupScrollListener() {
+      const sectionWrapper = document.getElementById(`shopify-section-${this.sectionId}`);
+      let scrollTimeout;
 
-    getDrawer() {
-      if (!this.drawer) {
-        this.drawer = document.getElementById(`mobile-menu-${this.getId()}`);
-      }
-      return this.drawer;
+      window.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        const currentScrollY = window.scrollY;
+        this.isScrollingUp = currentScrollY < this.lastScrollY;
+        this.lastScrollY = currentScrollY;
+
+        if (currentScrollY > this.stickyThreshold && this.isScrollingUp) {
+          if (sectionWrapper) {
+            sectionWrapper.classList.add('header-sticky--active');
+          }
+        } else {
+          if (sectionWrapper) {
+            sectionWrapper.classList.remove('header-sticky--active');
+          }
+        }
+
+        scrollTimeout = setTimeout(() => {
+          if (currentScrollY < this.stickyThreshold) {
+            if (sectionWrapper) {
+              sectionWrapper.classList.remove('header-sticky--active');
+            }
+          }
+        }, 150);
+      });
     }
 
     toggleDrawer() {
@@ -633,21 +876,18 @@
     }
 
     openDrawer() {
-      const drawer = this.getDrawer();
-      if (drawer) {
-        drawer.removeAttribute('hidden');
+      if (this.drawer) {
+        this.drawer.removeAttribute('hidden');
         this.menuToggle.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
-        // Focus first link in drawer for accessibility
         const firstLink = this.linksInDrawer[0];
         if (firstLink) setTimeout(() => firstLink.focus(), 100);
       }
     }
 
     closeDrawer() {
-      const drawer = this.getDrawer();
-      if (drawer) {
-        drawer.setAttribute('hidden', '');
+      if (this.drawer) {
+        this.drawer.setAttribute('hidden', '');
         this.menuToggle.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
         this.menuToggle.focus();
@@ -655,8 +895,7 @@
     }
 
     isDrawerOpen() {
-      const drawer = this.getDrawer();
-      return drawer && !drawer.hasAttribute('hidden');
+      return this.drawer && !this.drawer.hasAttribute('hidden');
     }
 
     cleanup() {
@@ -666,6 +905,7 @@
       this.linksInDrawer.forEach(link => {
         link.removeEventListener('click', () => this.closeDrawer());
       });
+      window.removeEventListener('scroll', () => {});
     }
   }
 
@@ -771,6 +1011,28 @@
     },
     {
       "type": "header",
+      "content": "Icon Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show cart icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show account icon",
+      "default": true
+    },
+    {
+      "type": "header",
       "content": "CTA Button Settings"
     },
     {
@@ -811,10 +1073,24 @@
       "content": "Header Behavior"
     },
     {
-      "type": "checkbox",
-      "id": "sticky_header",
-      "label": "Sticky header",
-      "default": true
+      "type": "select",
+      "id": "sticky_mode",
+      "label": "Sticky header mode",
+      "options": [
+        {
+          "value": "none",
+          "label": "Not sticky"
+        },
+        {
+          "value": "always",
+          "label": "Always sticky"
+        },
+        {
+          "value": "on-scroll",
+          "label": "Sticky on scroll up"
+        }
+      ],
+      "default": "always"
     },
     {
       "type": "checkbox",
