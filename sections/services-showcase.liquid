@@ -4,7 +4,7 @@
   Features: Multiple layout variants, hover effects, card styles, carousel support
 {% endcomment %}
 
-<div id="shopify-section-{{ section.id }}" class="services-showcase" data-color-scheme="{{ section.settings.color_scheme }}">
+<div id="shopify-section-{{ section.id }}" class="services-showcase color-scheme--{{ section.settings.color_scheme }}">
   <div class="services-showcase__container" style="
     --padding-top: {{ section.settings.padding_top }}px;
     --padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -703,24 +703,10 @@
   "description": "Display your services in an interactive showcase with multiple layout options",
   "settings": [
     {
-      "type": "select",
+      "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color Scheme",
-      "default": "background-1",
-      "options": [
-        {
-          "label": "Background 1",
-          "value": "background-1"
-        },
-        {
-          "label": "Background 2",
-          "value": "background-2"
-        },
-        {
-          "label": "Inverse",
-          "value": "inverse"
-        }
-      ]
+      "label": "Farbschema",
+      "default": "scheme-1"
     },
     {
       "type": "header",
@@ -991,7 +977,8 @@
         {
           "type": "text",
           "id": "badge_text",
-          "label": "Badge Text"
+          "label": "Badge Text",
+          "default": "Neu"
         },
         {
           "type": "color",

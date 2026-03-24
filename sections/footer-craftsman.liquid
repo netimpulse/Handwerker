@@ -4,7 +4,7 @@
   newsletter signup, social links, and dynamic payment icons
 {%- endcomment -%}
 
-<footer id="shopify-section-{{ section.id }}" class="footer-craftsman">
+<footer id="shopify-section-{{ section.id }}" class="footer-craftsman color-scheme--{{ section.settings.color_scheme }}">
   {%- if section.settings.show_top_border -%}
     <div class="footer-craftsman__divider"></div>
   {%- endif -%}
@@ -826,7 +826,8 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme"
+      "label": "Color scheme",
+      "default": "scheme-1"
     },
     {
       "type": "checkbox",
@@ -917,7 +918,8 @@
       "type": "text",
       "id": "made_by_text",
       "label": "Made by text (optional)",
-      "placeholder": "Made by..."
+      "placeholder": "Made by...",
+      "default": "Powered by Shopify"
     },
     {
       "type": "checkbox",
@@ -960,7 +962,8 @@
         {
           "type": "richtext",
           "id": "description",
-          "label": "Description"
+          "label": "Description",
+          "default": "<p>Ihr zuverlässiger Handwerker</p>"
         },
         {
           "type": "checkbox",
@@ -970,7 +973,8 @@
         {
           "type": "richtext",
           "id": "certifications_text",
-          "label": "Certifications text"
+          "label": "Certifications text",
+          "default": "<p>Zertifiziert</p>"
         }
       ]
     },
@@ -1005,22 +1009,26 @@
         {
           "type": "text",
           "id": "address",
-          "label": "Address"
+          "label": "Address",
+          "default": "Musterstraße 1, 12345 Berlin"
         },
         {
           "type": "text",
           "id": "phone",
-          "label": "Phone"
+          "label": "Phone",
+          "default": "+49 123 456789"
         },
         {
           "type": "text",
           "id": "email",
-          "label": "Email"
+          "label": "Email",
+          "default": "info@example.com"
         },
         {
           "type": "text",
           "id": "fax",
-          "label": "Fax (optional)"
+          "label": "Fax (optional)",
+          "default": "+49 123 456780"
         }
       ]
     },
@@ -1038,12 +1046,14 @@
         {
           "type": "richtext",
           "id": "hours_text",
-          "label": "Hours"
+          "label": "Hours",
+          "default": "<p>Mo-Fr: 8:00-17:00</p>"
         },
         {
           "type": "text",
           "id": "emergency_note",
-          "label": "Emergency note (optional)"
+          "label": "Emergency note (optional)",
+          "default": "24h Notdienst verfügbar"
         }
       ]
     },
@@ -1061,7 +1071,8 @@
         {
           "type": "text",
           "id": "description",
-          "label": "Description"
+          "label": "Description",
+          "default": "Abonnieren Sie unseren Newsletter"
         }
       ]
     },
@@ -1114,7 +1125,8 @@
         {
           "type": "text",
           "id": "whatsapp",
-          "label": "WhatsApp Phone (without +)"
+          "label": "WhatsApp Phone (without +)",
+          "default": "+49123456789"
         }
       ]
     }

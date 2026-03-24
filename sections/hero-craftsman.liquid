@@ -1,7 +1,7 @@
 <!-- Craftsman Hero Section -->
 <section
   id="shopify-section-{{ section.id }}"
-  class="hero-craftsman"
+  class="hero-craftsman color-scheme--{{ section.settings.color_scheme }}"
   data-bg-type="{{ section.settings.bg_type }}"
   style="--hero-height: {% if section.settings.height == 'viewport' %}100vh{% elsif section.settings.height == 'large' %}600px{% elsif section.settings.height == 'medium' %}400px{% else %}{{ section.settings.height_custom }}px{% endif %}; --hero-overlay-color: {{ section.settings.overlay_color }}; --hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; --hero-text-color: {{ section.settings.text_color }};"
 >
@@ -502,7 +502,8 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme"
+      "label": "Color scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",
@@ -622,7 +623,8 @@
     {
       "type": "text",
       "id": "badge_text",
-      "label": "Badge text (optional)"
+      "label": "Badge text (optional)",
+      "default": "Notdienst 24/7"
     },
     {
       "type": "textarea",
@@ -763,7 +765,8 @@
     {
       "type": "text",
       "id": "cta_button_2_text",
-      "label": "Button text"
+      "label": "Button text",
+      "default": "Mehr erfahren"
     },
     {
       "type": "url",

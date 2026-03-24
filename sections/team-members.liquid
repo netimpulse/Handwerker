@@ -416,7 +416,7 @@
   }
 {%- endstyle -%}
 
-<div class="section-container">
+<div class="section-container color-scheme--{{ section.settings.color_scheme }}">
   <div class="heading-wrapper">
     <{{ section.settings.heading_level }} class="section-heading">{{ section.settings.heading }}</{{ section.settings.heading_level }}>
     {% if section.settings.subheading != blank %}
@@ -619,7 +619,8 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme"
+      "label": "Color scheme",
+      "default": "scheme-1"
     },
     {
       "type": "text",
@@ -826,7 +827,8 @@
         {
           "type": "text",
           "id": "phone",
-          "label": "Phone number"
+          "label": "Phone number",
+          "default": "+49 123 456789"
         },
         {
           "type": "email",

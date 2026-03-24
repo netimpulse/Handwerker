@@ -3,7 +3,7 @@
   Professional Q&A section with smooth animations, keyboard navigation, and optional search
 {% endcomment %}
 
-<section id="shopify-section-{{ section.id }}" class="faq-accordion">
+<section id="shopify-section-{{ section.id }}" class="faq-accordion color-scheme--{{ section.settings.color_scheme }}">
   <div class="faq-accordion__container">
     {% comment %} Section Heading {% endcomment %}
     {% if section.settings.heading != blank %}
@@ -637,7 +637,7 @@ document.addEventListener('shopify:section:load', () => {
           "type": "text",
           "id": "category",
           "label": "Category (Optional)",
-          "default": ""
+          "default": "Allgemein"
         },
         {
           "type": "image_picker",
@@ -649,28 +649,10 @@ document.addEventListener('shopify:section:load', () => {
   ],
   "settings": [
     {
-      "type": "select",
+      "type": "color_scheme",
       "id": "color_scheme",
       "label": "Color Scheme",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        },
-        {
-          "value": "accent-1",
-          "label": "Accent 1"
-        },
-        {
-          "value": "accent-2",
-          "label": "Accent 2"
-        }
-      ],
-      "default": "background-1"
+      "default": "scheme-1"
     },
     {
       "type": "text",

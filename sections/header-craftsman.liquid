@@ -1,7 +1,7 @@
 <!-- Craftsman Sticky Header Section -->
 <header
   id="shopify-section-{{ section.id }}"
-  class="header-craftsman"
+  class="header-craftsman color-scheme--{{ section.settings.color_scheme }}"
   data-sticky="{{ section.settings.sticky_header }}"
   data-transparent="{{ section.settings.transparent_mode }}"
   role="banner"
@@ -675,7 +675,8 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme"
+      "label": "Color scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",

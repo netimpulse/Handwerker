@@ -4,7 +4,7 @@
   Triggered on scroll with smooth count-up animation
 {%- endcomment -%}
 
-<section id="shopify-section-{{ section.id }}" class="stats-counter">
+<section id="shopify-section-{{ section.id }}" class="stats-counter color-scheme--{{ section.settings.color_scheme }}">
   {%- if section.settings.background_image -%}
     <div class="stats-counter__background">
       <img
@@ -458,7 +458,8 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme"
+      "label": "Color scheme",
+      "default": "scheme-1"
     },
     {
       "type": "checkbox",
@@ -496,7 +497,8 @@
       "type": "text",
       "id": "subheading",
       "label": "Subheading",
-      "placeholder": "Optional subheading text"
+      "placeholder": "Optional subheading text",
+      "default": "Unsere Erfolge in Zahlen"
     },
     {
       "type": "select",
@@ -629,13 +631,15 @@
           "type": "text",
           "id": "prefix",
           "label": "Prefix (e.g. €, $)",
-          "placeholder": "Optional"
+          "placeholder": "Optional",
+          "default": "+"
         },
         {
           "type": "text",
           "id": "suffix",
           "label": "Suffix (e.g. %, +)",
-          "placeholder": "Optional"
+          "placeholder": "Optional",
+          "default": "%"
         },
         {
           "type": "text",
@@ -647,7 +651,8 @@
           "type": "text",
           "id": "description",
           "label": "Description",
-          "placeholder": "Optional short description"
+          "placeholder": "Optional short description",
+          "default": "Beschreibung"
         },
         {
           "type": "image_picker",
