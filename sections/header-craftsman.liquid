@@ -146,33 +146,21 @@
       <div class="header-craftsman__actions">
         <!-- Header Icons Container -->
         <div class="header-craftsman__icons">
-          <!-- Search Icon -->
+          <!-- Search: renders Dawn's native search snippet directly -->
           {%- if section.settings.show_search -%}
-            <details-modal class="header__search">
-              <details>
-                <summary class="header-craftsman__icon" aria-label="{{ 'general.search.search' | t }}" role="button">
-                  <svg class="icon icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="m21 21-4.35-4.35"/>
-                  </svg>
-                </summary>
-                <div class="header__search-modal" role="dialog" aria-label="{{ 'general.search.search' | t }}">
-                  {% render 'header-search', input_id: 'Search-In-Modal-Craftsman' %}
-                </div>
-              </details>
-            </details-modal>
+            {% render 'header-search', input_id: 'Search-In-Modal-Craftsman' %}
           {%- endif -%}
 
-          <!-- Cart Icon (Custom Toolbox Style) -->
+          <!-- Cart Icon (Custom Bag Style, NOT Dawn default) -->
           {%- if section.settings.show_cart -%}
-            <a href="{{ routes.cart_url }}" class="header-craftsman__icon header-craftsman__icon--cart" id="cart-icon-bubble">
-              <svg class="icon icon-cart-craftsman" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble" aria-label="{{ 'sections.header.cart_count' | t: count: cart.item_count }}">
+              <svg class="icon icon-cart-craftsman" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" width="24" height="24">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <path d="M16 10a4 4 0 01-8 0"/>
               </svg>
               {%- if cart.item_count > 0 -%}
-                <div class="header-craftsman__cart-count-bubble">
+                <div class="cart-count-bubble">
                   <span aria-hidden="true">{{ cart.item_count }}</span>
                   <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
                 </div>
@@ -180,11 +168,11 @@
             </a>
           {%- endif -%}
 
-          <!-- Account Icon -->
-          {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
-            <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header-craftsman__icon" aria-label="{{ 'customer.account_fallback' | t }}">
-              <svg class="icon icon-account" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <circle cx="12" cy="8" r="4"/>
+          <!-- Account Icon (always visible when enabled in Theme Editor) -->
+          {%- if section.settings.show_account -%}
+            <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link focus-inset" aria-label="{{ 'customer.account_fallback' | t }}">
+              <svg class="icon icon-account" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" width="24" height="24">
+                <circle cx="12" cy="8" r="5"/>
                 <path d="M20 21a8 8 0 10-16 0"/>
               </svg>
             </a>
@@ -225,44 +213,34 @@
     <div class="header-craftsman__drawer-content">
       <!-- Mobile Icons Row -->
       <div class="header-craftsman__drawer-icons">
-        <!-- Mobile Search Icon -->
         {%- if section.settings.show_search -%}
-          <details-modal class="header__search">
-            <details>
-              <summary class="header-craftsman__icon" aria-label="{{ 'general.search.search' | t }}" role="button">
-                <svg class="icon icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8"/>
-                  <path d="m21 21-4.35-4.35"/>
-                </svg>
-              </summary>
-              <div class="header__search-modal" role="dialog" aria-label="{{ 'general.search.search' | t }}">
-                {% render 'header-search', input_id: 'Search-In-Drawer-Craftsman' %}
-              </div>
-            </details>
-          </details-modal>
+          <a href="{{ routes.search_url }}" class="header__icon link focus-inset" aria-label="{{ 'general.search.search' | t }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" width="24" height="24">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </a>
         {%- endif -%}
 
-        <!-- Mobile Cart Icon -->
         {%- if section.settings.show_cart -%}
-          <a href="{{ routes.cart_url }}" class="header-craftsman__icon header-craftsman__icon--cart" aria-label="Cart">
-            <svg class="icon icon-cart-craftsman" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <a href="{{ routes.cart_url }}" class="header__icon link focus-inset" aria-label="Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" width="24" height="24">
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 01-8 0"/>
             </svg>
             {%- if cart.item_count > 0 -%}
-              <div class="header-craftsman__cart-count-bubble">
+              <div class="cart-count-bubble">
                 <span aria-hidden="true">{{ cart.item_count }}</span>
               </div>
             {%- endif -%}
           </a>
         {%- endif -%}
 
-        <!-- Mobile Account Icon -->
-        {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
-          <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header-craftsman__icon" aria-label="{{ 'customer.account_fallback' | t }}">
-            <svg class="icon icon-account" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="12" cy="8" r="4"/>
+        {%- if section.settings.show_account -%}
+          <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon link focus-inset" aria-label="{{ 'customer.account_fallback' | t }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" width="24" height="24">
+              <circle cx="12" cy="8" r="5"/>
               <path d="M20 21a8 8 0 10-16 0"/>
             </svg>
           </a>
@@ -336,7 +314,7 @@
   .header-craftsman__topbar {
     background-color: var(--topbar-bg);
     border-bottom: 1px solid rgb(var(--color-border));
-    font-size: 13px;
+    font-size: 16px;
     height: var(--topbar-height);
     display: flex;
     align-items: center;
@@ -372,7 +350,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-size: 11px;
+    font-size: 16px;
   }
 
   .header-craftsman__hours {
@@ -473,7 +451,7 @@
     color: var(--header-text);
     text-decoration: none;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 16px;
     position: relative;
     transition: color 0.2s;
   }
@@ -494,56 +472,21 @@
     width: 100%;
   }
 
-  /* Header Icons */
+  /* Header Icons - use Dawn's native .header__icon classes */
   .header-craftsman__icons {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
   }
 
-  .header-craftsman__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
+  .header-craftsman__icons .header__icon {
     color: var(--header-text);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    transition: opacity 0.2s;
-    text-decoration: none;
-    position: relative;
   }
 
-  .header-craftsman__icon:hover {
-    opacity: 0.7;
-  }
-
-  .header-craftsman__icon svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .header-craftsman__icon--cart {
-    position: relative;
-  }
-
-  .header-craftsman__cart-count-bubble {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: rgb(var(--color-button));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
+  /* Custom cart icon styling (bag icon instead of Dawn's default) */
+  .icon-cart-craftsman {
+    width: 2.4rem;
+    height: 2.4rem;
   }
 
   /* Actions Container */
@@ -558,7 +501,7 @@
     padding: 10px 20px;
     border-radius: 4px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     text-decoration: none;
     transition: all 0.2s;
     display: inline-block;
@@ -706,36 +649,7 @@
     text-align: center;
   }
 
-  /* Search Modal Styles */
-  .header__search {
-    --details-content-max-width: none;
-  }
-
-  .header__search-modal {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: var(--header-bg);
-    border: 1px solid rgb(var(--color-border));
-    border-radius: 4px;
-    padding: 16px;
-    min-width: 300px;
-    z-index: 101;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Accessibility */
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
+  /* Search uses Dawn's native search-modal styles - no custom overrides needed */
 
   /* Mobile Responsive */
   @media (max-width: 768px) {
