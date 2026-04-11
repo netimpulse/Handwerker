@@ -3,6 +3,7 @@
   Rich blog article display with video embeds, animated elements, charts,
   table of contents, progress bar, author box, share buttons, related posts.
   Uses Shopify's native article object - every blog post appears automatically.
+  Features: Structured data (JSON-LD), breadcrumbs, prev/next navigation.
 {% endcomment %}
 
 {%- assign current_article = article -%}
@@ -11,6 +12,27 @@
   {%- if current_article != blank -%}
     {%- assign word_count = current_article.content | strip_html | split: ' ' | size -%}
     {%- assign read_time = word_count | divided_by: 200 | at_least: 1 -%}
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": {{ current_article.title | json }},
+        "description": {{ current_article.excerpt_or_content | strip_html | truncatewords: 30 | json }},
+        "image": {% if current_article.image %}"{{ current_article.image | image_url: width: 1200 }}"{% else %}""{% endif %},
+        "datePublished": "{{ current_article.published_at | date: '%Y-%m-%d' }}",
+        "dateModified": "{{ current_article.updated_at | date: '%Y-%m-%d' }}",
+        "author": {
+          "@type": "Person",
+          "name": "{{ current_article.author | escape }}"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "{{ shop.name | escape }}"
+        }
+      }
+    </script>
 
     <!-- Reading Progress Bar -->
     {%- if section.settings.show_progress_bar -%}
@@ -21,6 +43,23 @@
 
     <article class="blog-post" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
       <div class="blog-post__container">
+
+        <!-- Breadcrumb Navigation -->
+        {%- if section.settings.show_breadcrumbs -%}
+          <nav class="blog-post__breadcrumbs" aria-label="Breadcrumb">
+            <ol class="blog-post__breadcrumb-list">
+              <li class="blog-post__breadcrumb-item">
+                <a href="/">{{ section.settings.breadcrumb_home | default: 'Home' }}</a>
+              </li>
+              <li class="blog-post__breadcrumb-item">
+                <a href="{{ blog.url }}">{{ blog.title }}</a>
+              </li>
+              <li class="blog-post__breadcrumb-item" aria-current="page">
+                {{ current_article.title | escape }}
+              </li>
+            </ol>
+          </nav>
+        {%- endif -%}
 
         <!-- Article Header -->
         <header class="blog-post__header">
@@ -86,144 +125,262 @@
 
           <!-- Article Content -->
           <div class="blog-post__content" data-article-content>
-            <!-- Dynamic blocks injected between article content -->
-            {%- assign content_parts = current_article.content | split: '<h2' -%}
-            {%- assign block_index = 0 -%}
 
-            {%- for part in content_parts -%}
-              {%- if forloop.first -%}
-                {{ part }}
-              {%- else -%}
-                <h2{{ part }}
-              {%- endif -%}
+            <!-- Blocks: Before Content -->
+            {%- for block in section.blocks -%}
+              {%- if block.settings.position == 'before_content' -%}
+                <div class="blog-post__block" {{ block.shopify_attributes }}>
+                  {%- case block.type -%}
 
-              {%- comment -%} Insert blocks between content sections {%- endcomment -%}
-              {%- for block in section.blocks -%}
-                {%- assign target_position = block.settings.position | default: 0 -%}
-                {%- if target_position == forloop.index0 -%}
-                  <div class="blog-post__block" {{ block.shopify_attributes }}>
-                    {%- case block.type -%}
-
-                      {%- when 'video' -%}
-                        <div class="blog-post__video-wrapper">
-                          {%- if block.settings.video_url != blank -%}
-                            {%- assign video_url = block.settings.video_url -%}
-                            {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
-                              {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
-                              {%- if video_url contains 'youtu.be' -%}
-                                {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
-                              {%- endif -%}
-                              <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
-                                <iframe
-                                  src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
-                                  title="{{ block.settings.video_title | default: 'Video' | escape }}"
-                                  frameborder="0"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowfullscreen
-                                  loading="lazy"
-                                  style="width:100%;height:100%;border-radius:12px;"
-                                ></iframe>
-                              </div>
-                            {%- elsif video_url contains 'vimeo.com' -%}
-                              {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
-                              <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
-                                <iframe
-                                  src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
-                                  title="{{ block.settings.video_title | default: 'Video' | escape }}"
-                                  frameborder="0"
-                                  allow="autoplay; fullscreen; picture-in-picture"
-                                  allowfullscreen
-                                  loading="lazy"
-                                  style="width:100%;height:100%;border-radius:12px;"
-                                ></iframe>
-                              </div>
+                    {%- when 'video' -%}
+                      <div class="blog-post__video-wrapper">
+                        {%- if block.settings.video_url != blank -%}
+                          {%- assign video_url = block.settings.video_url -%}
+                          {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
+                            {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
+                            {%- if video_url contains 'youtu.be' -%}
+                              {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
                             {%- endif -%}
-                            {%- if block.settings.video_caption != blank -%}
-                              <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
-                            {%- endif -%}
-                          {%- endif -%}
-                        </div>
-
-                      {%- when 'chart' -%}
-                        <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
-                          {%- if block.settings.chart_title != blank -%}
-                            <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
-                          {%- endif -%}
-                          <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
-                          {%- if block.settings.chart_caption != blank -%}
-                            <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
-                          {%- endif -%}
-                        </div>
-
-                      {%- when 'callout' -%}
-                        <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
-                          {%- if block.settings.callout_icon != blank -%}
-                            <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
-                          {%- endif -%}
-                          {%- if block.settings.callout_title != blank -%}
-                            <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
-                          {%- endif -%}
-                          <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
-                        </div>
-
-                      {%- when 'before_after' -%}
-                        <div class="blog-post__before-after" data-before-after>
-                          {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
-                            <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
-                              <div class="blog-post__ba-before">
-                                {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
-                              </div>
-                              <div class="blog-post__ba-after" data-ba-after>
-                                {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
-                              </div>
-                              <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
-                              <div class="blog-post__ba-handle" data-ba-handle></div>
+                            <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+                              <iframe
+                                src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
+                                title="{{ block.settings.video_title | default: 'Video' | escape }}"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                                loading="lazy"
+                                style="width:100%;height:100%;border-radius:12px;"
+                              ></iframe>
                             </div>
-                            <div class="blog-post__ba-labels">
-                              <span>Vorher</span>
-                              <span>Nachher</span>
+                          {%- elsif video_url contains 'vimeo.com' -%}
+                            {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
+                            <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+                              <iframe
+                                src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
+                                title="{{ block.settings.video_title | default: 'Video' | escape }}"
+                                frameborder="0"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowfullscreen
+                                loading="lazy"
+                                style="width:100%;height:100%;border-radius:12px;"
+                              ></iframe>
                             </div>
                           {%- endif -%}
-                        </div>
+                          {%- if block.settings.video_caption != blank -%}
+                            <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
+                          {%- endif -%}
+                        {%- endif -%}
+                      </div>
 
-                      {%- when 'cta' -%}
-                        <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
-                          {%- if block.settings.cta_heading != blank -%}
-                            <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
-                          {%- endif -%}
-                          {%- if block.settings.cta_text != blank -%}
-                            <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
-                          {%- endif -%}
-                          {%- if block.settings.cta_button_text != blank -%}
-                            <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
-                          {%- endif -%}
-                        </div>
+                    {%- when 'chart' -%}
+                      <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
+                        {%- if block.settings.chart_title != blank -%}
+                          <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
+                        {%- endif -%}
+                        <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
+                        {%- if block.settings.chart_caption != blank -%}
+                          <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
+                        {%- endif -%}
+                      </div>
 
-                      {%- when 'animated_counter' -%}
-                        <div class="blog-post__counters" data-counters>
-                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
-                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
-                            <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
+                    {%- when 'callout' -%}
+                      <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
+                        {%- if block.settings.callout_icon != blank -%}
+                          <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
+                        {%- endif -%}
+                        {%- if block.settings.callout_title != blank -%}
+                          <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
+                        {%- endif -%}
+                        <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
+                      </div>
+
+                    {%- when 'before_after' -%}
+                      <div class="blog-post__before-after" data-before-after>
+                        {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
+                          <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
+                            <div class="blog-post__ba-before">
+                              {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
+                            </div>
+                            <div class="blog-post__ba-after" data-ba-after>
+                              {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
+                            </div>
+                            <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
+                            <div class="blog-post__ba-handle" data-ba-handle></div>
                           </div>
-                          {%- if block.settings.counter_2_value > 0 -%}
-                            <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
-                              <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
-                              <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
-                            </div>
-                          {%- endif -%}
-                          {%- if block.settings.counter_3_value > 0 -%}
-                            <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
-                              <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
-                              <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
-                            </div>
-                          {%- endif -%}
-                        </div>
+                          <div class="blog-post__ba-labels">
+                            <span>Vorher</span>
+                            <span>Nachher</span>
+                          </div>
+                        {%- endif -%}
+                      </div>
 
-                    {%- endcase -%}
-                  </div>
-                {%- endif -%}
-              {%- endfor -%}
+                    {%- when 'cta' -%}
+                      <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
+                        {%- if block.settings.cta_heading != blank -%}
+                          <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
+                        {%- endif -%}
+                        {%- if block.settings.cta_text != blank -%}
+                          <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
+                        {%- endif -%}
+                        {%- if block.settings.cta_button_text != blank -%}
+                          <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
+                        {%- endif -%}
+                      </div>
+
+                    {%- when 'animated_counter' -%}
+                      <div class="blog-post__counters" data-counters>
+                        <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
+                          <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
+                          <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
+                        </div>
+                        {%- if block.settings.counter_2_value > 0 -%}
+                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
+                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
+                            <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
+                          </div>
+                        {%- endif -%}
+                        {%- if block.settings.counter_3_value > 0 -%}
+                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
+                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
+                            <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
+                          </div>
+                        {%- endif -%}
+                      </div>
+
+                  {%- endcase -%}
+                </div>
+              {%- endif -%}
             {%- endfor -%}
+
+            <!-- Article Content -->
+            {{ current_article.content }}
+
+            <!-- Blocks: After Content -->
+            {%- for block in section.blocks -%}
+              {%- if block.settings.position == 'after_content' -%}
+                <div class="blog-post__block" {{ block.shopify_attributes }}>
+                  {%- case block.type -%}
+
+                    {%- when 'video' -%}
+                      <div class="blog-post__video-wrapper">
+                        {%- if block.settings.video_url != blank -%}
+                          {%- assign video_url = block.settings.video_url -%}
+                          {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
+                            {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
+                            {%- if video_url contains 'youtu.be' -%}
+                              {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
+                            {%- endif -%}
+                            <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+                              <iframe
+                                src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
+                                title="{{ block.settings.video_title | default: 'Video' | escape }}"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                                loading="lazy"
+                                style="width:100%;height:100%;border-radius:12px;"
+                              ></iframe>
+                            </div>
+                          {%- elsif video_url contains 'vimeo.com' -%}
+                            {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
+                            <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+                              <iframe
+                                src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
+                                title="{{ block.settings.video_title | default: 'Video' | escape }}"
+                                frameborder="0"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowfullscreen
+                                loading="lazy"
+                                style="width:100%;height:100%;border-radius:12px;"
+                              ></iframe>
+                            </div>
+                          {%- endif -%}
+                          {%- if block.settings.video_caption != blank -%}
+                            <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
+                          {%- endif -%}
+                        {%- endif -%}
+                      </div>
+
+                    {%- when 'chart' -%}
+                      <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
+                        {%- if block.settings.chart_title != blank -%}
+                          <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
+                        {%- endif -%}
+                        <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
+                        {%- if block.settings.chart_caption != blank -%}
+                          <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
+                        {%- endif -%}
+                      </div>
+
+                    {%- when 'callout' -%}
+                      <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
+                        {%- if block.settings.callout_icon != blank -%}
+                          <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
+                        {%- endif -%}
+                        {%- if block.settings.callout_title != blank -%}
+                          <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
+                        {%- endif -%}
+                        <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
+                      </div>
+
+                    {%- when 'before_after' -%}
+                      <div class="blog-post__before-after" data-before-after>
+                        {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
+                          <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
+                            <div class="blog-post__ba-before">
+                              {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
+                            </div>
+                            <div class="blog-post__ba-after" data-ba-after>
+                              {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
+                            </div>
+                            <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
+                            <div class="blog-post__ba-handle" data-ba-handle></div>
+                          </div>
+                          <div class="blog-post__ba-labels">
+                            <span>Vorher</span>
+                            <span>Nachher</span>
+                          </div>
+                        {%- endif -%}
+                      </div>
+
+                    {%- when 'cta' -%}
+                      <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
+                        {%- if block.settings.cta_heading != blank -%}
+                          <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
+                        {%- endif -%}
+                        {%- if block.settings.cta_text != blank -%}
+                          <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
+                        {%- endif -%}
+                        {%- if block.settings.cta_button_text != blank -%}
+                          <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
+                        {%- endif -%}
+                      </div>
+
+                    {%- when 'animated_counter' -%}
+                      <div class="blog-post__counters" data-counters>
+                        <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
+                          <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
+                          <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
+                        </div>
+                        {%- if block.settings.counter_2_value > 0 -%}
+                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
+                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
+                            <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
+                          </div>
+                        {%- endif -%}
+                        {%- if block.settings.counter_3_value > 0 -%}
+                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
+                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
+                            <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
+                          </div>
+                        {%- endif -%}
+                      </div>
+
+                  {%- endcase -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+
           </div>
         </div>
 
@@ -232,13 +389,22 @@
           <div class="blog-post__share">
             <span class="blog-post__share-label">Teilen:</span>
             <a href="https://www.facebook.com/sharer/sharer.php?u={{ current_article.url | prepend: shop.url | url_encode }}" target="_blank" rel="noopener noreferrer" class="blog-post__share-link" aria-label="Auf Facebook teilen">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color: {{ section.settings.color_facebook }}"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             </a>
             <a href="https://twitter.com/intent/tweet?url={{ current_article.url | prepend: shop.url | url_encode }}&text={{ current_article.title | url_encode }}" target="_blank" rel="noopener noreferrer" class="blog-post__share-link" aria-label="Auf X teilen">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color: {{ section.settings.color_x }}"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ current_article.url | prepend: shop.url | url_encode }}" target="_blank" rel="noopener noreferrer" class="blog-post__share-link" aria-label="Auf LinkedIn teilen">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color: {{ section.settings.color_linkedin }}"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="https://wa.me/?text={{ current_article.title | url_encode }}%20{{ current_article.url | prepend: shop.url | url_encode }}" target="_blank" rel="noopener noreferrer" class="blog-post__share-link" aria-label="Auf WhatsApp teilen">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color: {{ section.settings.color_whatsapp }}"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+            <a href="https://pinterest.com/pin/create/button/?url={{ current_article.url | prepend: shop.url | url_encode }}&description={{ current_article.title | url_encode }}" target="_blank" rel="noopener noreferrer" class="blog-post__share-link" aria-label="Auf Pinterest teilen">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color: {{ section.settings.color_pinterest }}"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z"/></svg>
             </a>
             <a href="mailto:?subject={{ current_article.title | url_encode }}&body={{ current_article.url | prepend: shop.url | url_encode }}" class="blog-post__share-link" aria-label="Per E-Mail teilen">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color: {{ section.settings.color_email }}"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
             </a>
           </div>
         {%- endif -%}
@@ -316,6 +482,11 @@
             {% form 'new_comment', current_article %}
               <div class="blog-post__comment-form">
                 <h4>Kommentar hinterlassen</h4>
+                {%- if section.settings.show_moderation_notice and blog.moderated? -%}
+                  <div class="blog-post__moderation-notice">
+                    Kommentare werden vor Veröffentlichung überprüft.
+                  </div>
+                {%- endif -%}
                 {%- if form.errors -%}
                   <div class="blog-post__form-errors" role="alert">
                     {{ form.errors | default_errors }}
@@ -343,6 +514,160 @@
           </div>
         {%- endif -%}
 
+        <!-- Blocks: After Article -->
+        {%- for block in section.blocks -%}
+          {%- if block.settings.position == 'after_article' -%}
+            <div class="blog-post__block" {{ block.shopify_attributes }}>
+              {%- case block.type -%}
+
+                {%- when 'video' -%}
+                  <div class="blog-post__video-wrapper">
+                    {%- if block.settings.video_url != blank -%}
+                      {%- assign video_url = block.settings.video_url -%}
+                      {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
+                        {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
+                        {%- if video_url contains 'youtu.be' -%}
+                          {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
+                        {%- endif -%}
+                        <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+                          <iframe
+                            src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
+                            title="{{ block.settings.video_title | default: 'Video' | escape }}"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            loading="lazy"
+                            style="width:100%;height:100%;border-radius:12px;"
+                          ></iframe>
+                        </div>
+                      {%- elsif video_url contains 'vimeo.com' -%}
+                        {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
+                        <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+                          <iframe
+                            src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
+                            title="{{ block.settings.video_title | default: 'Video' | escape }}"
+                            frameborder="0"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowfullscreen
+                            loading="lazy"
+                            style="width:100%;height:100%;border-radius:12px;"
+                          ></iframe>
+                        </div>
+                      {%- endif -%}
+                      {%- if block.settings.video_caption != blank -%}
+                        <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </div>
+
+                {%- when 'chart' -%}
+                  <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
+                    {%- if block.settings.chart_title != blank -%}
+                      <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
+                    {%- endif -%}
+                    <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
+                    {%- if block.settings.chart_caption != blank -%}
+                      <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
+                    {%- endif -%}
+                  </div>
+
+                {%- when 'callout' -%}
+                  <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
+                    {%- if block.settings.callout_icon != blank -%}
+                      <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
+                    {%- endif -%}
+                    {%- if block.settings.callout_title != blank -%}
+                      <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
+                    {%- endif -%}
+                    <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
+                  </div>
+
+                {%- when 'before_after' -%}
+                  <div class="blog-post__before-after" data-before-after>
+                    {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
+                      <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
+                        <div class="blog-post__ba-before">
+                          {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
+                        </div>
+                        <div class="blog-post__ba-after" data-ba-after>
+                          {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
+                        </div>
+                        <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
+                        <div class="blog-post__ba-handle" data-ba-handle></div>
+                      </div>
+                      <div class="blog-post__ba-labels">
+                        <span>Vorher</span>
+                        <span>Nachher</span>
+                      </div>
+                    {%- endif -%}
+                  </div>
+
+                {%- when 'cta' -%}
+                  <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
+                    {%- if block.settings.cta_heading != blank -%}
+                      <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
+                    {%- endif -%}
+                    {%- if block.settings.cta_text != blank -%}
+                      <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
+                    {%- endif -%}
+                    {%- if block.settings.cta_button_text != blank -%}
+                      <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
+                    {%- endif -%}
+                  </div>
+
+                {%- when 'animated_counter' -%}
+                  <div class="blog-post__counters" data-counters>
+                    <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
+                      <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
+                      <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
+                    </div>
+                    {%- if block.settings.counter_2_value > 0 -%}
+                      <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
+                        <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
+                        <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
+                      </div>
+                    {%- endif -%}
+                    {%- if block.settings.counter_3_value > 0 -%}
+                      <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
+                        <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
+                        <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
+                      </div>
+                    {%- endif -%}
+                  </div>
+
+              {%- endcase -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        <!-- Previous/Next Article Navigation -->
+        {%- if section.settings.show_prev_next -%}
+          <nav class="blog-post__prev-next" aria-label="Article navigation">
+            <div class="blog-post__nav-grid">
+              {%- assign prev_article = blog.previous_article -%}
+              {%- if prev_article -%}
+                <a href="{{ prev_article.url }}" class="blog-post__nav-link blog-post__nav-link--prev">
+                  <span class="blog-post__nav-arrow">←</span>
+                  <div class="blog-post__nav-content">
+                    <span class="blog-post__nav-label">Vorheriger Beitrag</span>
+                    <span class="blog-post__nav-title">{{ prev_article.title | escape }}</span>
+                  </div>
+                </a>
+              {%- endif -%}
+              {%- assign next_article = blog.next_article -%}
+              {%- if next_article -%}
+                <a href="{{ next_article.url }}" class="blog-post__nav-link blog-post__nav-link--next">
+                  <div class="blog-post__nav-content">
+                    <span class="blog-post__nav-label">Nächster Beitrag</span>
+                    <span class="blog-post__nav-title">{{ next_article.title | escape }}</span>
+                  </div>
+                  <span class="blog-post__nav-arrow">→</span>
+                </a>
+              {%- endif -%}
+            </div>
+          </nav>
+        {%- endif -%}
+
         <!-- Back to Blog -->
         <div class="blog-post__back">
           <a href="{{ blog.url }}" class="blog-post__back-link">
@@ -364,7 +689,6 @@
 </blog-post-enhanced>
 
 <style>
-  /* Progress Bar */
   #shopify-section-{{ section.id }} .blog-post__progress-bar {
     position: fixed;
     top: 0;
@@ -382,7 +706,39 @@
     transition: width 0.1s linear;
   }
 
-  /* Container */
+  #shopify-section-{{ section.id }} .blog-post__breadcrumbs {
+    margin-bottom: 24px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__breadcrumb-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 14px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__breadcrumb-item:not(:last-child)::after {
+    content: '/';
+    margin-left: 8px;
+    color: rgba(var(--color-foreground), 0.4);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__breadcrumb-item a {
+    color: rgb(var(--color-link));
+    text-decoration: none;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__breadcrumb-item a:hover {
+    text-decoration: underline;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__breadcrumb-item[aria-current="page"] {
+    color: rgba(var(--color-foreground), 0.6);
+  }
+
   #shopify-section-{{ section.id }} .blog-post {
     max-width: {{ section.settings.max_width }}px;
     margin: 0 auto;
@@ -390,7 +746,6 @@
     padding-right: 20px;
   }
 
-  /* Header */
   #shopify-section-{{ section.id }} .blog-post__header {
     text-align: center;
     margin-bottom: 48px;
@@ -462,7 +817,6 @@
     object-fit: cover;
   }
 
-  /* Layout */
   #shopify-section-{{ section.id }} .blog-post__layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -476,7 +830,6 @@
     grid-template-columns: 220px 1fr;
   }
 
-  /* Table of Contents */
   #shopify-section-{{ section.id }} .blog-post__sidebar {
     position: sticky;
     top: 100px;
@@ -521,7 +874,6 @@
     color: rgb(var(--color-button));
   }
 
-  /* Article Content */
   #shopify-section-{{ section.id }} .blog-post__content {
     font-size: 1.0625rem;
     line-height: 1.8;
@@ -576,7 +928,6 @@
     font-style: italic;
   }
 
-  /* Block: Video */
   #shopify-section-{{ section.id }} .blog-post__video-wrapper {
     margin: 2em 0;
   }
@@ -589,7 +940,6 @@
     font-style: italic;
   }
 
-  /* Block: Chart */
   #shopify-section-{{ section.id }} .blog-post__chart {
     margin: 2em 0;
     padding: 24px;
@@ -610,7 +960,6 @@
     max-height: 300px;
   }
 
-  /* Block: Callout */
   #shopify-section-{{ section.id }} .blog-post__callout {
     margin: 2em 0;
     padding: 20px 24px;
@@ -650,7 +999,6 @@
     color: rgba(var(--color-foreground), 0.8);
   }
 
-  /* Block: Before/After */
   #shopify-section-{{ section.id }} .blog-post__before-after {
     margin: 2em 0;
   }
@@ -715,7 +1063,6 @@
     margin-top: 8px;
   }
 
-  /* Block: CTA */
   #shopify-section-{{ section.id }} .blog-post__cta {
     margin: 2em 0;
     padding: 32px;
@@ -765,7 +1112,6 @@
     color: rgb(var(--color-button-text));
   }
 
-  /* Block: Animated Counters */
   #shopify-section-{{ section.id }} .blog-post__counters {
     display: flex;
     justify-content: center;
@@ -793,7 +1139,6 @@
     margin-top: 4px;
   }
 
-  /* Share */
   #shopify-section-{{ section.id }} .blog-post__share {
     display: flex;
     align-items: center;
@@ -824,11 +1169,10 @@
   }
 
   #shopify-section-{{ section.id }} .blog-post__share-link:hover {
-    background: rgb(var(--color-button));
-    color: rgb(var(--color-button-text));
+    background: rgba(var(--color-foreground), 0.12);
+    transform: translateY(-2px);
   }
 
-  /* Author Box */
   #shopify-section-{{ section.id }} .blog-post__author-box {
     max-width: 800px;
     margin: 32px auto;
@@ -871,7 +1215,6 @@
     line-height: 1.5;
   }
 
-  /* Related Posts */
   #shopify-section-{{ section.id }} .blog-post__related {
     max-width: 800px;
     margin: 40px auto;
@@ -932,7 +1275,6 @@
     line-height: 1.3;
   }
 
-  /* Comments */
   #shopify-section-{{ section.id }} .blog-post__comments {
     max-width: 800px;
     margin: 40px auto;
@@ -979,7 +1321,15 @@
     line-height: 1.6;
   }
 
-  /* Comment Form */
+  #shopify-section-{{ section.id }} .blog-post__moderation-notice {
+    padding: 12px 16px;
+    background: rgba(var(--color-foreground), 0.05);
+    border-radius: 8px;
+    font-size: 14px;
+    color: rgba(var(--color-foreground), 0.6);
+    margin-bottom: 16px;
+  }
+
   #shopify-section-{{ section.id }} .blog-post__comment-form {
     margin-top: 32px;
     padding: 24px;
@@ -1045,7 +1395,75 @@
     opacity: 0.9;
   }
 
-  /* Back Link */
+  #shopify-section-{{ section.id }} .blog-post__prev-next {
+    max-width: 800px;
+    margin: 40px auto 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 10px;
+    text-decoration: none;
+    color: rgb(var(--color-foreground));
+    transition: all 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-link:hover {
+    border-color: rgb(var(--color-button));
+    background: rgba(var(--color-button), 0.03);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-link--prev {
+    grid-column: 1;
+    justify-content: flex-start;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-link--next {
+    grid-column: 2;
+    justify-content: flex-end;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-arrow {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-link--next .blog-post__nav-content {
+    text-align: right;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(var(--color-foreground), 0.5);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__nav-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: rgb(var(--color-button));
+  }
+
   #shopify-section-{{ section.id }} .blog-post__back {
     max-width: 800px;
     margin: 40px auto 0;
@@ -1066,7 +1484,6 @@
     gap: 10px;
   }
 
-  /* Responsive */
   @media (max-width: 900px) {
     #shopify-section-{{ section.id }} .blog-post__layout:has(.blog-post__sidebar) {
       grid-template-columns: 1fr;
@@ -1083,6 +1500,15 @@
 
     #shopify-section-{{ section.id }} .blog-post__hero-image {
       aspect-ratio: 16 / 9;
+    }
+
+    #shopify-section-{{ section.id }} .blog-post__nav-grid {
+      grid-template-columns: 1fr;
+    }
+
+    #shopify-section-{{ section.id }} .blog-post__nav-link--prev,
+    #shopify-section-{{ section.id }} .blog-post__nav-link--next {
+      grid-column: auto;
     }
   }
 
@@ -1101,6 +1527,7 @@
       this.setupCharts();
       this.setupBeforeAfter();
       this.setupCounters();
+      this.setupEditorEvents();
     }
 
     setupProgressBar() {
@@ -1138,7 +1565,6 @@
         tocList.appendChild(li);
       });
 
-      // Highlight active
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -1173,7 +1599,6 @@
 
         ctx.clearRect(0, 0, w, h);
 
-        // Draw grid lines
         ctx.strokeStyle = 'rgba(0,0,0,0.05)';
         for (let i = 0; i <= 4; i++) {
           const y = 20 + (chartHeight / 4) * i;
@@ -1192,7 +1617,6 @@
             ctx.beginPath();
             ctx.roundRect(x, y, barWidth * 0.7, barH, 4);
             ctx.fill();
-            // Label
             ctx.fillStyle = '#666';
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
@@ -1210,7 +1634,6 @@
             else ctx.lineTo(x, y);
           });
           ctx.stroke();
-          // Points
           values.forEach((val, i) => {
             const x = 50 + i * barWidth + barWidth * 0.35;
             const y = 20 + chartHeight - (val / maxVal) * chartHeight;
@@ -1274,6 +1697,22 @@
       this._counterObserver = observer;
     }
 
+    setupEditorEvents() {
+      document.addEventListener('shopify:section:load', (e) => {
+        if (e.detail.sectionId === this.closest('[data-shopify-section-id]')?.dataset.shopifySectionId) {
+          this.setupCharts();
+          this.setupBeforeAfter();
+          this.setupCounters();
+        }
+      });
+
+      document.addEventListener('shopify:block:select', (e) => {
+        this.setupCharts();
+        this.setupBeforeAfter();
+        this.setupCounters();
+      });
+    }
+
     disconnectedCallback() {
       if (this._cleanupProgress) this._cleanupProgress();
       if (this._tocObserver) this._tocObserver.disconnect();
@@ -1303,6 +1742,18 @@
     },
     {
       "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumb navigation",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_home",
+      "label": "Breadcrumb home label",
+      "default": "Home"
+    },
+    {
+      "type": "checkbox",
       "id": "show_hero_image",
       "label": "Show hero image",
       "default": true
@@ -1318,6 +1769,46 @@
       "id": "show_progress_bar",
       "label": "Show reading progress bar",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Social Colors"
+    },
+    {
+      "type": "color",
+      "id": "color_facebook",
+      "label": "Facebook",
+      "default": "#1877F2"
+    },
+    {
+      "type": "color",
+      "id": "color_x",
+      "label": "X (Twitter)",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "color_linkedin",
+      "label": "LinkedIn",
+      "default": "#0A66C2"
+    },
+    {
+      "type": "color",
+      "id": "color_whatsapp",
+      "label": "WhatsApp",
+      "default": "#25D366"
+    },
+    {
+      "type": "color",
+      "id": "color_pinterest",
+      "label": "Pinterest",
+      "default": "#E60023"
+    },
+    {
+      "type": "color",
+      "id": "color_email",
+      "label": "E-Mail",
+      "default": "#666666"
     },
     {
       "type": "header",
@@ -1361,6 +1852,22 @@
       "type": "checkbox",
       "id": "show_comments",
       "label": "Show comments section",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_moderation_notice",
+      "label": "Show moderation notice",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_prev_next",
+      "label": "Show previous/next articles",
       "default": true
     },
     {
@@ -1420,14 +1927,15 @@
           "label": "Caption"
         },
         {
-          "type": "range",
+          "type": "select",
           "id": "position",
-          "min": 0,
-          "max": 20,
-          "step": 1,
-          "label": "Insert after heading #",
-          "default": 1,
-          "info": "0 = top, 1 = after first h2"
+          "label": "Position",
+          "options": [
+            { "value": "before_content", "label": "Before article content" },
+            { "value": "after_content", "label": "After article content" },
+            { "value": "after_article", "label": "After author/share (bottom)" }
+          ],
+          "default": "after_content"
         }
       ]
     },
@@ -1474,13 +1982,15 @@
           "label": "Caption"
         },
         {
-          "type": "range",
+          "type": "select",
           "id": "position",
-          "min": 0,
-          "max": 20,
-          "step": 1,
-          "label": "Insert after heading #",
-          "default": 1
+          "label": "Position",
+          "options": [
+            { "value": "before_content", "label": "Before article content" },
+            { "value": "after_content", "label": "After article content" },
+            { "value": "after_article", "label": "After author/share (bottom)" }
+          ],
+          "default": "after_content"
         }
       ]
     },
@@ -1516,13 +2026,15 @@
           "label": "Content"
         },
         {
-          "type": "range",
+          "type": "select",
           "id": "position",
-          "min": 0,
-          "max": 20,
-          "step": 1,
-          "label": "Insert after heading #",
-          "default": 1
+          "label": "Position",
+          "options": [
+            { "value": "before_content", "label": "Before article content" },
+            { "value": "after_content", "label": "After article content" },
+            { "value": "after_article", "label": "After author/share (bottom)" }
+          ],
+          "default": "after_content"
         }
       ]
     },
@@ -1541,13 +2053,15 @@
           "label": "After image"
         },
         {
-          "type": "range",
+          "type": "select",
           "id": "position",
-          "min": 0,
-          "max": 20,
-          "step": 1,
-          "label": "Insert after heading #",
-          "default": 1
+          "label": "Position",
+          "options": [
+            { "value": "before_content", "label": "Before article content" },
+            { "value": "after_content", "label": "After article content" },
+            { "value": "after_article", "label": "After author/share (bottom)" }
+          ],
+          "default": "after_content"
         }
       ]
     },
@@ -1588,13 +2102,15 @@
           "label": "Button link"
         },
         {
-          "type": "range",
+          "type": "select",
           "id": "position",
-          "min": 0,
-          "max": 20,
-          "step": 1,
-          "label": "Insert after heading #",
-          "default": 2
+          "label": "Position",
+          "options": [
+            { "value": "before_content", "label": "Before article content" },
+            { "value": "after_content", "label": "After article content" },
+            { "value": "after_article", "label": "After author/share (bottom)" }
+          ],
+          "default": "after_content"
         }
       ]
     },
@@ -1657,13 +2173,15 @@
           "default": "Zufriedenheit"
         },
         {
-          "type": "range",
+          "type": "select",
           "id": "position",
-          "min": 0,
-          "max": 20,
-          "step": 1,
-          "label": "Insert after heading #",
-          "default": 2
+          "label": "Position",
+          "options": [
+            { "value": "before_content", "label": "Before article content" },
+            { "value": "after_content", "label": "After article content" },
+            { "value": "after_article", "label": "After author/share (bottom)" }
+          ],
+          "default": "after_content"
         }
       ]
     }
