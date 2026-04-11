@@ -1,0 +1,579 @@
+{% comment %}
+  Blog Featured Section - Craftsman Theme
+  Homepage section for highlighting blog posts with featured article + grid layout
+  Natively integrates with Shopify's blog/article system
+{% endcomment %}
+
+<blog-featured class="color-{{ section.settings.color_scheme }}">
+  <div class="blog-featured" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+    <div class="blog-featured__container">
+
+      {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+        <div class="blog-featured__header" style="text-align: {{ section.settings.text_alignment }};">
+          {%- if section.settings.label_text != blank -%}
+            <span class="blog-featured__label">{{ section.settings.label_text }}</span>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="blog-featured__heading">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.subheading != blank -%}
+            <p class="blog-featured__subheading">{{ section.settings.subheading }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- assign blog = blogs[section.settings.blog] -%}
+      {%- if blog != blank and blog.articles_count > 0 -%}
+        {%- assign articles_limit = section.settings.articles_count | default: 4 -%}
+
+        <div class="blog-featured__grid blog-featured__grid--{{ section.settings.layout }}">
+          {%- for article in blog.articles limit: articles_limit -%}
+            {%- assign is_featured = false -%}
+            {%- if forloop.first and section.settings.layout == 'featured' -%}
+              {%- assign is_featured = true -%}
+            {%- endif -%}
+
+            <article class="blog-featured__card {% if is_featured %}blog-featured__card--featured{% endif %}" {% if forloop.index > 1 %}style="animation-delay: {{ forloop.index | times: 0.1 }}s;"{% endif %}>
+              {%- if article.image != blank -%}
+                <a href="{{ article.url }}" class="blog-featured__image-link" aria-label="{{ article.title | escape }}">
+                  <div class="blog-featured__image-wrapper {% if is_featured %}blog-featured__image-wrapper--featured{% endif %}">
+                    {{
+                      article.image
+                      | image_url: width: 800
+                      | image_tag:
+                        loading: 'lazy',
+                        sizes: '(min-width: 1200px) 600px, (min-width: 768px) 50vw, 100vw',
+                        widths: '300,400,600,800',
+                        class: 'blog-featured__image',
+                        alt: article.image.alt | default: article.title | escape
+                    }}
+                  </div>
+                </a>
+              {%- endif -%}
+
+              <div class="blog-featured__content">
+                <div class="blog-featured__meta">
+                  {%- if article.tags.size > 0 -%}
+                    <span class="blog-featured__tag">{{ article.tags.first }}</span>
+                  {%- endif -%}
+                  <time class="blog-featured__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                    {{ article.published_at | date: '%d. %B %Y' }}
+                  </time>
+                </div>
+
+                <h3 class="blog-featured__title {% if is_featured %}blog-featured__title--featured{% endif %}">
+                  <a href="{{ article.url }}">{{ article.title | escape }}</a>
+                </h3>
+
+                {%- if article.excerpt_or_content != blank -%}
+                  <p class="blog-featured__excerpt">
+                    {%- if is_featured -%}
+                      {{ article.excerpt_or_content | strip_html | truncatewords: 30 }}
+                    {%- else -%}
+                      {{ article.excerpt_or_content | strip_html | truncatewords: 15 }}
+                    {%- endif -%}
+                  </p>
+                {%- endif -%}
+
+                <div class="blog-featured__footer">
+                  {%- assign word_count = article.content | strip_html | split: ' ' | size -%}
+                  {%- assign read_time = word_count | divided_by: 200 | at_least: 1 -%}
+                  <span class="blog-featured__read-time">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                      <path d="M8 4v4l3 2" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    </svg>
+                    {{ read_time }} min
+                  </span>
+
+                  {%- if section.settings.show_author and article.author != blank -%}
+                    <span class="blog-featured__author">{{ article.author }}</span>
+                  {%- endif -%}
+
+                  <a href="{{ article.url }}" class="blog-featured__read-more" aria-label="{{ 'blogs.article.read_more' | t }}: {{ article.title | escape }}">
+                    Weiterlesen
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+          {%- endfor -%}
+        </div>
+
+        {%- if section.settings.show_view_all -%}
+          <div class="blog-featured__view-all" style="text-align: center;">
+            <a href="{{ blog.url }}" class="blog-featured__view-all-link">
+              {{ section.settings.view_all_text | default: 'Alle Beiträge ansehen' }}
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </a>
+          </div>
+        {%- endif -%}
+
+      {%- else -%}
+        <div class="blog-featured__empty">
+          <p>{{ 'blogs.article.no_articles' | t | default: 'Wählen Sie einen Blog im Theme Editor aus, um Beiträge anzuzeigen.' }}</p>
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+</blog-featured>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --blog-featured-max-width: {{ section.settings.max_width }}px;
+  }
+{%- endstyle -%}
+
+<style>
+  #shopify-section-{{ section.id }} .blog-featured {
+    max-width: var(--blog-featured-max-width, 1400px);
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__container {
+    max-width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__header {
+    margin-bottom: 48px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgb(var(--color-button));
+    background: rgba(var(--color-button), 0.1);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__heading {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: rgb(var(--color-foreground));
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__subheading {
+    font-size: 1.0625rem;
+    color: rgba(var(--color-foreground), 0.7);
+    margin: 0;
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__header[style*="center"] .blog-featured__subheading {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Grid Layouts */
+  #shopify-section-{{ section.id }} .blog-featured__grid {
+    display: grid;
+    gap: 24px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__grid--featured {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__grid--featured .blog-featured__card--featured {
+    grid-row: 1 / span 2;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__grid--grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__grid--list {
+    grid-template-columns: 1fr;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Card */
+  #shopify-section-{{ section.id }} .blog-featured__card {
+    background: rgb(var(--color-background));
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(var(--color-foreground), 0.1);
+  }
+
+  /* Image */
+  #shopify-section-{{ section.id }} .blog-featured__image-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__image-wrapper {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: rgba(var(--color-foreground), 0.05);
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__image-wrapper--featured {
+    aspect-ratio: 4 / 3;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__card:hover .blog-featured__image {
+    transform: scale(1.05);
+  }
+
+  /* Content */
+  #shopify-section-{{ section.id }} .blog-featured__content {
+    padding: 20px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgb(var(--color-button));
+    background: rgba(var(--color-button), 0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__date {
+    font-size: 13px;
+    color: rgba(var(--color-foreground), 0.5);
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__title--featured {
+    font-size: 1.5rem;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__title a {
+    color: rgb(var(--color-foreground));
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__title a:hover {
+    color: rgb(var(--color-link));
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__excerpt {
+    font-size: 1rem;
+    color: rgba(var(--color-foreground), 0.7);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px solid rgba(var(--color-border), 0.5);
+    margin-top: auto;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__read-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: rgba(var(--color-foreground), 0.5);
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__author {
+    font-size: 13px;
+    color: rgba(var(--color-foreground), 0.5);
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgb(var(--color-button));
+    text-decoration: none;
+    margin-left: auto;
+    transition: gap 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__read-more:hover {
+    gap: 10px;
+  }
+
+  /* View All */
+  #shopify-section-{{ section.id }} .blog-featured__view-all {
+    margin-top: 40px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__view-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgb(var(--color-button));
+    text-decoration: none;
+    padding: 12px 28px;
+    border: 2px solid rgb(var(--color-button));
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-featured__view-all-link:hover {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  /* Empty State */
+  #shopify-section-{{ section.id }} .blog-featured__empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(var(--color-foreground), 0.5);
+    font-size: 1rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .blog-featured__grid--featured {
+      grid-template-columns: 1fr;
+    }
+
+    #shopify-section-{{ section.id }} .blog-featured__grid--featured .blog-featured__card--featured {
+      grid-row: auto;
+    }
+
+    #shopify-section-{{ section.id }} .blog-featured__title--featured {
+      font-size: 1.25rem;
+    }
+
+    #shopify-section-{{ section.id }} .blog-featured__header {
+      margin-bottom: 32px;
+    }
+
+    #shopify-section-{{ section.id }} .blog-featured__content {
+      padding: 16px 20px 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .blog-featured__card,
+    #shopify-section-{{ section.id }} .blog-featured__image,
+    #shopify-section-{{ section.id }} .blog-featured__read-more {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  class BlogFeatured extends HTMLElement {
+    connectedCallback() {
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+            this.observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+      this.querySelectorAll('.blog-featured__card').forEach((card, i) => {
+        if (i > 0) {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(20px)';
+          card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          this.observer.observe(card);
+        }
+      });
+    }
+
+    disconnectedCallback() {
+      if (this.observer) this.observer.disconnect();
+    }
+  }
+
+  if (!customElements.get('blog-featured')) {
+    customElements.define('blog-featured', BlogFeatured);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Blog Featured",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "label_text",
+      "label": "Section label",
+      "default": "Blog"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Aktuelles & Wissenswertes"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Tipps, Neuigkeiten und Einblicke rund um unser Handwerk"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog"
+    },
+    {
+      "type": "range",
+      "id": "articles_count",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "Number of articles",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout style",
+      "options": [
+        { "value": "featured", "label": "Featured + Grid" },
+        { "value": "grid", "label": "Grid" },
+        { "value": "list", "label": "List" }
+      ],
+      "default": "featured"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Header alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1400
+    },
+    {
+      "type": "header",
+      "content": "Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show view all button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all button text",
+      "default": "Alle Beiträge ansehen"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Featured"
+    }
+  ]
+}
+{% endschema %}

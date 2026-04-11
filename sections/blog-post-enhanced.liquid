@@ -1,0 +1,1678 @@
+{% comment %}
+  Enhanced Blog Post Section - Craftsman Theme
+  Rich blog article display with video embeds, animated elements, charts,
+  table of contents, progress bar, author box, share buttons, related posts.
+  Uses Shopify's native article object - every blog post appears automatically.
+{% endcomment %}
+
+{%- assign current_article = article -%}
+
+<blog-post-enhanced class="color-{{ section.settings.color_scheme }}">
+  {%- if current_article != blank -%}
+    {%- assign word_count = current_article.content | strip_html | split: ' ' | size -%}
+    {%- assign read_time = word_count | divided_by: 200 | at_least: 1 -%}
+
+    <!-- Reading Progress Bar -->
+    {%- if section.settings.show_progress_bar -%}
+      <div class="blog-post__progress-bar" data-progress-bar>
+        <div class="blog-post__progress-fill" data-progress-fill></div>
+      </div>
+    {%- endif -%}
+
+    <article class="blog-post" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+      <div class="blog-post__container">
+
+        <!-- Article Header -->
+        <header class="blog-post__header">
+          <div class="blog-post__meta-top">
+            {%- if current_article.tags.size > 0 -%}
+              <div class="blog-post__tags">
+                {%- for tag in current_article.tags -%}
+                  <a href="{{ blog.url }}/tagged/{{ tag | handleize }}" class="blog-post__tag">{{ tag }}</a>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+
+          <h1 class="blog-post__title">{{ current_article.title | escape }}</h1>
+
+          <div class="blog-post__meta">
+            {%- if current_article.author != blank -%}
+              <span class="blog-post__author">von {{ current_article.author }}</span>
+            {%- endif -%}
+            <time class="blog-post__date" datetime="{{ current_article.published_at | date: '%Y-%m-%d' }}">
+              {{ current_article.published_at | date: '%d. %B %Y' }}
+            </time>
+            <span class="blog-post__read-time">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <path d="M8 4v4l3 2" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              </svg>
+              {{ read_time }} min Lesezeit
+            </span>
+          </div>
+
+          {%- if current_article.image != blank and section.settings.show_hero_image -%}
+            <div class="blog-post__hero-image">
+              {{
+                current_article.image
+                | image_url: width: 1400
+                | image_tag:
+                  loading: 'eager',
+                  fetchpriority: 'high',
+                  sizes: '(min-width: 1200px) 1000px, 100vw',
+                  widths: '400,600,800,1000,1200,1400',
+                  class: 'blog-post__hero-img',
+                  alt: current_article.image.alt | default: current_article.title | escape
+              }}
+            </div>
+          {%- endif -%}
+        </header>
+
+        <!-- Main Content Area with Optional Sidebar -->
+        <div class="blog-post__layout">
+
+          <!-- Table of Contents (Sidebar) -->
+          {%- if section.settings.show_toc -%}
+            <aside class="blog-post__sidebar" data-toc-sidebar>
+              <nav class="blog-post__toc" aria-label="Inhaltsverzeichnis">
+                <h3 class="blog-post__toc-title">Inhalt</h3>
+                <ol class="blog-post__toc-list" data-toc-list>
+                  <!-- Populated by JS from article headings -->
+                </ol>
+              </nav>
+            </aside>
+          {%- endif -%}
+
+          <!-- Article Content -->
+          <div class="blog-post__content" data-article-content>
+            <!-- Dynamic blocks injected between article content -->
+            {%- assign content_parts = current_article.content | split: '<h2' -%}
+            {%- assign block_index = 0 -%}
+
+            {%- for part in content_parts -%}
+              {%- if forloop.first -%}
+                {{ part }}
+              {%- else -%}
+                <h2{{ part }}
+              {%- endif -%}
+
+              {%- comment -%} Insert blocks between content sections {%- endcomment -%}
+              {%- for block in section.blocks -%}
+                {%- assign target_position = block.settings.position | default: 0 -%}
+                {%- if target_position == forloop.index0 -%}
+                  <div class="blog-post__block" {{ block.shopify_attributes }}>
+                    {%- case block.type -%}
+
+                      {%- when 'video' -%}
+                        <div class="blog-post__video-wrapper">
+                          {%- if block.settings.video_url != blank -%}
+                            {%- assign video_url = block.settings.video_url -%}
+                            {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
+                              {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
+                              {%- if video_url contains 'youtu.be' -%}
+                                {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
+                              {%- endif -%}
+                              <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+                                <iframe
+                                  src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
+                                  title="{{ block.settings.video_title | default: 'Video' | escape }}"
+                                  frameborder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowfullscreen
+                                  loading="lazy"
+                                  style="width:100%;height:100%;border-radius:12px;"
+                                ></iframe>
+                              </div>
+                            {%- elsif video_url contains 'vimeo.com' -%}
+                              {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
+                              <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+                                <iframe
+                                  src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
+                                  title="{{ block.settings.video_title | default: 'Video' | escape }}"
+                                  frameborder="0"
+                                  allow="autoplay; fullscreen; picture-in-picture"
+                                  allowfullscreen
+                                  loading="lazy"
+                                  style="width:100%;height:100%;border-radius:12px;"
+                                ></iframe>
+                              </div>
+                            {%- endif -%}
+                            {%- if block.settings.video_caption != blank -%}
+                              <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
+                            {%- endif -%}
+                          {%- endif -%}
+                        </div>
+
+                      {%- when 'chart' -%}
+                        <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
+                          {%- if block.settings.chart_title != blank -%}
+                            <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
+                          {%- endif -%}
+                          <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
+                          {%- if block.settings.chart_caption != blank -%}
+                            <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
+                          {%- endif -%}
+                        </div>
+
+                      {%- when 'callout' -%}
+                        <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
+                          {%- if block.settings.callout_icon != blank -%}
+                            <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
+                          {%- endif -%}
+                          {%- if block.settings.callout_title != blank -%}
+                            <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
+                          {%- endif -%}
+                          <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
+                        </div>
+
+                      {%- when 'before_after' -%}
+                        <div class="blog-post__before-after" data-before-after>
+                          {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
+                            <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
+                              <div class="blog-post__ba-before">
+                                {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
+                              </div>
+                              <div class="blog-post__ba-after" data-ba-after>
+                                {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
+                              </div>
+                              <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
+                              <div class="blog-post__ba-handle" data-ba-handle></div>
+                            </div>
+                            <div class="blog-post__ba-labels">
+                              <span>Vorher</span>
+                              <span>Nachher</span>
+                            </div>
+                          {%- endif -%}
+                        </div>
+
+                      {%- when 'cta' -%}
+                        <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
+                          {%- if block.settings.cta_heading != blank -%}
+                            <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
+                          {%- endif -%}
+                          {%- if block.settings.cta_text != blank -%}
+                            <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
+                          {%- endif -%}
+                          {%- if block.settings.cta_button_text != blank -%}
+                            <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
+                          {%- endif -%}
+                        </div>
+
+                      {%- when 'animated_counter' -%}
+                        <div class="blog-post__counters" data-counters>
+                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
+                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
+                            <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
+                          </div>
+                          {%- if block.settings.counter_2_value > 0 -%}
+                            <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
+                              <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
+                              <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
+                            </div>
+                          {%- endif -%}
+                          {%- if block.settings.counter_3_value > 0 -%}
+                            <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
+                              <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
+                              <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
+                            </div>
+                          {%- endif -%}
+                        </div>
+
+                    {%- endcase -%}
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <!-- Share Buttons -->
+        {%- if section.settings.show_share -%}
+          <div class="blog-post__share">
+            <span class="blog-post__share-label">Teilen:</span>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ current_article.url | prepend: shop.url | url_encode }}" target="_blank" rel="noopener noreferrer" class="blog-post__share-link" aria-label="Auf Facebook teilen">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="https://twitter.com/intent/tweet?url={{ current_article.url | prepend: shop.url | url_encode }}&text={{ current_article.title | url_encode }}" target="_blank" rel="noopener noreferrer" class="blog-post__share-link" aria-label="Auf X teilen">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+            </a>
+            <a href="mailto:?subject={{ current_article.title | url_encode }}&body={{ current_article.url | prepend: shop.url | url_encode }}" class="blog-post__share-link" aria-label="Per E-Mail teilen">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </a>
+          </div>
+        {%- endif -%}
+
+        <!-- Author Box -->
+        {%- if section.settings.show_author_box and current_article.author != blank -%}
+          <div class="blog-post__author-box">
+            <div class="blog-post__author-info">
+              <div class="blog-post__author-avatar">{{ current_article.author | slice: 0 }}</div>
+              <div>
+                <strong class="blog-post__author-name">{{ current_article.author }}</strong>
+                {%- if section.settings.author_bio != blank -%}
+                  <p class="blog-post__author-bio">{{ section.settings.author_bio }}</p>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+
+        <!-- Related Posts -->
+        {%- if section.settings.show_related -%}
+          {%- assign related_tag = current_article.tags.first -%}
+          {%- if related_tag != blank -%}
+            <div class="blog-post__related">
+              <h3 class="blog-post__related-heading">{{ section.settings.related_heading | default: 'Weitere Beiträge' }}</h3>
+              <div class="blog-post__related-grid">
+                {%- assign related_count = 0 -%}
+                {%- for art in blog.articles -%}
+                  {%- if art.handle != current_article.handle and art.tags contains related_tag and related_count < 3 -%}
+                    {%- assign related_count = related_count | plus: 1 -%}
+                    <a href="{{ art.url }}" class="blog-post__related-card">
+                      {%- if art.image != blank -%}
+                        <div class="blog-post__related-image">
+                          {{ art.image | image_url: width: 400 | image_tag: loading: 'lazy', sizes: '300px', widths: '200,300,400', alt: art.title | escape }}
+                        </div>
+                      {%- endif -%}
+                      <div class="blog-post__related-content">
+                        <span class="blog-post__related-date">{{ art.published_at | date: '%d. %B %Y' }}</span>
+                        <h4 class="blog-post__related-title">{{ art.title | escape }}</h4>
+                      </div>
+                    </a>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+
+        <!-- Comments Section -->
+        {%- if blog.comments_enabled? and section.settings.show_comments -%}
+          <div class="blog-post__comments" id="comments">
+            <h3 class="blog-post__comments-heading">
+              {{ current_article.comments_count }} {{ current_article.comments_count | pluralize: 'Kommentar', 'Kommentare' }}
+            </h3>
+
+            {%- paginate current_article.comments by 10 -%}
+              {%- for comment in current_article.comments -%}
+                <div class="blog-post__comment">
+                  <div class="blog-post__comment-avatar">{{ comment.author | slice: 0 }}</div>
+                  <div class="blog-post__comment-body">
+                    <div class="blog-post__comment-meta">
+                      <strong>{{ comment.author }}</strong>
+                      <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">{{ comment.created_at | date: '%d. %B %Y' }}</time>
+                    </div>
+                    <div class="blog-post__comment-content">{{ comment.content }}</div>
+                  </div>
+                </div>
+              {%- endfor -%}
+
+              {%- if paginate.pages > 1 -%}
+                <nav class="blog-post__comment-pagination">{{ paginate | default_pagination }}</nav>
+              {%- endif -%}
+            {%- endpaginate -%}
+
+            {% form 'new_comment', current_article %}
+              <div class="blog-post__comment-form">
+                <h4>Kommentar hinterlassen</h4>
+                {%- if form.errors -%}
+                  <div class="blog-post__form-errors" role="alert">
+                    {{ form.errors | default_errors }}
+                  </div>
+                {%- endif -%}
+                <div class="blog-post__form-fields">
+                  <div class="blog-post__form-row">
+                    <div class="blog-post__form-field">
+                      <label for="CommentAuthor">Name</label>
+                      <input type="text" name="comment[author]" id="CommentAuthor" value="{{ form.author }}" required>
+                    </div>
+                    <div class="blog-post__form-field">
+                      <label for="CommentEmail">E-Mail</label>
+                      <input type="email" name="comment[email]" id="CommentEmail" value="{{ form.email }}" required>
+                    </div>
+                  </div>
+                  <div class="blog-post__form-field">
+                    <label for="CommentBody">Kommentar</label>
+                    <textarea name="comment[body]" id="CommentBody" rows="5" required>{{ form.body }}</textarea>
+                  </div>
+                  <button type="submit" class="blog-post__form-submit">Kommentar senden</button>
+                </div>
+              </div>
+            {% endform %}
+          </div>
+        {%- endif -%}
+
+        <!-- Back to Blog -->
+        <div class="blog-post__back">
+          <a href="{{ blog.url }}" class="blog-post__back-link">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M10 13L5 8L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Zurück zum Blog
+          </a>
+        </div>
+
+      </div>
+    </article>
+
+  {%- else -%}
+    <div class="blog-post__empty" style="padding: 80px 20px; text-align: center;">
+      <p>Diese Section wird auf der Blog-Beitragsseite angezeigt.</p>
+    </div>
+  {%- endif -%}
+</blog-post-enhanced>
+
+<style>
+  /* Progress Bar */
+  #shopify-section-{{ section.id }} .blog-post__progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(var(--color-foreground), 0.1);
+    z-index: 200;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__progress-fill {
+    height: 100%;
+    background: rgb(var(--color-button));
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+
+  /* Container */
+  #shopify-section-{{ section.id }} .blog-post {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* Header */
+  #shopify-section-{{ section.id }} .blog-post__header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__meta-top {
+    margin-bottom: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__tags {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__tag {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgb(var(--color-button));
+    background: rgba(var(--color-button), 0.1);
+    padding: 4px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__tag:hover {
+    background: rgba(var(--color-button), 0.2);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__title {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    font-weight: 800;
+    color: rgb(var(--color-foreground));
+    margin: 0 0 16px 0;
+    line-height: 1.15;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 1rem;
+    color: rgba(var(--color-foreground), 0.6);
+    margin-bottom: 32px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__read-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__hero-image {
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 24px;
+    aspect-ratio: 2 / 1;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Layout */
+  #shopify-section-{{ section.id }} .blog-post__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__layout:has(.blog-post__sidebar) {
+    max-width: 100%;
+    grid-template-columns: 220px 1fr;
+  }
+
+  /* Table of Contents */
+  #shopify-section-{{ section.id }} .blog-post__sidebar {
+    position: sticky;
+    top: 100px;
+    align-self: start;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__toc {
+    padding: 20px;
+    background: rgba(var(--color-foreground), 0.03);
+    border-radius: 12px;
+    border: 1px solid rgb(var(--color-border));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__toc-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: rgb(var(--color-foreground));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__toc-list a {
+    font-size: 14px;
+    color: rgba(var(--color-foreground), 0.7);
+    text-decoration: none;
+    line-height: 1.4;
+    display: block;
+    padding: 4px 0;
+    transition: color 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__toc-list a:hover,
+  #shopify-section-{{ section.id }} .blog-post__toc-list a.active {
+    color: rgb(var(--color-button));
+  }
+
+  /* Article Content */
+  #shopify-section-{{ section.id }} .blog-post__content {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: rgb(var(--color-foreground));
+    overflow-wrap: break-word;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 2em 0 0.75em;
+    scroll-margin-top: 100px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 1.5em 0 0.5em;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__content p {
+    margin: 0 0 1.25em;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 1.5em 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__content a {
+    color: rgb(var(--color-link));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__content ul,
+  #shopify-section-{{ section.id }} .blog-post__content ol {
+    margin: 1em 0;
+    padding-left: 1.5em;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__content li {
+    margin-bottom: 0.5em;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__content blockquote {
+    border-left: 4px solid rgb(var(--color-button));
+    padding: 16px 24px;
+    margin: 1.5em 0;
+    background: rgba(var(--color-foreground), 0.03);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+  }
+
+  /* Block: Video */
+  #shopify-section-{{ section.id }} .blog-post__video-wrapper {
+    margin: 2em 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__media-caption {
+    font-size: 14px;
+    color: rgba(var(--color-foreground), 0.5);
+    text-align: center;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* Block: Chart */
+  #shopify-section-{{ section.id }} .blog-post__chart {
+    margin: 2em 0;
+    padding: 24px;
+    background: rgba(var(--color-foreground), 0.03);
+    border-radius: 12px;
+    border: 1px solid rgb(var(--color-border));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__chart-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__chart-canvas {
+    width: 100%;
+    max-height: 300px;
+  }
+
+  /* Block: Callout */
+  #shopify-section-{{ section.id }} .blog-post__callout {
+    margin: 2em 0;
+    padding: 20px 24px;
+    border-radius: 12px;
+    border-left: 4px solid rgb(var(--color-button));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__callout--info {
+    background: rgba(var(--color-button), 0.05);
+    border-left-color: rgb(var(--color-button));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__callout--warning {
+    background: rgba(200, 150, 0, 0.08);
+    border-left-color: #c89600;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__callout--tip {
+    background: rgba(0, 160, 80, 0.06);
+    border-left-color: #00a050;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__callout-icon {
+    font-size: 1.25rem;
+    margin-right: 8px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__callout-title {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__callout-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(var(--color-foreground), 0.8);
+  }
+
+  /* Block: Before/After */
+  #shopify-section-{{ section.id }} .blog-post__before-after {
+    margin: 2em 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__ba-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__ba-before,
+  #shopify-section-{{ section.id }} .blog-post__ba-after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__ba-before img,
+  #shopify-section-{{ section.id }} .blog-post__ba-after img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__ba-after {
+    clip-path: inset(0 50% 0 0);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__ba-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: ew-resize;
+    z-index: 3;
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__ba-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 3px;
+    background: white;
+    z-index: 2;
+    pointer-events: none;
+    box-shadow: 0 0 6px rgba(0,0,0,0.3);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__ba-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: rgba(var(--color-foreground), 0.5);
+    margin-top: 8px;
+  }
+
+  /* Block: CTA */
+  #shopify-section-{{ section.id }} .blog-post__cta {
+    margin: 2em 0;
+    padding: 32px;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__cta--accent {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__cta--subtle {
+    background: rgba(var(--color-foreground), 0.04);
+    border: 1px solid rgb(var(--color-border));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__cta-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__cta-text {
+    font-size: 1rem;
+    margin: 0 0 16px 0;
+    opacity: 0.9;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__cta-button {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__cta--accent .blog-post__cta-button {
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__cta--subtle .blog-post__cta-button {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  /* Block: Animated Counters */
+  #shopify-section-{{ section.id }} .blog-post__counters {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin: 2em 0;
+    padding: 32px;
+    background: rgba(var(--color-foreground), 0.03);
+    border-radius: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__counter {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: rgb(var(--color-button));
+    line-height: 1;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__counter-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(var(--color-foreground), 0.7);
+    margin-top: 4px;
+  }
+
+  /* Share */
+  #shopify-section-{{ section.id }} .blog-post__share {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+    border-top: 1px solid rgb(var(--color-border));
+    border-bottom: 1px solid rgb(var(--color-border));
+    margin: 40px auto 0;
+    max-width: 800px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__share-label {
+    font-weight: 600;
+    font-size: 1rem;
+    color: rgb(var(--color-foreground));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__share-link {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(var(--color-foreground), 0.06);
+    color: rgb(var(--color-foreground));
+    transition: all 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__share-link:hover {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  /* Author Box */
+  #shopify-section-{{ section.id }} .blog-post__author-box {
+    max-width: 800px;
+    margin: 32px auto;
+    padding: 24px;
+    background: rgba(var(--color-foreground), 0.03);
+    border-radius: 12px;
+    border: 1px solid rgb(var(--color-border));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__author-info {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__author-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__author-name {
+    font-size: 1.125rem;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__author-bio {
+    font-size: 1rem;
+    color: rgba(var(--color-foreground), 0.7);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Related Posts */
+  #shopify-section-{{ section.id }} .blog-post__related {
+    max-width: 800px;
+    margin: 40px auto;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-card {
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(var(--color-foreground), 0.08);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-image {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-content {
+    padding: 14px 16px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-date {
+    font-size: 13px;
+    color: rgba(var(--color-foreground), 0.5);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__related-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 4px 0 0;
+    line-height: 1.3;
+  }
+
+  /* Comments */
+  #shopify-section-{{ section.id }} .blog-post__comments {
+    max-width: 800px;
+    margin: 40px auto;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__comments-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__comment {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(var(--color-border), 0.5);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(var(--color-foreground), 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__comment-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__comment-meta time {
+    color: rgba(var(--color-foreground), 0.5);
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__comment-content {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Comment Form */
+  #shopify-section-{{ section.id }} .blog-post__comment-form {
+    margin-top: 32px;
+    padding: 24px;
+    background: rgba(var(--color-foreground), 0.03);
+    border-radius: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__comment-form h4 {
+    margin: 0 0 16px 0;
+    font-size: 1.125rem;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__form-field label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__form-field input,
+  #shopify-section-{{ section.id }} .blog-post__form-field textarea {
+    padding: 10px 14px;
+    border: 2px solid rgb(var(--color-border));
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+    transition: border-color 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__form-field input:focus,
+  #shopify-section-{{ section.id }} .blog-post__form-field textarea:focus {
+    outline: none;
+    border-color: rgb(var(--color-button));
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__form-submit {
+    padding: 12px 28px;
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__form-submit:hover {
+    opacity: 0.9;
+  }
+
+  /* Back Link */
+  #shopify-section-{{ section.id }} .blog-post__back {
+    max-width: 800px;
+    margin: 40px auto 0;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgb(var(--color-button));
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: gap 0.2s;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__back-link:hover {
+    gap: 10px;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    #shopify-section-{{ section.id }} .blog-post__layout:has(.blog-post__sidebar) {
+      grid-template-columns: 1fr;
+    }
+
+    #shopify-section-{{ section.id }} .blog-post__sidebar {
+      position: static;
+      order: -1;
+    }
+
+    #shopify-section-{{ section.id }} .blog-post__form-row {
+      grid-template-columns: 1fr;
+    }
+
+    #shopify-section-{{ section.id }} .blog-post__hero-image {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .blog-post__progress-fill {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  class BlogPostEnhanced extends HTMLElement {
+    connectedCallback() {
+      this.setupProgressBar();
+      this.setupTableOfContents();
+      this.setupCharts();
+      this.setupBeforeAfter();
+      this.setupCounters();
+    }
+
+    setupProgressBar() {
+      const fill = this.querySelector('[data-progress-fill]');
+      if (!fill) return;
+      const content = this.querySelector('[data-article-content]');
+      if (!content) return;
+
+      const update = () => {
+        const rect = content.getBoundingClientRect();
+        const total = content.scrollHeight;
+        const scrolled = Math.max(0, -rect.top);
+        const pct = Math.min(100, (scrolled / (total - window.innerHeight)) * 100);
+        fill.style.width = pct + '%';
+      };
+
+      window.addEventListener('scroll', update, { passive: true });
+      this._cleanupProgress = () => window.removeEventListener('scroll', update);
+    }
+
+    setupTableOfContents() {
+      const tocList = this.querySelector('[data-toc-list]');
+      const content = this.querySelector('[data-article-content]');
+      if (!tocList || !content) return;
+
+      const headings = content.querySelectorAll('h2');
+      headings.forEach((h, i) => {
+        const id = 'heading-' + i;
+        h.id = id;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent;
+        li.appendChild(a);
+        tocList.appendChild(li);
+      });
+
+      // Highlight active
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tocList.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            const link = tocList.querySelector(`a[href="#${entry.target.id}"]`);
+            if (link) link.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-100px 0px -70% 0px' });
+
+      headings.forEach(h => observer.observe(h));
+      this._tocObserver = observer;
+    }
+
+    setupCharts() {
+      this.querySelectorAll('[data-chart]').forEach(chartEl => {
+        const canvas = chartEl.querySelector('canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const type = chartEl.dataset.chartType || 'bar';
+        const labels = (chartEl.dataset.chartLabels || '').split(',').map(s => s.trim());
+        const values = (chartEl.dataset.chartValues || '').split(',').map(s => parseFloat(s.trim()));
+        const colors = (chartEl.dataset.chartColors || '').split(',').map(s => s.trim());
+
+        if (!labels.length || !values.length) return;
+
+        const maxVal = Math.max(...values);
+        const w = canvas.width;
+        const h = canvas.height;
+        const barWidth = (w - 60) / labels.length;
+        const chartHeight = h - 60;
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Draw grid lines
+        ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+        for (let i = 0; i <= 4; i++) {
+          const y = 20 + (chartHeight / 4) * i;
+          ctx.beginPath();
+          ctx.moveTo(40, y);
+          ctx.lineTo(w - 10, y);
+          ctx.stroke();
+        }
+
+        if (type === 'bar') {
+          values.forEach((val, i) => {
+            const barH = (val / maxVal) * chartHeight;
+            const x = 50 + i * barWidth;
+            const y = 20 + chartHeight - barH;
+            ctx.fillStyle = colors[i] || `hsl(${i * 60}, 60%, 50%)`;
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth * 0.7, barH, 4);
+            ctx.fill();
+            // Label
+            ctx.fillStyle = '#666';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(labels[i] || '', x + barWidth * 0.35, h - 8);
+            ctx.fillText(val, x + barWidth * 0.35, y - 6);
+          });
+        } else if (type === 'line') {
+          ctx.strokeStyle = colors[0] || 'hsl(210, 60%, 50%)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          values.forEach((val, i) => {
+            const x = 50 + i * barWidth + barWidth * 0.35;
+            const y = 20 + chartHeight - (val / maxVal) * chartHeight;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.stroke();
+          // Points
+          values.forEach((val, i) => {
+            const x = 50 + i * barWidth + barWidth * 0.35;
+            const y = 20 + chartHeight - (val / maxVal) * chartHeight;
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = colors[0] || 'hsl(210, 60%, 50%)';
+            ctx.fill();
+            ctx.fillStyle = '#666';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(labels[i] || '', x, h - 8);
+          });
+        }
+      });
+    }
+
+    setupBeforeAfter() {
+      this.querySelectorAll('[data-before-after]').forEach(el => {
+        const slider = el.querySelector('[data-ba-slider]');
+        const after = el.querySelector('[data-ba-after]');
+        const handle = el.querySelector('[data-ba-handle]');
+        if (!slider || !after || !handle) return;
+
+        slider.addEventListener('input', () => {
+          const val = slider.value;
+          after.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
+          handle.style.left = val + '%';
+        });
+      });
+    }
+
+    setupCounters() {
+      const counters = this.querySelectorAll('[data-counters]');
+      if (!counters.length) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.querySelectorAll('[data-count-to]').forEach(counter => {
+              const target = parseInt(counter.dataset.countTo);
+              const numEl = counter.querySelector('.blog-post__counter-number');
+              if (!numEl || numEl.dataset.animated) return;
+              numEl.dataset.animated = 'true';
+              let current = 0;
+              const step = Math.max(1, Math.ceil(target / 60));
+              const interval = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                  current = target;
+                  clearInterval(interval);
+                }
+                numEl.textContent = current.toLocaleString('de-DE');
+              }, 20);
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      counters.forEach(c => observer.observe(c));
+      this._counterObserver = observer;
+    }
+
+    disconnectedCallback() {
+      if (this._cleanupProgress) this._cleanupProgress();
+      if (this._tocObserver) this._tocObserver.disconnect();
+      if (this._counterObserver) this._counterObserver.disconnect();
+    }
+  }
+
+  if (!customElements.get('blog-post-enhanced')) {
+    customElements.define('blog-post-enhanced', BlogPostEnhanced);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Blog Post Enhanced",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Article Display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hero_image",
+      "label": "Show hero image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_toc",
+      "label": "Show table of contents",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress_bar",
+      "label": "Show reading progress bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Social & Author"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "Show share buttons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author_box",
+      "label": "Show author box",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "author_bio",
+      "label": "Author bio",
+      "default": "Experte mit langjähriger Erfahrung im Handwerk."
+    },
+    {
+      "type": "header",
+      "content": "Related & Comments"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related",
+      "label": "Show related posts",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "related_heading",
+      "label": "Related posts heading",
+      "default": "Weitere Beiträge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comments",
+      "label": "Show comments section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 800,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1100
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video Embed",
+      "settings": [
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "YouTube or Vimeo URL",
+          "info": "Paste a YouTube or Vimeo URL"
+        },
+        {
+          "type": "text",
+          "id": "video_title",
+          "label": "Video title"
+        },
+        {
+          "type": "text",
+          "id": "video_caption",
+          "label": "Caption"
+        },
+        {
+          "type": "range",
+          "id": "position",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "label": "Insert after heading #",
+          "default": 1,
+          "info": "0 = top, 1 = after first h2"
+        }
+      ]
+    },
+    {
+      "type": "chart",
+      "name": "Chart / Diagram",
+      "settings": [
+        {
+          "type": "select",
+          "id": "chart_type",
+          "label": "Chart type",
+          "options": [
+            { "value": "bar", "label": "Bar Chart" },
+            { "value": "line", "label": "Line Chart" }
+          ],
+          "default": "bar"
+        },
+        {
+          "type": "text",
+          "id": "chart_title",
+          "label": "Chart title"
+        },
+        {
+          "type": "text",
+          "id": "chart_labels",
+          "label": "Labels (comma separated)",
+          "default": "Jan, Feb, Mar, Apr, Mai"
+        },
+        {
+          "type": "text",
+          "id": "chart_values",
+          "label": "Values (comma separated)",
+          "default": "12, 19, 8, 15, 22"
+        },
+        {
+          "type": "text",
+          "id": "chart_colors",
+          "label": "Farben (kommagetrennt)",
+          "default": "#2563eb, #3b82f6, #60a5fa, #93c5fd, #1d4ed8"
+        },
+        {
+          "type": "text",
+          "id": "chart_caption",
+          "label": "Caption"
+        },
+        {
+          "type": "range",
+          "id": "position",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "label": "Insert after heading #",
+          "default": 1
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "name": "Callout Box",
+      "settings": [
+        {
+          "type": "select",
+          "id": "callout_style",
+          "label": "Style",
+          "options": [
+            { "value": "info", "label": "Info (blue)" },
+            { "value": "warning", "label": "Warning (yellow)" },
+            { "value": "tip", "label": "Tip (green)" }
+          ],
+          "default": "info"
+        },
+        {
+          "type": "text",
+          "id": "callout_icon",
+          "label": "Icon (emoji)",
+          "default": "💡"
+        },
+        {
+          "type": "text",
+          "id": "callout_title",
+          "label": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "callout_text",
+          "label": "Content"
+        },
+        {
+          "type": "range",
+          "id": "position",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "label": "Insert after heading #",
+          "default": 1
+        }
+      ]
+    },
+    {
+      "type": "before_after",
+      "name": "Before/After Slider",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "before_image",
+          "label": "Before image"
+        },
+        {
+          "type": "image_picker",
+          "id": "after_image",
+          "label": "After image"
+        },
+        {
+          "type": "range",
+          "id": "position",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "label": "Insert after heading #",
+          "default": 1
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "name": "Call to Action",
+      "settings": [
+        {
+          "type": "select",
+          "id": "cta_style",
+          "label": "Style",
+          "options": [
+            { "value": "accent", "label": "Accent (bold)" },
+            { "value": "subtle", "label": "Subtle (border)" }
+          ],
+          "default": "accent"
+        },
+        {
+          "type": "text",
+          "id": "cta_heading",
+          "label": "Heading",
+          "default": "Kostenlose Beratung"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Text"
+        },
+        {
+          "type": "text",
+          "id": "cta_button_text",
+          "label": "Button text",
+          "default": "Jetzt anfragen"
+        },
+        {
+          "type": "url",
+          "id": "cta_button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "range",
+          "id": "position",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "label": "Insert after heading #",
+          "default": 2
+        }
+      ]
+    },
+    {
+      "type": "animated_counter",
+      "name": "Animated Counters",
+      "settings": [
+        {
+          "type": "number",
+          "id": "counter_1_value",
+          "label": "Counter 1 value",
+          "default": 500
+        },
+        {
+          "type": "text",
+          "id": "counter_1_suffix",
+          "label": "Counter 1 suffix",
+          "default": "+"
+        },
+        {
+          "type": "text",
+          "id": "counter_1_label",
+          "label": "Counter 1 label",
+          "default": "Projekte"
+        },
+        {
+          "type": "number",
+          "id": "counter_2_value",
+          "label": "Counter 2 value",
+          "default": 15
+        },
+        {
+          "type": "text",
+          "id": "counter_2_suffix",
+          "label": "Counter 2 suffix",
+          "default": " Jahre"
+        },
+        {
+          "type": "text",
+          "id": "counter_2_label",
+          "label": "Counter 2 label",
+          "default": "Erfahrung"
+        },
+        {
+          "type": "number",
+          "id": "counter_3_value",
+          "label": "Counter 3 value",
+          "default": 98
+        },
+        {
+          "type": "text",
+          "id": "counter_3_suffix",
+          "label": "Counter 3 suffix",
+          "default": "%"
+        },
+        {
+          "type": "text",
+          "id": "counter_3_label",
+          "label": "Counter 3 label",
+          "default": "Zufriedenheit"
+        },
+        {
+          "type": "range",
+          "id": "position",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "label": "Insert after heading #",
+          "default": 2
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Post Enhanced"
+    }
+  ],
+  "templates": ["article"]
+}
+{% endschema %}
