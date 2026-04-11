@@ -2,6 +2,7 @@
   Enhanced Blog Post Section - Craftsman Theme
   Rich blog article display with video embeds, animated elements, charts,
   table of contents, progress bar, author box, share buttons, related posts.
+  Features: Inline block positioning, block size/alignment control, optional author image
   Uses Shopify's native article object - every blog post appears automatically.
   Features: Structured data (JSON-LD), breadcrumbs, prev/next navigation.
 {% endcomment %}
@@ -123,260 +124,40 @@
             </aside>
           {%- endif -%}
 
-          <!-- Article Content -->
+          <!-- Article Content with Inline Blocks -->
           <div class="blog-post__content" data-article-content>
 
-            <!-- Blocks: Before Content -->
+            <!-- Blocks positioned at position 0 (before all content) -->
             {%- for block in section.blocks -%}
-              {%- if block.settings.position == 'before_content' -%}
-                <div class="blog-post__block" {{ block.shopify_attributes }}>
-                  {%- case block.type -%}
-
-                    {%- when 'video' -%}
-                      <div class="blog-post__video-wrapper">
-                        {%- if block.settings.video_url != blank -%}
-                          {%- assign video_url = block.settings.video_url -%}
-                          {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
-                            {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
-                            {%- if video_url contains 'youtu.be' -%}
-                              {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
-                            {%- endif -%}
-                            <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
-                              <iframe
-                                src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
-                                title="{{ block.settings.video_title | default: 'Video' | escape }}"
-                                frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen
-                                loading="lazy"
-                                style="width:100%;height:100%;border-radius:12px;"
-                              ></iframe>
-                            </div>
-                          {%- elsif video_url contains 'vimeo.com' -%}
-                            {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
-                            <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
-                              <iframe
-                                src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
-                                title="{{ block.settings.video_title | default: 'Video' | escape }}"
-                                frameborder="0"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowfullscreen
-                                loading="lazy"
-                                style="width:100%;height:100%;border-radius:12px;"
-                              ></iframe>
-                            </div>
-                          {%- endif -%}
-                          {%- if block.settings.video_caption != blank -%}
-                            <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
-                          {%- endif -%}
-                        {%- endif -%}
-                      </div>
-
-                    {%- when 'chart' -%}
-                      <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
-                        {%- if block.settings.chart_title != blank -%}
-                          <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
-                        {%- endif -%}
-                        <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
-                        {%- if block.settings.chart_caption != blank -%}
-                          <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
-                        {%- endif -%}
-                      </div>
-
-                    {%- when 'callout' -%}
-                      <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
-                        {%- if block.settings.callout_icon != blank -%}
-                          <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
-                        {%- endif -%}
-                        {%- if block.settings.callout_title != blank -%}
-                          <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
-                        {%- endif -%}
-                        <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
-                      </div>
-
-                    {%- when 'before_after' -%}
-                      <div class="blog-post__before-after" data-before-after>
-                        {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
-                          <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
-                            <div class="blog-post__ba-before">
-                              {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
-                            </div>
-                            <div class="blog-post__ba-after" data-ba-after>
-                              {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
-                            </div>
-                            <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
-                            <div class="blog-post__ba-handle" data-ba-handle></div>
-                          </div>
-                          <div class="blog-post__ba-labels">
-                            <span>Vorher</span>
-                            <span>Nachher</span>
-                          </div>
-                        {%- endif -%}
-                      </div>
-
-                    {%- when 'cta' -%}
-                      <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
-                        {%- if block.settings.cta_heading != blank -%}
-                          <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
-                        {%- endif -%}
-                        {%- if block.settings.cta_text != blank -%}
-                          <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
-                        {%- endif -%}
-                        {%- if block.settings.cta_button_text != blank -%}
-                          <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
-                        {%- endif -%}
-                      </div>
-
-                    {%- when 'animated_counter' -%}
-                      <div class="blog-post__counters" data-counters>
-                        <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
-                          <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
-                          <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
-                        </div>
-                        {%- if block.settings.counter_2_value > 0 -%}
-                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
-                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
-                            <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
-                          </div>
-                        {%- endif -%}
-                        {%- if block.settings.counter_3_value > 0 -%}
-                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
-                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
-                            <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
-                          </div>
-                        {%- endif -%}
-                      </div>
-
-                  {%- endcase -%}
+              {%- if block.settings.position == 0 -%}
+                <div class="blog-post__block blog-post__block--{{ block.settings.block_width }} blog-post__block--{{ block.settings.block_align }}" {{ block.shopify_attributes }}>
+                  {% render 'blog-post-block', block: block %}
                 </div>
               {%- endif -%}
             {%- endfor -%}
 
-            <!-- Article Content -->
-            {{ current_article.content }}
+            <!-- Split content by paragraphs and insert blocks at positions -->
+            {%- assign paragraphs = current_article.content | split: '</p>' -%}
+            {%- for p in paragraphs -%}
+              {%- unless p == blank -%}
+                {{ p }}</p>
+                {%- assign para_index = forloop.index -%}
+                {%- for block in section.blocks -%}
+                  {%- if block.settings.position == para_index -%}
+                    <div class="blog-post__block blog-post__block--{{ block.settings.block_width }} blog-post__block--{{ block.settings.block_align }}" {{ block.shopify_attributes }}>
+                      {% render 'blog-post-block', block: block %}
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endunless -%}
+            {%- endfor -%}
 
-            <!-- Blocks: After Content -->
+            <!-- Blocks with position exceeding paragraph count (rendered after last paragraph) -->
+            {%- assign actual_paragraphs = current_article.content | split: '</p>' | size | minus: 1 -%}
             {%- for block in section.blocks -%}
-              {%- if block.settings.position == 'after_content' -%}
-                <div class="blog-post__block" {{ block.shopify_attributes }}>
-                  {%- case block.type -%}
-
-                    {%- when 'video' -%}
-                      <div class="blog-post__video-wrapper">
-                        {%- if block.settings.video_url != blank -%}
-                          {%- assign video_url = block.settings.video_url -%}
-                          {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
-                            {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
-                            {%- if video_url contains 'youtu.be' -%}
-                              {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
-                            {%- endif -%}
-                            <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
-                              <iframe
-                                src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
-                                title="{{ block.settings.video_title | default: 'Video' | escape }}"
-                                frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen
-                                loading="lazy"
-                                style="width:100%;height:100%;border-radius:12px;"
-                              ></iframe>
-                            </div>
-                          {%- elsif video_url contains 'vimeo.com' -%}
-                            {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
-                            <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
-                              <iframe
-                                src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
-                                title="{{ block.settings.video_title | default: 'Video' | escape }}"
-                                frameborder="0"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowfullscreen
-                                loading="lazy"
-                                style="width:100%;height:100%;border-radius:12px;"
-                              ></iframe>
-                            </div>
-                          {%- endif -%}
-                          {%- if block.settings.video_caption != blank -%}
-                            <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
-                          {%- endif -%}
-                        {%- endif -%}
-                      </div>
-
-                    {%- when 'chart' -%}
-                      <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
-                        {%- if block.settings.chart_title != blank -%}
-                          <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
-                        {%- endif -%}
-                        <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
-                        {%- if block.settings.chart_caption != blank -%}
-                          <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
-                        {%- endif -%}
-                      </div>
-
-                    {%- when 'callout' -%}
-                      <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
-                        {%- if block.settings.callout_icon != blank -%}
-                          <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
-                        {%- endif -%}
-                        {%- if block.settings.callout_title != blank -%}
-                          <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
-                        {%- endif -%}
-                        <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
-                      </div>
-
-                    {%- when 'before_after' -%}
-                      <div class="blog-post__before-after" data-before-after>
-                        {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
-                          <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
-                            <div class="blog-post__ba-before">
-                              {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
-                            </div>
-                            <div class="blog-post__ba-after" data-ba-after>
-                              {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
-                            </div>
-                            <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
-                            <div class="blog-post__ba-handle" data-ba-handle></div>
-                          </div>
-                          <div class="blog-post__ba-labels">
-                            <span>Vorher</span>
-                            <span>Nachher</span>
-                          </div>
-                        {%- endif -%}
-                      </div>
-
-                    {%- when 'cta' -%}
-                      <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
-                        {%- if block.settings.cta_heading != blank -%}
-                          <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
-                        {%- endif -%}
-                        {%- if block.settings.cta_text != blank -%}
-                          <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
-                        {%- endif -%}
-                        {%- if block.settings.cta_button_text != blank -%}
-                          <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
-                        {%- endif -%}
-                      </div>
-
-                    {%- when 'animated_counter' -%}
-                      <div class="blog-post__counters" data-counters>
-                        <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
-                          <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
-                          <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
-                        </div>
-                        {%- if block.settings.counter_2_value > 0 -%}
-                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
-                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
-                            <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
-                          </div>
-                        {%- endif -%}
-                        {%- if block.settings.counter_3_value > 0 -%}
-                          <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
-                            <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
-                            <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
-                          </div>
-                        {%- endif -%}
-                      </div>
-
-                  {%- endcase -%}
+              {%- if block.settings.position > actual_paragraphs and block.settings.position != 0 -%}
+                <div class="blog-post__block blog-post__block--{{ block.settings.block_width }} blog-post__block--{{ block.settings.block_align }}" {{ block.shopify_attributes }}>
+                  {% render 'blog-post-block', block: block %}
                 </div>
               {%- endif -%}
             {%- endfor -%}
@@ -413,7 +194,13 @@
         {%- if section.settings.show_author_box and current_article.author != blank -%}
           <div class="blog-post__author-box">
             <div class="blog-post__author-info">
-              <div class="blog-post__author-avatar">{{ current_article.author | slice: 0 }}</div>
+              {%- if section.settings.author_image != blank -%}
+                <div class="blog-post__author-avatar">
+                  {{ section.settings.author_image | image_url: width: 120 | image_tag: loading: 'lazy', class: 'blog-post__author-photo', alt: current_article.author | escape }}
+                </div>
+              {%- else -%}
+                <div class="blog-post__author-avatar">{{ current_article.author | slice: 0 }}</div>
+              {%- endif -%}
               <div>
                 <strong class="blog-post__author-name">{{ current_article.author }}</strong>
                 {%- if section.settings.author_bio != blank -%}
@@ -513,132 +300,6 @@
             {% endform %}
           </div>
         {%- endif -%}
-
-        <!-- Blocks: After Article -->
-        {%- for block in section.blocks -%}
-          {%- if block.settings.position == 'after_article' -%}
-            <div class="blog-post__block" {{ block.shopify_attributes }}>
-              {%- case block.type -%}
-
-                {%- when 'video' -%}
-                  <div class="blog-post__video-wrapper">
-                    {%- if block.settings.video_url != blank -%}
-                      {%- assign video_url = block.settings.video_url -%}
-                      {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
-                        {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
-                        {%- if video_url contains 'youtu.be' -%}
-                          {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
-                        {%- endif -%}
-                        <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
-                          <iframe
-                            src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
-                            title="{{ block.settings.video_title | default: 'Video' | escape }}"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen
-                            loading="lazy"
-                            style="width:100%;height:100%;border-radius:12px;"
-                          ></iframe>
-                        </div>
-                      {%- elsif video_url contains 'vimeo.com' -%}
-                        {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
-                        <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
-                          <iframe
-                            src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
-                            title="{{ block.settings.video_title | default: 'Video' | escape }}"
-                            frameborder="0"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowfullscreen
-                            loading="lazy"
-                            style="width:100%;height:100%;border-radius:12px;"
-                          ></iframe>
-                        </div>
-                      {%- endif -%}
-                      {%- if block.settings.video_caption != blank -%}
-                        <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
-                      {%- endif -%}
-                    {%- endif -%}
-                  </div>
-
-                {%- when 'chart' -%}
-                  <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
-                    {%- if block.settings.chart_title != blank -%}
-                      <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
-                    {%- endif -%}
-                    <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
-                    {%- if block.settings.chart_caption != blank -%}
-                      <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
-                    {%- endif -%}
-                  </div>
-
-                {%- when 'callout' -%}
-                  <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
-                    {%- if block.settings.callout_icon != blank -%}
-                      <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
-                    {%- endif -%}
-                    {%- if block.settings.callout_title != blank -%}
-                      <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
-                    {%- endif -%}
-                    <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
-                  </div>
-
-                {%- when 'before_after' -%}
-                  <div class="blog-post__before-after" data-before-after>
-                    {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
-                      <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
-                        <div class="blog-post__ba-before">
-                          {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
-                        </div>
-                        <div class="blog-post__ba-after" data-ba-after>
-                          {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
-                        </div>
-                        <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
-                        <div class="blog-post__ba-handle" data-ba-handle></div>
-                      </div>
-                      <div class="blog-post__ba-labels">
-                        <span>Vorher</span>
-                        <span>Nachher</span>
-                      </div>
-                    {%- endif -%}
-                  </div>
-
-                {%- when 'cta' -%}
-                  <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
-                    {%- if block.settings.cta_heading != blank -%}
-                      <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
-                    {%- endif -%}
-                    {%- if block.settings.cta_text != blank -%}
-                      <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
-                    {%- endif -%}
-                    {%- if block.settings.cta_button_text != blank -%}
-                      <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
-                    {%- endif -%}
-                  </div>
-
-                {%- when 'animated_counter' -%}
-                  <div class="blog-post__counters" data-counters>
-                    <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
-                      <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
-                      <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
-                    </div>
-                    {%- if block.settings.counter_2_value > 0 -%}
-                      <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
-                        <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
-                        <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
-                      </div>
-                    {%- endif -%}
-                    {%- if block.settings.counter_3_value > 0 -%}
-                      <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
-                        <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
-                        <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
-                      </div>
-                    {%- endif -%}
-                  </div>
-
-              {%- endcase -%}
-            </div>
-          {%- endif -%}
-        {%- endfor -%}
 
         <!-- Previous/Next Article Navigation -->
         {%- if section.settings.show_prev_next -%}
@@ -928,6 +589,40 @@
     font-style: italic;
   }
 
+  /* Block Width & Alignment Classes */
+  #shopify-section-{{ section.id }} .blog-post__block--full {
+    width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__block--large {
+    width: 80%;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__block--medium {
+    width: 60%;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__block--small {
+    width: 40%;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__block--center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__block--left {
+    float: left;
+    margin-right: 24px;
+    margin-bottom: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__block--right {
+    float: right;
+    margin-left: 24px;
+    margin-bottom: 16px;
+  }
+
   #shopify-section-{{ section.id }} .blog-post__video-wrapper {
     margin: 2em 0;
   }
@@ -1200,6 +895,14 @@
     font-size: 1.25rem;
     font-weight: 700;
     flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .blog-post__author-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
   }
 
   #shopify-section-{{ section.id }} .blog-post__author-name {
@@ -1509,6 +1212,14 @@
     #shopify-section-{{ section.id }} .blog-post__nav-link--prev,
     #shopify-section-{{ section.id }} .blog-post__nav-link--next {
       grid-column: auto;
+    }
+
+    #shopify-section-{{ section.id }} .blog-post__block--left,
+    #shopify-section-{{ section.id }} .blog-post__block--right {
+      float: none;
+      margin-right: 0;
+      margin-left: 0;
+      width: 100% !important;
     }
   }
 
@@ -1827,6 +1538,11 @@
       "default": true
     },
     {
+      "type": "image_picker",
+      "id": "author_image",
+      "label": "Author photo"
+    },
+    {
       "type": "textarea",
       "id": "author_bio",
       "label": "Author bio",
@@ -1927,15 +1643,37 @@
           "label": "Caption"
         },
         {
-          "type": "select",
+          "type": "range",
           "id": "position",
-          "label": "Position",
+          "label": "Position (paragraph #)",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "info": "0 = before all content, 1 = after 1st paragraph, etc."
+        },
+        {
+          "type": "select",
+          "id": "block_width",
+          "label": "Block width",
           "options": [
-            { "value": "before_content", "label": "Before article content" },
-            { "value": "after_content", "label": "After article content" },
-            { "value": "after_article", "label": "After author/share (bottom)" }
+            { "value": "full", "label": "Full width (100%)" },
+            { "value": "large", "label": "Large (80%)" },
+            { "value": "medium", "label": "Medium (60%)" },
+            { "value": "small", "label": "Small (40%)" }
           ],
-          "default": "after_content"
+          "default": "full"
+        },
+        {
+          "type": "select",
+          "id": "block_align",
+          "label": "Alignment",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "left", "label": "Left (text wraps)" },
+            { "value": "right", "label": "Right (text wraps)" }
+          ],
+          "default": "center"
         }
       ]
     },
@@ -1973,7 +1711,7 @@
         {
           "type": "text",
           "id": "chart_colors",
-          "label": "Farben (kommagetrennt)",
+          "label": "Colors (comma separated)",
           "default": "#2563eb, #3b82f6, #60a5fa, #93c5fd, #1d4ed8"
         },
         {
@@ -1982,15 +1720,37 @@
           "label": "Caption"
         },
         {
-          "type": "select",
+          "type": "range",
           "id": "position",
-          "label": "Position",
+          "label": "Position (paragraph #)",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "info": "0 = before all content, 1 = after 1st paragraph, etc."
+        },
+        {
+          "type": "select",
+          "id": "block_width",
+          "label": "Block width",
           "options": [
-            { "value": "before_content", "label": "Before article content" },
-            { "value": "after_content", "label": "After article content" },
-            { "value": "after_article", "label": "After author/share (bottom)" }
+            { "value": "full", "label": "Full width (100%)" },
+            { "value": "large", "label": "Large (80%)" },
+            { "value": "medium", "label": "Medium (60%)" },
+            { "value": "small", "label": "Small (40%)" }
           ],
-          "default": "after_content"
+          "default": "full"
+        },
+        {
+          "type": "select",
+          "id": "block_align",
+          "label": "Alignment",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "left", "label": "Left (text wraps)" },
+            { "value": "right", "label": "Right (text wraps)" }
+          ],
+          "default": "center"
         }
       ]
     },
@@ -2026,15 +1786,37 @@
           "label": "Content"
         },
         {
-          "type": "select",
+          "type": "range",
           "id": "position",
-          "label": "Position",
+          "label": "Position (paragraph #)",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "info": "0 = before all content, 1 = after 1st paragraph, etc."
+        },
+        {
+          "type": "select",
+          "id": "block_width",
+          "label": "Block width",
           "options": [
-            { "value": "before_content", "label": "Before article content" },
-            { "value": "after_content", "label": "After article content" },
-            { "value": "after_article", "label": "After author/share (bottom)" }
+            { "value": "full", "label": "Full width (100%)" },
+            { "value": "large", "label": "Large (80%)" },
+            { "value": "medium", "label": "Medium (60%)" },
+            { "value": "small", "label": "Small (40%)" }
           ],
-          "default": "after_content"
+          "default": "full"
+        },
+        {
+          "type": "select",
+          "id": "block_align",
+          "label": "Alignment",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "left", "label": "Left (text wraps)" },
+            { "value": "right", "label": "Right (text wraps)" }
+          ],
+          "default": "center"
         }
       ]
     },
@@ -2053,15 +1835,37 @@
           "label": "After image"
         },
         {
-          "type": "select",
+          "type": "range",
           "id": "position",
-          "label": "Position",
+          "label": "Position (paragraph #)",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "info": "0 = before all content, 1 = after 1st paragraph, etc."
+        },
+        {
+          "type": "select",
+          "id": "block_width",
+          "label": "Block width",
           "options": [
-            { "value": "before_content", "label": "Before article content" },
-            { "value": "after_content", "label": "After article content" },
-            { "value": "after_article", "label": "After author/share (bottom)" }
+            { "value": "full", "label": "Full width (100%)" },
+            { "value": "large", "label": "Large (80%)" },
+            { "value": "medium", "label": "Medium (60%)" },
+            { "value": "small", "label": "Small (40%)" }
           ],
-          "default": "after_content"
+          "default": "full"
+        },
+        {
+          "type": "select",
+          "id": "block_align",
+          "label": "Alignment",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "left", "label": "Left (text wraps)" },
+            { "value": "right", "label": "Right (text wraps)" }
+          ],
+          "default": "center"
         }
       ]
     },
@@ -2102,15 +1906,37 @@
           "label": "Button link"
         },
         {
-          "type": "select",
+          "type": "range",
           "id": "position",
-          "label": "Position",
+          "label": "Position (paragraph #)",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "info": "0 = before all content, 1 = after 1st paragraph, etc."
+        },
+        {
+          "type": "select",
+          "id": "block_width",
+          "label": "Block width",
           "options": [
-            { "value": "before_content", "label": "Before article content" },
-            { "value": "after_content", "label": "After article content" },
-            { "value": "after_article", "label": "After author/share (bottom)" }
+            { "value": "full", "label": "Full width (100%)" },
+            { "value": "large", "label": "Large (80%)" },
+            { "value": "medium", "label": "Medium (60%)" },
+            { "value": "small", "label": "Small (40%)" }
           ],
-          "default": "after_content"
+          "default": "full"
+        },
+        {
+          "type": "select",
+          "id": "block_align",
+          "label": "Alignment",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "left", "label": "Left (text wraps)" },
+            { "value": "right", "label": "Right (text wraps)" }
+          ],
+          "default": "center"
         }
       ]
     },
@@ -2173,15 +1999,37 @@
           "default": "Zufriedenheit"
         },
         {
-          "type": "select",
+          "type": "range",
           "id": "position",
-          "label": "Position",
+          "label": "Position (paragraph #)",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "info": "0 = before all content, 1 = after 1st paragraph, etc."
+        },
+        {
+          "type": "select",
+          "id": "block_width",
+          "label": "Block width",
           "options": [
-            { "value": "before_content", "label": "Before article content" },
-            { "value": "after_content", "label": "After article content" },
-            { "value": "after_article", "label": "After author/share (bottom)" }
+            { "value": "full", "label": "Full width (100%)" },
+            { "value": "large", "label": "Large (80%)" },
+            { "value": "medium", "label": "Medium (60%)" },
+            { "value": "small", "label": "Small (40%)" }
           ],
-          "default": "after_content"
+          "default": "full"
+        },
+        {
+          "type": "select",
+          "id": "block_align",
+          "label": "Alignment",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "left", "label": "Left (text wraps)" },
+            { "value": "right", "label": "Right (text wraps)" }
+          ],
+          "default": "center"
         }
       ]
     }

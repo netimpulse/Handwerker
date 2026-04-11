@@ -823,8 +823,8 @@
 
         this.searchLoading.hidden = true;
 
-        if (data.resources && data.resources.results && data.resources.results.length > 0) {
-          const articles = data.resources.results.filter(r => r.object_type === 'article');
+        const articles = data.resources?.results?.articles || [];
+        if (articles.length > 0) {
           this.renderSearchResults(articles);
           this.searchEmpty.hidden = true;
         } else {
@@ -848,14 +848,16 @@
         li.setAttribute('role', 'option');
         li.setAttribute('tabindex', '-1');
 
-        const imageHtml = article.image ? `
+        const imgSrc = typeof article.image === 'string' ? article.image : (article.image?.url || article.featured_image?.url || '');
+        const imageHtml = imgSrc ? `
           <div class="blog-overview__search-result-image">
-            <img src="${article.image.url}" alt="${article.title || ''}" loading="lazy">
+            <img src="${imgSrc}" alt="${(article.title || '').replace(/"/g, '&quot;')}" loading="lazy">
           </div>
         ` : '';
 
-        const excerpt = article.excerpt_or_content
-          ? article.excerpt_or_content.replace(/<[^>]*>/g, '').substring(0, 80) + '...'
+        const bodyText = article.body || article.excerpt_or_content || '';
+        const excerpt = bodyText
+          ? bodyText.replace(/<[^>]*>/g, '').substring(0, 80) + '...'
           : '';
 
         const date = article.published_at

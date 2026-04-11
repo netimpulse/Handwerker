@@ -1,0 +1,124 @@
+{% comment %}
+  Blog Post Block Renderer - Snippet
+  Renders individual block content based on block type
+  Called from blog-post-enhanced.liquid
+{% endcomment %}
+
+{%- case block.type -%}
+
+  {%- when 'video' -%}
+    <div class="blog-post__video-wrapper">
+      {%- if block.settings.video_url != blank -%}
+        {%- assign video_url = block.settings.video_url -%}
+        {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
+          {%- assign yt_id = video_url | split: 'v=' | last | split: '&' | first -%}
+          {%- if video_url contains 'youtu.be' -%}
+            {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
+          {%- endif -%}
+          <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/{{ yt_id }}"
+              title="{{ block.settings.video_title | default: 'Video' | escape }}"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+              style="width:100%;height:100%;border-radius:12px;"
+            ></iframe>
+          </div>
+        {%- elsif video_url contains 'vimeo.com' -%}
+          {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
+          <div class="blog-post__video-embed" style="aspect-ratio: 16/9;">
+            <iframe
+              src="https://player.vimeo.com/video/{{ vimeo_id }}?dnt=1"
+              title="{{ block.settings.video_title | default: 'Video' | escape }}"
+              frameborder="0"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+              style="width:100%;height:100%;border-radius:12px;"
+            ></iframe>
+          </div>
+        {%- endif -%}
+        {%- if block.settings.video_caption != blank -%}
+          <p class="blog-post__media-caption">{{ block.settings.video_caption }}</p>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+  {%- when 'chart' -%}
+    <div class="blog-post__chart" data-chart data-chart-type="{{ block.settings.chart_type }}" data-chart-labels="{{ block.settings.chart_labels | escape }}" data-chart-values="{{ block.settings.chart_values | escape }}" data-chart-colors="{{ block.settings.chart_colors | escape }}">
+      {%- if block.settings.chart_title != blank -%}
+        <h4 class="blog-post__chart-title">{{ block.settings.chart_title }}</h4>
+      {%- endif -%}
+      <canvas class="blog-post__chart-canvas" width="600" height="300" aria-label="{{ block.settings.chart_title | default: 'Chart' | escape }}"></canvas>
+      {%- if block.settings.chart_caption != blank -%}
+        <p class="blog-post__media-caption">{{ block.settings.chart_caption }}</p>
+      {%- endif -%}
+    </div>
+
+  {%- when 'callout' -%}
+    <div class="blog-post__callout blog-post__callout--{{ block.settings.callout_style }}">
+      {%- if block.settings.callout_icon != blank -%}
+        <span class="blog-post__callout-icon">{{ block.settings.callout_icon }}</span>
+      {%- endif -%}
+      {%- if block.settings.callout_title != blank -%}
+        <strong class="blog-post__callout-title">{{ block.settings.callout_title }}</strong>
+      {%- endif -%}
+      <div class="blog-post__callout-content">{{ block.settings.callout_text }}</div>
+    </div>
+
+  {%- when 'before_after' -%}
+    <div class="blog-post__before-after" data-before-after>
+      {%- if block.settings.before_image != blank and block.settings.after_image != blank -%}
+        <div class="blog-post__ba-container" style="aspect-ratio: 16/10;">
+          <div class="blog-post__ba-before">
+            {{ block.settings.before_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Vorher' }}
+          </div>
+          <div class="blog-post__ba-after" data-ba-after>
+            {{ block.settings.after_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Nachher' }}
+          </div>
+          <input type="range" class="blog-post__ba-slider" data-ba-slider min="0" max="100" value="50" aria-label="Vorher/Nachher Vergleich">
+          <div class="blog-post__ba-handle" data-ba-handle></div>
+        </div>
+        <div class="blog-post__ba-labels">
+          <span>Vorher</span>
+          <span>Nachher</span>
+        </div>
+      {%- endif -%}
+    </div>
+
+  {%- when 'cta' -%}
+    <div class="blog-post__cta blog-post__cta--{{ block.settings.cta_style }}">
+      {%- if block.settings.cta_heading != blank -%}
+        <h4 class="blog-post__cta-heading">{{ block.settings.cta_heading }}</h4>
+      {%- endif -%}
+      {%- if block.settings.cta_text != blank -%}
+        <p class="blog-post__cta-text">{{ block.settings.cta_text }}</p>
+      {%- endif -%}
+      {%- if block.settings.cta_button_text != blank -%}
+        <a href="{{ block.settings.cta_button_link }}" class="blog-post__cta-button">{{ block.settings.cta_button_text }}</a>
+      {%- endif -%}
+    </div>
+
+  {%- when 'animated_counter' -%}
+    <div class="blog-post__counters" data-counters>
+      <div class="blog-post__counter" data-count-to="{{ block.settings.counter_1_value }}">
+        <span class="blog-post__counter-number">0</span>{{ block.settings.counter_1_suffix }}
+        <span class="blog-post__counter-label">{{ block.settings.counter_1_label }}</span>
+      </div>
+      {%- if block.settings.counter_2_value > 0 -%}
+        <div class="blog-post__counter" data-count-to="{{ block.settings.counter_2_value }}">
+          <span class="blog-post__counter-number">0</span>{{ block.settings.counter_2_suffix }}
+          <span class="blog-post__counter-label">{{ block.settings.counter_2_label }}</span>
+        </div>
+      {%- endif -%}
+      {%- if block.settings.counter_3_value > 0 -%}
+        <div class="blog-post__counter" data-count-to="{{ block.settings.counter_3_value }}">
+          <span class="blog-post__counter-number">0</span>{{ block.settings.counter_3_suffix }}
+          <span class="blog-post__counter-label">{{ block.settings.counter_3_label }}</span>
+        </div>
+      {%- endif -%}
+    </div>
+
+{%- endcase -%}
