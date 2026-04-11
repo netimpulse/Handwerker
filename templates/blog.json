@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -11,9 +20,26 @@
         "padding_top": 36,
         "padding_bottom": 36
       }
+    },
+    "blog_overview_UhJHdF": {
+      "type": "blog-overview",
+      "name": "Blog Overview",
+      "settings": {
+        "color_scheme": "",
+        "label_text": "Blog",
+        "heading": "Alle Beiträge",
+        "subheading": "Tipps, Neuigkeiten und Einblicke rund um unser Handwerk",
+        "blog": "",
+        "search_placeholder": "Beiträge durchsuchen...",
+        "articles_per_page": 12,
+        "max_width": 1400,
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "blog_overview_UhJHdF"
   ]
 }

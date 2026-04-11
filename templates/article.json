@@ -1,1 +1,85 @@
-{"sections":{"main":{"type":"main-article","blocks":{"featured_image":{"type":"featured_image","settings":{"image_height":"adapt"}},"title":{"type":"title","settings":{"blog_show_date":true,"blog_show_author":false}},"share":{"type":"share","settings":{"share_label":"Share"}},"content":{"type":"content","settings":{}}},"block_order":["featured_image","title","share","content"],"settings":{}}},"order":["main"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-article",
+      "blocks": {
+        "featured_image": {
+          "type": "featured_image",
+          "settings": {
+            "image_height": "adapt"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+            "blog_show_date": true,
+            "blog_show_author": false
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        },
+        "content": {
+          "type": "content",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "featured_image",
+        "title",
+        "share",
+        "content"
+      ],
+      "settings": {}
+    },
+    "blog_post_enhanced_cXCTEL": {
+      "type": "blog-post-enhanced",
+      "blocks": {
+        "video_LRWRdr": {
+          "type": "video",
+          "settings": {
+            "video_url": "https://youtu.be/PEaXF1_t6Jo?si=zv1ZNt1VJPgBR2hg",
+            "video_title": "ggg",
+            "video_caption": "b",
+            "position": 1
+          }
+        }
+      },
+      "block_order": [
+        "video_LRWRdr"
+      ],
+      "name": "Blog Post Enhanced",
+      "settings": {
+        "color_scheme": "",
+        "show_hero_image": true,
+        "show_toc": true,
+        "show_progress_bar": true,
+        "show_share": true,
+        "show_author_box": true,
+        "author_bio": "Experte mit langjähriger Erfahrung im Handwerk.",
+        "show_related": true,
+        "related_heading": "Weitere Beiträge",
+        "show_comments": true,
+        "max_width": 1100,
+        "padding_top": 48,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main",
+    "blog_post_enhanced_cXCTEL"
+  ]
+}

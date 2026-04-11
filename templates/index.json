@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "image_banner": {
@@ -29,33 +38,32 @@
       "settings": {
         "image_overlay_opacity": 40,
         "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
         "image_behavior": "none",
+        "desktop_content_position": "bottom-center",
         "desktop_content_alignment": "center",
+        "show_text_box": false,
         "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
         "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
         "show_text_below": false
       }
     },
     "featured_collection": {
       "type": "featured-collection",
       "settings": {
+        "collection": "all",
+        "products_to_show": 8,
         "title": "Featured products",
         "heading_size": "h2",
         "description": "",
         "show_description": false,
         "description_style": "body",
-        "collection": "all",
-        "products_to_show": 8,
         "columns_desktop": 4,
-        "color_scheme": "scheme-1",
+        "enable_desktop_slider": false,
         "full_width": false,
         "show_view_all": true,
         "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
+        "color_scheme": "scheme-1",
         "image_ratio": "adapt",
         "image_shape": "default",
         "show_secondary_image": true,
@@ -63,13 +71,97 @@
         "show_rating": false,
         "quick_add": "none",
         "columns_mobile": "2",
+        "swipe_on_mobile": false,
         "padding_top": 44,
         "padding_bottom": 36
+      }
+    },
+    "blog_featured_cxkrE3": {
+      "type": "blog-featured",
+      "name": "Blog Featured",
+      "settings": {
+        "color_scheme": "",
+        "label_text": "Blog",
+        "heading": "Aktuelles & Wissenswertes",
+        "subheading": "Tipps, Neuigkeiten und Einblicke rund um unser Handwerk",
+        "blog": "news",
+        "articles_count": 4,
+        "layout": "featured",
+        "text_alignment": "center",
+        "max_width": 1400,
+        "show_author": true,
+        "show_view_all": true,
+        "view_all_text": "Alle Beiträge ansehen",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "project_gallery_C4yEnd": {
+      "type": "project-gallery",
+      "blocks": {
+        "project_VWj3z7": {
+          "type": "project",
+          "settings": {
+            "title": "Heritage Restoration",
+            "category": "Restoration",
+            "description": "Meticulous restoration of historic timber details",
+            "link_url": "",
+            "link_text": "View Project"
+          }
+        },
+        "project_pHqDBp": {
+          "type": "project",
+          "settings": {
+            "title": "Custom Cabinetry",
+            "category": "Cabinetry",
+            "description": "Hand-crafted kitchen and living room solutions",
+            "link_url": "",
+            "link_text": "View Project"
+          }
+        },
+        "project_MVLxcJ": {
+          "type": "project",
+          "settings": {
+            "title": "Bespoke Doors",
+            "category": "Carpentry",
+            "description": "Elegant custom-made entrance and interior doors",
+            "link_url": "",
+            "link_text": "View Project"
+          }
+        }
+      },
+      "block_order": [
+        "project_VWj3z7",
+        "project_pHqDBp",
+        "project_MVLxcJ"
+      ],
+      "name": "Project Gallery",
+      "settings": {
+        "color_scheme": "",
+        "heading": "Our Projects",
+        "heading_level": "h2",
+        "heading_alignment": "center",
+        "subheading": "Showcasing our finest craftsmanship",
+        "layout": "grid-3",
+        "show_filter_bar": true,
+        "filter_animation": "fade",
+        "hover_overlay": "slide-up",
+        "image_aspect_ratio": "3:2",
+        "show_lightbox": true,
+        "corner_radius": 8,
+        "initial_show_count": 9,
+        "show_view_all": false,
+        "view_all_url": "",
+        "gap": 16,
+        "padding_top": 40,
+        "padding_bottom": 40
       }
     }
   },
   "order": [
     "image_banner",
-    "featured_collection"
+    "featured_collection",
+    "blog_featured_cxkrE3",
+    "project_gallery_C4yEnd"
   ]
 }
