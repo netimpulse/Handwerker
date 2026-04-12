@@ -92,7 +92,7 @@
 
 {% comment %} Service Card Include {% endcomment %}
 {% capture 'service-card' %}
-  <div class="services-showcase__card" data-block-id="{{ block.id }}">
+  <div class="services-showcase__card" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
     {% if block.settings.background_image %}
       <div class="services-showcase__card-background" style="background-image: url('{{ block.settings.background_image | image_url: width: 800 }}')"></div>
     {% endif %}

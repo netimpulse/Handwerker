@@ -80,6 +80,7 @@
 
           <div
             class="testimonials-carousel__slide testimonials-carousel__card--{{ card_style }}"
+            {{ block.shopify_attributes }}
             role="group"
             aria-roledescription="slide"
             aria-label="Testimonial {{ forloop.index }} of {{ total_testimonials }}"
@@ -188,7 +189,7 @@
   #shopify-section-{{ section.id }} {
     --color-foreground: rgb(var(--color-foreground));
     --color-background: rgb(var(--color-background));
-    --color-accent: rgb(rgb(var(--color-button)));
+    --color-accent: rgb(var(--color-button));
 
     padding-top: var(--padding-top);
     padding-bottom: var(--padding-bottom);

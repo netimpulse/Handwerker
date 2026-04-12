@@ -128,7 +128,7 @@
       </div>
 
       <!-- Navigation Menu -->
-      <nav class="header-craftsman__nav" aria-label="Main navigation">
+      <nav class="header-craftsman__nav header-craftsman__nav--{{ section.settings.menu_align }}" aria-label="Main navigation">
         {% if section.settings.menu != blank %}
           {% for link in linklists[section.settings.menu].links %}
             <a
@@ -445,6 +445,19 @@
     gap: 30px;
     flex: 1;
     align-items: center;
+  }
+
+  /* Menu Alignment */
+  #shopify-section-{{ section.id }} .header-craftsman__nav--left {
+    justify-content: flex-start;
+  }
+
+  #shopify-section-{{ section.id }} .header-craftsman__nav--center {
+    justify-content: center;
+  }
+
+  #shopify-section-{{ section.id }} .header-craftsman__nav--right {
+    justify-content: flex-end;
   }
 
   .header-craftsman__nav-link {
@@ -922,6 +935,17 @@
       "id": "menu",
       "label": "Menu",
       "default": "main-menu"
+    },
+    {
+      "type": "select",
+      "id": "menu_align",
+      "label": "Menu alignment",
+      "options": [
+        {"value": "left", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "right", "label": "Right"}
+      ],
+      "default": "center"
     },
     {
       "type": "header",

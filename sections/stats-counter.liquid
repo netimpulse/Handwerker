@@ -94,8 +94,8 @@
 <style>
   #shopify-section-{{ section.id }} {
     --color-scheme-background: rgb(var(--color-background));
-    --color-scheme-text: rgb(rgb(var(--color-foreground)));
-    --color-scheme-accent: rgb(rgb(var(--color-button)));
+    --color-scheme-text: rgb(var(--color-foreground));
+    --color-scheme-accent: rgb(var(--color-button));
     --color-scheme-border: rgb(var(--color-border));
   }
 
@@ -210,7 +210,7 @@
     width: 80px;
     height: 80px;
     border-radius: 8px;
-    background-color: rgba(rgb(var(--color-button)), 0.1);
+    background-color: rgba(var(--color-button), 0.1);
   }
 
   .stats-counter__icon img {

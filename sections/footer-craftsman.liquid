@@ -301,8 +301,8 @@
 <style>
   #shopify-section-{{ section.id }} {
     --color-scheme-background: rgb(var(--color-background));
-    --color-scheme-text: rgb(rgb(var(--color-foreground)));
-    --color-scheme-accent: rgb(rgb(var(--color-button)));
+    --color-scheme-text: rgb(var(--color-foreground));
+    --color-scheme-accent: rgb(var(--color-button));
     --color-scheme-border: rgb(var(--color-border));
 
     background-color: rgb(var(--color-background));
@@ -453,7 +453,7 @@
     gap: 0.5rem;
     align-items: center;
     padding: 0.75rem;
-    background-color: rgba(rgb(var(--color-button)), 0.1);
+    background-color: rgba(var(--color-button), 0.1);
     border-radius: 4px;
     font-size: 1rem;
     color: rgb(var(--color-button));
@@ -489,7 +489,7 @@
   }
 
   .footer-craftsman__input::placeholder {
-    color: rgba(rgb(var(--color-foreground)), 0.5);
+    color: rgba(var(--color-foreground), 0.5);
   }
 
   .footer-craftsman__input:focus {
@@ -559,7 +559,7 @@
   /* Bottom Bar */
   .footer-craftsman__bottom {
     border-top: 1px solid rgba(var(--color-foreground), 0.15);
-    background-color: rgba(rgb(var(--color-button)), 0.02);
+    background-color: rgba(var(--color-button), 0.02);
     padding: {{ section.settings.padding_bottom }}px {{ section.settings.padding_horizontal }}px;
   }
 
@@ -903,7 +903,7 @@
       "id": "copyright_text",
       "label": "Copyright text",
       "default": "© [year] Firmenname. All rights reserved.",
-      "info": "Use {{ year }} for current year"
+      "info": "Use [year] for current year"
     },
     {
       "type": "checkbox",

@@ -408,7 +408,7 @@
     <div class="projects-grid" data-show-count="{{ section.settings.initial_show_count }}">
       {%- for block in section.blocks -%}
         {%- capture category_filter -%}{{ block.settings.category | downcase | replace: ' ', '-' }}{%- endcapture -%}
-        <div class="project-item" data-category="{{ category_filter }}" data-index="{{ forloop.index0 }}" {% if forloop.index0 >= section.settings.initial_show_count %}style="display: none;"{% endif %}>
+        <div class="project-item" data-category="{{ category_filter }}" data-index="{{ forloop.index0 }}" {% if forloop.index0 >= section.settings.initial_show_count %}style="display: none;"{% endif %} {{ block.shopify_attributes }}>
           <div class="project-image-wrapper" tabindex="0" role="button" aria-label="View project: {{ block.settings.title }}" data-image-index="{{ forloop.index0 }}">
             {% if block.settings.image != blank %}
               <img

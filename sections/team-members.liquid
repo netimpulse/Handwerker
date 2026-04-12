@@ -425,7 +425,7 @@
   {% if section.blocks.size > 0 %}
     <div class="team-grid" {% if section.settings.layout == 'carousel' %}data-carousel-enabled="true"{% endif %}>
       {%- for block in section.blocks -%}
-        <div class="team-member" tabindex="0" role="article" aria-label="{{ block.settings.name }}, {{ block.settings.role }}">
+        <div class="team-member" tabindex="0" role="article" aria-label="{{ block.settings.name }}, {{ block.settings.role }}" {{ block.shopify_attributes }}>
           <div class="member-photo-wrapper">
             {% if block.settings.image != blank %}
               <img

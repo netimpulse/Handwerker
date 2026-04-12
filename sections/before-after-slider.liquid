@@ -4,6 +4,7 @@
   Perfect for showcasing transformations and project results
 {% endcomment %}
 
+<before-after-slider>
 <div class="before-after-slider color-{{ section.settings.color_scheme }}">
   <div class="before-after-slider__container" style="
     --padding-top: {{ section.settings.padding_top }}px;
@@ -79,10 +80,11 @@
     </div>
   </div>
 </div>
+</before-after-slider>
 
 {% comment %} Before/After Comparison Include {% endcomment %}
 {% capture 'before-after-comparison' %}
-  <div class="before-after-slider__item" data-block-id="{{ block.id }}">
+  <div class="before-after-slider__item" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
     <before-after-slider
       role="slider"
       aria-label="Image comparison slider"
