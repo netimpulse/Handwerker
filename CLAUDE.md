@@ -259,6 +259,10 @@ Bei Unsicherheit, ob etwas eingetragen werden soll: lieber eintragen.
    in Settings → Notifications prüfen
 7. **Optional Metafelder:** Produkt-Metafelder für technische Daten, falls
    specs_table später metafield-getrieben werden soll (aktuell manuelle Zeilen)
+8. **Demo-Produkte anlegen** (mind. 1–2, gern mit Varianten + mehreren
+   Bildern) – der Dev-Store hat aktuell KEINE Produkte, daher konnte die
+   Produkt-Detailseite (inkl. neuer Blocks trust_row/quote_cta/specs_table)
+   noch nicht visuell getestet werden. Nach Anlage: QA-Lauf wiederholen.
 
 ---
 
@@ -277,5 +281,33 @@ Bei Unsicherheit, ob etwas eingetragen werden soll: lieber eintragen.
   (`shopify.theme.toml`, env: `SHOPIFY_CLI_THEME_TOKEN`,
   `SHOPIFY_STOREFRONT_PASSWORD` sind in der Session gesetzt)
 - Push auf Test-Theme: `shopify theme push -e development`
-- Visual QA: `npx playwright test` (Screenshots), Details im Skill
-  `shopify-visual-qa`
+- Visual QA: `npx playwright test tests/craftsman-pages.spec.ts --timeout=60000`
+  (Screenshots in `qa-screenshots/`); Details im Skill `shopify-visual-qa`
+- QA-Stand 2026-06-11: 10/10 Tests grün (Home/Cart/404/Suche, Desktop+Mobile);
+  Landing, Leistungen, Über uns, Referenzen, Kontakt visuell abgenommen.
+  **Produktseite noch NICHT visuell getestet** – der Dev-Store hat keine
+  Produkte (siehe Admin-To-dos).
+
+### ⚠️ Gelernte Stolperfallen (UNBEDINGT beachten)
+
+1. **Dawn base.css versteckt `div:empty` global.** Dekorative Leer-Divs
+   (Slider-Handles, Hazard-Stripes) brauchen explizites `display: block` mit
+   ≥ (0,2,0)-Spezifität (z. B. `.cf-ba .cf-ba__handle`), sonst unsichtbar.
+2. **Settings-Deadlock beim Theme-Push:** Wenn Server-Theme alte Werte mit
+   anderem Typ hat (z. B. `page_width: "narrow"` String vs. neues
+   range-Schema), schlagen settings_schema UND settings_data zirkulär fehl.
+   Lösung: settings_data OHNE die Konflikt-Keys pushen → dann
+   settings_schema → dann volle settings_data (3 × `--only`).
+3. **`shopify theme check` hängt in der Remote-Sandbox** (>30 min, 7 GB RAM)
+   – auch mit ignore-Config. Stattdessen: eigene Python-Validierung
+   (Schema-JSON, Tag-Balance, t:-Keys) + serverseitige Push-Validierung
+   (meldet jeden Schema-Fehler pro Datei). CI auf GitHub läuft separat.
+4. **Playwright in der Sandbox:** `ignoreHTTPSErrors: true` nötig
+   (Egress-Proxy-CA) und Mobile-Projekt auf `browserName: "chromium"` pinnen
+   (WebKit nicht installiert). 401-Konsolenfehler sind Preview-Rauschen.
+5. **Scroll-Reveals (`.cf-reveal`)** werden erst durch `cf-reveal-group`
+   (Klasse `cf-armed`) versteckt – ohne JS bleibt alles sichtbar. Für
+   Full-Page-Screenshots Reveals per `page.evaluate` erzwingen (steht so
+   im Test-Spec).
+6. **Ungültige Setting-Typen:** `"type": "email"` existiert nicht (→ text);
+   `color_scheme`-Settings brauchen zwingend ein `label`.

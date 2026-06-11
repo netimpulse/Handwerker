@@ -38,6 +38,15 @@ test.describe("Handwerker Theme – Seiten-QA", () => {
         expect(response?.ok(), `HTTP-Status: ${response?.status()}`).toBe(true);
       }
 
+      // Scroll-Reveals fuer den Full-Page-Screenshot erzwingen: der
+      // IntersectionObserver feuert beim Instant-Scroll des Captures nicht.
+      await page.evaluate(() => {
+        document
+          .querySelectorAll(".cf-reveal")
+          .forEach((el) => el.classList.add("cf-reveal--in"));
+      });
+      await page.waitForTimeout(600);
+
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       await page.screenshot({
         path: path.join(dir, `${testInfo.project.name}-${target.name}.png`),
@@ -45,7 +54,14 @@ test.describe("Handwerker Theme – Seiten-QA", () => {
       });
 
       const realErrors = errors.filter(
-        (e) => !e.includes("favicon") && !e.includes("third-party")
+        (e) =>
+          !e.includes("favicon") &&
+          !e.includes("third-party") &&
+          // 401 auf Shopify-Preview-/Auth-Subressourcen ist Preview-Rauschen,
+          // kein Theme-Fehler. Echte fehlende Assets (404) bleiben sichtbar —
+          // außer auf der 404-Seite selbst (dort ist das Dokument der 404er).
+          !e.includes("status of 401") &&
+          !(target.name === "404" && e.includes("status of 404"))
       );
       expect(realErrors, realErrors.join("\n")).toEqual([]);
     });

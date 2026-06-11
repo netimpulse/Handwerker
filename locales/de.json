@@ -317,7 +317,7 @@
     },
     "404": {
       "title": "Seite nicht gefunden",
-      "subtext": "404"
+      "subtext": "Die gesuchte Seite existiert nicht oder ist umgezogen."
     }
   },
   "sections": {

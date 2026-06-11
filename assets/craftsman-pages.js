@@ -264,6 +264,8 @@
         items.forEach((el) => el.classList.add('cf-reveal--in'));
         return;
       }
+      // Hidden-State erst jetzt aktivieren – ohne JS bleibt alles sichtbar.
+      this.classList.add('cf-armed');
       this.observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {

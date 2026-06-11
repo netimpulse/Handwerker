@@ -317,7 +317,7 @@
     },
     "404": {
       "title": "Page not found",
-      "subtext": "404"
+      "subtext": "The page you are looking for does not exist or has moved."
     }
   },
   "sections": {
