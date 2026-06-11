@@ -20,9 +20,13 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
     trace: "retain-on-failure",
+    // Remote-Sandbox: Egress-Proxy nutzt eigene CA, daher TLS-Fehler ignorieren.
+    ignoreHTTPSErrors: true,
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } },
-    { name: "mobile",  use: { ...devices["iPhone 13"] } },
+    // browserName erzwungen: iPhone-Descriptor wuerde WebKit verlangen,
+    // im QA-Container ist nur Chromium installiert.
+    { name: "mobile",  use: { ...devices["iPhone 13"], browserName: "chromium" } },
   ],
 });

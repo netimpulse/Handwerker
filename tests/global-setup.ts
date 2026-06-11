@@ -23,7 +23,8 @@ export default async function globalSetup(_config: FullConfig) {
   if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true });
 
   const browser = await chromium.launch();
-  const context = await browser.newContext();
+  // Remote-Sandbox: Egress-Proxy nutzt eigene CA, daher TLS-Fehler ignorieren.
+  const context = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await context.newPage();
 
   // 1) Storefront-Passwort-Login (falls Passwort gesetzt UND aktiv)

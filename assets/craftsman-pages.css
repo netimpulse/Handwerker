@@ -11,6 +11,20 @@
   background-color: rgb(var(--color-background));
 }
 
+/* Default-Größe für alle Craftsman-Icons: SVGs mit reiner viewBox haben keine
+   intrinsische Größe und würden sonst auf Containerbreite aufblasen.
+   Kontext-Regeln (z. B. .cf-info-card svg) überschreiben dies gezielt. */
+.cf-icon {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+.cf-emergency .cf-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+
 .cf-page .page-width {
   max-width: var(--page-width);
   margin: 0 auto;
