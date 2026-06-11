@@ -1,0 +1,137 @@
+{{ 'craftsman-pages.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'craftsman-pages.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="cf-page color-{{ section.settings.color_scheme.id }} gradient section-{{ section.id }}-padding">
+  <div class="page-width">
+    <header class="cf-section-head">
+      <p class="cf-kicker">{{ 'general.craftsman.legal.kicker' | t }}</p>
+      <h1 class="cf-heading">{{ page.title | escape }}</h1>
+    </header>
+
+    <div class="cf-legal__meta">
+      {%- if section.settings.show_date and page.published_at != blank -%}
+        <span>{{ 'general.craftsman.legal.updated' | t }}: {{ page.published_at | date: format: 'date' }}</span>
+      {%- endif -%}
+      {%- if section.settings.show_print -%}
+        <cf-print-button>
+          <button type="button" class="cf-legal__print">
+            {% render 'icon-craftsman', icon: 'printer' %}
+            {{ 'general.craftsman.legal.print' | t }}
+          </button>
+        </cf-print-button>
+      {%- endif -%}
+    </div>
+
+    <div class="cf-legal {% if section.settings.show_toc %}cf-legal--with-toc{% endif %}">
+      {%- if section.settings.show_toc -%}
+        <cf-legal-toc class="cf-legal__toc" data-content-target="#CfLegalContent-{{ section.id }}">
+          <nav aria-label="{{ 'general.craftsman.legal.toc' | t }}">
+            <p class="cf-legal__toc-title">{{ 'general.craftsman.legal.toc' | t }}</p>
+            <ol></ol>
+          </nav>
+        </cf-legal-toc>
+      {%- endif -%}
+      <div class="cf-legal__content" id="CfLegalContent-{{ section.id }}">
+        <div class="cf-rte">
+          {{ page.content }}
+        </div>
+        {%- if section.settings.contact_box != blank -%}
+          <aside class="cf-legal__contact-box">
+            {{ section.settings.contact_box }}
+          </aside>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.page-legal.name",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.page-legal.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_toc",
+      "label": "t:sections.page-legal.show_toc",
+      "info": "t:sections.page-legal.show_toc_info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "t:sections.page-legal.show_date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_print",
+      "label": "t:sections.page-legal.show_print",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "contact_box",
+      "label": "t:sections.page-legal.contact_box",
+      "info": "t:sections.page-legal.contact_box_info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.page-legal.preset_name"
+    }
+  ]
+}
+{% endschema %}

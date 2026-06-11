@@ -1,0 +1,485 @@
+{{ 'craftsman-pages.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'craftsman-pages.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign service_blocks = section.blocks | where: 'type', 'service_detail'
+  assign step_blocks = section.blocks | where: 'type', 'step'
+  assign faq_blocks = section.blocks | where: 'type', 'faq'
+  assign cta_blocks = section.blocks | where: 'type', 'cta'
+
+  assign estimator_services = ''
+  for block in service_blocks
+    if block.settings.price_min > 0
+      assign estimator_services = 'yes'
+      break
+    endif
+  endfor
+-%}
+
+<div class="cf-page color-{{ section.settings.color_scheme.id }} gradient section-{{ section.id }}-padding">
+  <cf-reveal-group>
+    {%- comment -%} ------------------------------ Intro {%- endcomment -%}
+    <section class="cf-band">
+      <div class="page-width">
+        {% render 'cf-section-head', kicker: section.settings.kicker, heading: section.settings.heading, text: section.settings.text, heading_tag: 'h1', align: 'center' %}
+
+        {%- comment -%} ------------------------------ Service rows {%- endcomment -%}
+        {%- for block in service_blocks -%}
+          {%- assign row_alt = forloop.index | modulo: 2 -%}
+          <article class="cf-row {% if row_alt == 0 %}cf-row--flip{% endif %} cf-reveal" id="service-{{ block.settings.title | handleize }}" {{ block.shopify_attributes }}>
+            <div class="cf-row__media">
+              {%- if block.settings.image != blank -%}
+                {%- assign img_alt = block.settings.image.alt | default: block.settings.title | escape -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 1200
+                  | image_tag: widths: '480, 750, 990, 1200', sizes: '(min-width: 900px) 45vw, 100vw', alt: img_alt, loading: 'lazy'
+                }}
+              {%- else -%}
+                {{ 'lifestyle-1' | placeholder_svg_tag }}
+              {%- endif -%}
+            </div>
+            <div class="cf-row__content">
+              {%- if block.settings.tag != blank -%}
+                <p class="cf-kicker">{{ block.settings.tag | escape }}</p>
+              {%- endif -%}
+              {%- if block.settings.title != blank -%}
+                <h2 class="cf-heading cf-heading--sm">{{ block.settings.title | escape }}</h2>
+              {%- endif -%}
+              {%- if block.settings.text != blank -%}
+                <div class="cf-rte">{{ block.settings.text }}</div>
+              {%- endif -%}
+              {%- if block.settings.features != blank -%}
+                <ul class="cf-feature-list">
+                  {%- assign features = block.settings.features | newline_to_br | split: '<br />' -%}
+                  {%- for feature in features -%}
+                    {%- assign feature_clean = feature | strip -%}
+                    {%- if feature_clean != blank -%}
+                      <li>
+                        {% render 'icon-craftsman', icon: 'check' %}
+                        <span>{{ feature_clean }}</span>
+                      </li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+              {%- if block.settings.price_hint != blank -%}
+                <p class="cf-price-hint">{{ block.settings.price_hint | escape }}</p>
+              {%- endif -%}
+              {%- if block.settings.button_label != blank -%}
+                <div class="cf-actions">
+                  <a href="{{ block.settings.button_link | default: '#' }}" class="cf-btn cf-btn--secondary">{{ block.settings.button_label | escape }}</a>
+                </div>
+              {%- endif -%}
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    </section>
+
+    {%- comment -%} ------------------------------ Instant estimator {%- endcomment -%}
+    {%- if section.settings.show_estimator and estimator_services == 'yes' -%}
+      <section class="cf-band cf-band--tint cf-band--grid-bg" id="preis-schaetzer">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.estimator_kicker, heading: section.settings.estimator_heading, text: section.settings.estimator_text, align: 'center' %}
+          <cf-estimator class="cf-estimator" data-currency="{{ cart.currency.iso_code }}">
+            <div class="cf-form cf-estimator__box">
+              <div class="cf-form__grid">
+                <div class="cf-form__field">
+                  <label class="cf-form__label" for="cf-estimator-service-{{ section.id }}">{{ 'general.craftsman.estimator.service_label' | t }}</label>
+                  <select class="cf-form__select" id="cf-estimator-service-{{ section.id }}">
+                    {%- for block in service_blocks -%}
+                      {%- if block.settings.price_min > 0 -%}
+                        <option
+                          value="{{ block.settings.title | escape }}"
+                          data-min="{{ block.settings.price_min }}"
+                          data-max="{{ block.settings.price_max | default: block.settings.price_min }}"
+                          data-unit="{{ block.settings.price_unit | escape }}"
+                        >
+                          {{ block.settings.title | escape }}
+                        </option>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </select>
+                </div>
+                <div class="cf-form__field">
+                  <label class="cf-form__label" for="cf-estimator-qty-{{ section.id }}">
+                    {{ 'general.craftsman.estimator.quantity_label' | t }}
+                    (<span data-unit-label></span>)
+                  </label>
+                  <input class="cf-form__input" type="number" id="cf-estimator-qty-{{ section.id }}" min="1" step="1" value="10">
+                </div>
+              </div>
+              <div class="cf-estimator__result" data-estimate-wrap hidden>
+                <p class="cf-estimator__result-label">{{ 'general.craftsman.estimator.result_label' | t }}</p>
+                <p class="cf-estimator__result-value" data-estimate aria-live="polite"></p>
+                <p class="cf-form__hint">{{ 'general.craftsman.estimator.disclaimer' | t }}</p>
+              </div>
+              {%- if section.settings.estimator_button_label != blank -%}
+                <div class="cf-actions">
+                  <a class="cf-btn" href="{{ section.settings.estimator_button_link | default: '#' }}">{{ section.settings.estimator_button_label | escape }}</a>
+                </div>
+              {%- endif -%}
+            </div>
+          </cf-estimator>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Process steps {%- endcomment -%}
+    {%- if step_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.process_kicker, heading: section.settings.process_heading, align: 'center' %}
+          <div class="cf-steps">
+            {%- for block in step_blocks -%}
+              {% render 'cf-step', title: block.settings.title, text: block.settings.text, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ FAQ {%- endcomment -%}
+    {%- if faq_blocks.size > 0 -%}
+      <section class="cf-band cf-band--tint">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.faq_kicker, heading: section.settings.faq_heading, align: 'center' %}
+          <div class="cf-faq">
+            {%- for block in faq_blocks -%}
+              {% render 'cf-faq-item', question: block.settings.question, answer: block.settings.answer, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ CTA {%- endcomment -%}
+    {%- if cta_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {%- for block in cta_blocks -%}
+            {% render 'cf-cta-banner', heading: block.settings.heading, text: block.settings.text, button_label: block.settings.button_label, button_link: block.settings.button_link, phone: block.settings.phone, attrs: block.shopify_attributes %}
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  </cf-reveal-group>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.page-services.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.page-services.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_intro"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.services_kicker"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.services_heading"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.cf.text"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_estimator"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_estimator",
+      "label": "t:sections.cf.show_estimator",
+      "info": "t:sections.cf.show_estimator_info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "estimator_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.estimator_kicker"
+    },
+    {
+      "type": "text",
+      "id": "estimator_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.estimator_heading"
+    },
+    {
+      "type": "textarea",
+      "id": "estimator_text",
+      "label": "t:sections.cf.text",
+      "default": "t:sections.cf.defaults.estimator_text"
+    },
+    {
+      "type": "text",
+      "id": "estimator_button_label",
+      "label": "t:sections.cf.button_label",
+      "default": "t:sections.cf.defaults.estimator_button"
+    },
+    {
+      "type": "url",
+      "id": "estimator_button_link",
+      "label": "t:sections.cf.button_link"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_process"
+    },
+    {
+      "type": "text",
+      "id": "process_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.process_kicker"
+    },
+    {
+      "type": "text",
+      "id": "process_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.process_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_faq"
+    },
+    {
+      "type": "text",
+      "id": "faq_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.faq_kicker"
+    },
+    {
+      "type": "text",
+      "id": "faq_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.faq_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service_detail",
+      "name": "t:sections.cf.blocks.service_detail.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.cf.image"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "t:sections.cf.tag"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.cf.title",
+          "default": "t:sections.cf.defaults.service_title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.service_detail_text"
+        },
+        {
+          "type": "textarea",
+          "id": "features",
+          "label": "t:sections.cf.features",
+          "info": "t:sections.cf.features_info",
+          "default": "t:sections.cf.defaults.service_features"
+        },
+        {
+          "type": "text",
+          "id": "price_hint",
+          "label": "t:sections.cf.price_hint"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:sections.cf.button_label",
+          "default": "t:sections.cf.defaults.service_button"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.cf.button_link"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.cf.group_estimator"
+        },
+        {
+          "type": "number",
+          "id": "price_min",
+          "label": "t:sections.cf.price_min",
+          "info": "t:sections.cf.price_min_info"
+        },
+        {
+          "type": "number",
+          "id": "price_max",
+          "label": "t:sections.cf.price_max"
+        },
+        {
+          "type": "text",
+          "id": "price_unit",
+          "label": "t:sections.cf.price_unit",
+          "default": "t:sections.cf.defaults.price_unit"
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "name": "t:sections.cf.blocks.step.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.cf.title",
+          "default": "t:sections.cf.defaults.step_title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.step_text"
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "name": "t:sections.cf.blocks.faq.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:sections.cf.question",
+          "default": "t:sections.cf.defaults.faq_question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "t:sections.cf.answer",
+          "default": "t:sections.cf.defaults.faq_answer"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "name": "t:sections.cf.blocks.cta.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.cf.heading",
+          "default": "t:sections.cf.defaults.cta_heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.cta_text"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:sections.cf.button_label",
+          "default": "t:sections.cf.defaults.cta_button"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.cf.button_link"
+        },
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "t:sections.cf.phone"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.page-services.preset_name",
+      "blocks": [
+        { "type": "service_detail" },
+        { "type": "service_detail" },
+        { "type": "service_detail" },
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "cta" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -55,6 +55,60 @@
       "next_slide": "Slide right",
       "previous_slide": "Slide left",
       "name": "Slider"
+    },
+    "before_after": {
+      "before_label": "Before",
+      "after_label": "After",
+      "slider_label": "Drag to compare before and after"
+    },
+    "craftsman": {
+      "learn_more": "Learn more",
+      "rating_label": "{{ rating }} of 5 stars",
+      "trust_label": "Why choose us",
+      "filter_label": "Filter projects",
+      "filter_all": "All",
+      "filter_results": "projects shown",
+      "estimator": {
+        "service_label": "Service",
+        "quantity_label": "Quantity",
+        "result_label": "Estimated price range",
+        "disclaimer": "Non-binding estimate. You will receive the exact price in your personal quote."
+      },
+      "contact": {
+        "success": "Thank you for your inquiry! We will get back to you within one business day.",
+        "name_label": "Name",
+        "email_label": "Email",
+        "phone_label": "Phone",
+        "zip_label": "ZIP / City",
+        "service_label": "Service",
+        "service_placeholder": "Please choose…",
+        "message_label": "Your message",
+        "submit": "Request a free quote",
+        "aside_label": "Contact information",
+        "address_label": "Address",
+        "hours_label": "Opening hours",
+        "map_hint": "Open map",
+        "reachable_now": "Available now",
+        "callback_hint": "Leave a message – we will call you back"
+      },
+      "zip": {
+        "placeholder": "ZIP code",
+        "check": "Check"
+      },
+      "legal": {
+        "kicker": "Legal",
+        "updated": "Last updated",
+        "print": "Print page",
+        "toc": "Contents"
+      },
+      "not_found": {
+        "home": "Back to homepage"
+      },
+      "actionbar": {
+        "call": "Call",
+        "quote": "Get quote",
+        "whatsapp": "WhatsApp"
+      }
     }
   },
   "newsletter": {
@@ -274,7 +328,6 @@
       "announcement": "Announcement",
       "announcement_bar": "Announcement bar"
     },
-
     "header": {
       "announcement": "Announcement",
       "menu": "Menu",
@@ -527,5 +580,8 @@
       "send_on": "YYYY-MM-DD",
       "send_on_label": "Send on (optional)"
     }
+  },
+  "date_formats": {
+    "date": "%B %d, %Y"
   }
 }

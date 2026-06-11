@@ -1,0 +1,59 @@
+{%- comment -%}
+  Service card (image or icon, title, text, link).
+
+  Accepts:
+  - image: {Image} optional card image
+  - icon: {String} icon name for 'icon-craftsman' (used when no image)
+  - title: {String} service title
+  - text: {String} short description
+  - link: {Url} optional target url
+  - link_label: {String} optional link label (falls back to locale)
+  - tag: {String} optional corner tag (e.g. "Förderfähig")
+  - loading: {String} 'lazy' (default) or 'eager'
+  - attrs: {String} optional block.shopify_attributes
+
+  Usage:
+  {% render 'cf-service-card', image: block.settings.image, title: block.settings.title, attrs: block.shopify_attributes %}
+{%- endcomment -%}
+{%- liquid
+  assign img_loading = loading | default: 'lazy'
+  assign card_link_label = link_label
+  if card_link_label == blank
+    assign card_link_label = 'general.craftsman.learn_more' | t
+  endif
+  assign img_alt = image.alt | default: title | escape
+-%}
+<article class="cf-card cf-reveal" {{ attrs }}>
+  {%- if tag != blank -%}
+    <span class="cf-card__tag">{{ tag | escape }}</span>
+  {%- endif -%}
+  {%- if image != blank -%}
+    <div class="cf-card__media">
+      {{
+        image
+        | image_url: width: 900
+        | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 990px) 30vw, (min-width: 750px) 45vw, 100vw', alt: img_alt, loading: img_loading
+      }}
+    </div>
+  {%- endif -%}
+  <div class="cf-card__body">
+    {%- if image == blank and icon != blank -%}
+      <span class="cf-card__icon">{% render 'icon-craftsman', icon: icon %}</span>
+    {%- endif -%}
+    {%- if title != blank -%}
+      <h3 class="cf-card__title">
+        {%- if link != blank -%}
+          <a href="{{ link }}">{{ title | escape }}</a>
+        {%- else -%}
+          {{ title | escape }}
+        {%- endif -%}
+      </h3>
+    {%- endif -%}
+    {%- if text != blank -%}
+      <p class="cf-card__text">{{ text }}</p>
+    {%- endif -%}
+    {%- if link != blank -%}
+      <span class="cf-card__link" aria-hidden="true">{{ card_link_label | escape }} →</span>
+    {%- endif -%}
+  </div>
+</article>

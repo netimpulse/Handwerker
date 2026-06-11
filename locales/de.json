@@ -55,6 +55,60 @@
       "next_slide": "Nach rechts schieben",
       "previous_slide": "Nach links schieben",
       "name": "Slider"
+    },
+    "before_after": {
+      "before_label": "Vorher",
+      "after_label": "Nachher",
+      "slider_label": "Ziehen, um Vorher und Nachher zu vergleichen"
+    },
+    "craftsman": {
+      "learn_more": "Mehr erfahren",
+      "rating_label": "{{ rating }} von 5 Sternen",
+      "trust_label": "Darum wir",
+      "filter_label": "Projekte filtern",
+      "filter_all": "Alle",
+      "filter_results": "Projekte sichtbar",
+      "estimator": {
+        "service_label": "Leistung",
+        "quantity_label": "Menge",
+        "result_label": "Geschätzte Preisspanne",
+        "disclaimer": "Unverbindliche Schätzung. Den exakten Preis erhalten Sie im persönlichen Angebot."
+      },
+      "contact": {
+        "success": "Vielen Dank für Ihre Anfrage! Wir melden uns innerhalb eines Werktags bei Ihnen.",
+        "name_label": "Name",
+        "email_label": "E-Mail",
+        "phone_label": "Telefon",
+        "zip_label": "PLZ / Ort",
+        "service_label": "Leistung",
+        "service_placeholder": "Bitte wählen…",
+        "message_label": "Ihre Nachricht",
+        "submit": "Kostenloses Angebot anfordern",
+        "aside_label": "Kontaktinformationen",
+        "address_label": "Adresse",
+        "hours_label": "Öffnungszeiten",
+        "map_hint": "Karte öffnen",
+        "reachable_now": "Jetzt erreichbar",
+        "callback_hint": "Nachricht hinterlassen – wir rufen zurück"
+      },
+      "zip": {
+        "placeholder": "PLZ",
+        "check": "Prüfen"
+      },
+      "legal": {
+        "kicker": "Rechtliches",
+        "updated": "Stand",
+        "print": "Seite drucken",
+        "toc": "Inhalt"
+      },
+      "not_found": {
+        "home": "Zur Startseite"
+      },
+      "actionbar": {
+        "call": "Anrufen",
+        "quote": "Angebot",
+        "whatsapp": "WhatsApp"
+      }
     }
   },
   "newsletter": {
@@ -526,5 +580,8 @@
       "expanded": "Formular für den Empfänger des Gutscheins erweitert",
       "collapsed": "Formular für den Empfänger des Gutscheins minimiert"
     }
+  },
+  "date_formats": {
+    "date": "%d.%m.%Y"
   }
 }

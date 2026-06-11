@@ -1,0 +1,546 @@
+{{ 'craftsman-pages.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'craftsman-pages.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign service_options = section.blocks | where: 'type', 'service_option'
+  assign faq_blocks = section.blocks | where: 'type', 'faq'
+  assign emergency_tel = section.settings.emergency_phone | remove: ' ' | remove: '/' | remove: '-' | remove: '(' | remove: ')'
+  assign phone_tel = section.settings.phone | remove: ' ' | remove: '/' | remove: '-' | remove: '(' | remove: ')'
+-%}
+
+<div class="cf-page color-{{ section.settings.color_scheme.id }} gradient section-{{ section.id }}-padding">
+  <cf-reveal-group>
+    {%- comment -%} ------------------------------ Emergency bar {%- endcomment -%}
+    {%- if section.settings.show_emergency and section.settings.emergency_phone != blank -%}
+      <cf-availability
+        class="cf-emergency"
+        data-open="{{ section.settings.emergency_open }}"
+        data-close="{{ section.settings.emergency_close }}"
+        data-days="{{ section.settings.emergency_days | escape }}"
+      >
+        {% render 'icon-craftsman', icon: 'warning' %}
+        <strong>{{ section.settings.emergency_text | escape }}</strong>
+        <span data-when-open>{{ 'general.craftsman.contact.reachable_now' | t }}</span>
+        <span data-when-closed hidden>{{ 'general.craftsman.contact.callback_hint' | t }}</span>
+        <a href="tel:{{ emergency_tel }}">{{ section.settings.emergency_phone | escape }}</a>
+      </cf-availability>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Intro + form + info {%- endcomment -%}
+    <section class="cf-band">
+      <div class="page-width">
+        {% render 'cf-section-head', kicker: section.settings.kicker, heading: section.settings.heading, text: section.settings.text, heading_tag: 'h1' %}
+
+        <div class="cf-contact-layout">
+          <div class="cf-form">
+            <h2 class="cf-heading cf-heading--sm">{{ section.settings.form_heading | escape }}</h2>
+            {%- form 'contact', id: 'CraftsmanContactForm', class: 'cf-form__inner' -%}
+              {%- if form.posted_successfully? -%}
+                <div class="cf-form__success" tabindex="-1" autofocus>
+                  {% render 'icon-craftsman', icon: 'check' %}
+                  <p>{{ 'general.craftsman.contact.success' | t }}</p>
+                </div>
+              {%- elsif form.errors -%}
+                <div class="form__message" role="alert">
+                  {% render 'icon-craftsman', icon: 'warning' %}
+                  <h3 class="form-status">{{ 'templates.contact.form.error_heading' | t }}</h3>
+                </div>
+                <ul class="form-status-list" role="list">
+                  {%- for field in form.errors -%}
+                    <li>
+                      {%- if field == 'form' -%}
+                        {{ form.errors.messages[field] }}
+                      {%- else -%}
+                        {{ form.errors.translated_fields[field] | capitalize }}
+                        {{ form.errors.messages[field] }}
+                      {%- endif -%}
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+
+              <div class="cf-form__grid">
+                <div class="cf-form__field">
+                  <label class="cf-form__label" for="CfContactName-{{ section.id }}">{{ 'general.craftsman.contact.name_label' | t }}</label>
+                  <input
+                    class="cf-form__input"
+                    autocomplete="name"
+                    type="text"
+                    id="CfContactName-{{ section.id }}"
+                    name="contact[{{ 'templates.contact.form.name' | t }}]"
+                    value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                  >
+                </div>
+                <div class="cf-form__field">
+                  <label class="cf-form__label" for="CfContactEmail-{{ section.id }}">{{ 'general.craftsman.contact.email_label' | t }} *</label>
+                  <input
+                    class="cf-form__input"
+                    autocomplete="email"
+                    type="email"
+                    id="CfContactEmail-{{ section.id }}"
+                    name="contact[email]"
+                    spellcheck="false"
+                    autocapitalize="off"
+                    value="{{ form.email }}"
+                    aria-required="true"
+                    required
+                    {% if form.errors contains 'email' %}
+                      aria-invalid="true"
+                      aria-describedby="CfContactEmailError-{{ section.id }}"
+                    {% endif %}
+                  >
+                  {%- if form.errors contains 'email' -%}
+                    <small class="contact__field-error" id="CfContactEmailError-{{ section.id }}">
+                      <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+                      {{ form.errors.translated_fields.email | capitalize }}
+                      {{ form.errors.messages.email }}
+                    </small>
+                  {%- endif -%}
+                </div>
+                <div class="cf-form__field">
+                  <label class="cf-form__label" for="CfContactPhone-{{ section.id }}">{{ 'general.craftsman.contact.phone_label' | t }}</label>
+                  <input
+                    class="cf-form__input"
+                    autocomplete="tel"
+                    type="tel"
+                    id="CfContactPhone-{{ section.id }}"
+                    name="contact[{{ 'general.craftsman.contact.phone_label' | t }}]"
+                    pattern="[0-9\-+ ()]*"
+                    value="{{ form.phone }}"
+                  >
+                </div>
+                <div class="cf-form__field">
+                  <label class="cf-form__label" for="CfContactZip-{{ section.id }}">{{ 'general.craftsman.contact.zip_label' | t }}</label>
+                  <input
+                    class="cf-form__input"
+                    autocomplete="postal-code"
+                    type="text"
+                    id="CfContactZip-{{ section.id }}"
+                    name="contact[{{ 'general.craftsman.contact.zip_label' | t }}]"
+                  >
+                </div>
+                {%- if service_options.size > 0 -%}
+                  <div class="cf-form__field cf-form__field--full">
+                    <label class="cf-form__label" for="CfContactService-{{ section.id }}">{{ 'general.craftsman.contact.service_label' | t }}</label>
+                    <select class="cf-form__select" id="CfContactService-{{ section.id }}" name="contact[{{ 'general.craftsman.contact.service_label' | t }}]">
+                      <option value="">{{ 'general.craftsman.contact.service_placeholder' | t }}</option>
+                      {%- for block in service_options -%}
+                        <option value="{{ block.settings.label | escape }}" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</option>
+                      {%- endfor -%}
+                    </select>
+                  </div>
+                {%- endif -%}
+                <div class="cf-form__field cf-form__field--full">
+                  <label class="cf-form__label" for="CfContactBody-{{ section.id }}">{{ 'general.craftsman.contact.message_label' | t }} *</label>
+                  <textarea
+                    class="cf-form__textarea"
+                    rows="6"
+                    id="CfContactBody-{{ section.id }}"
+                    name="contact[body]"
+                    required
+                    aria-required="true"
+                  >{{ form.body }}</textarea>
+                </div>
+              </div>
+              {%- if section.settings.privacy_text != blank -%}
+                <p class="cf-form__hint">{{ section.settings.privacy_text }}</p>
+              {%- endif -%}
+              <div class="cf-actions">
+                <button type="submit" class="cf-btn">{{ 'general.craftsman.contact.submit' | t }}</button>
+              </div>
+            {%- endform -%}
+          </div>
+
+          <aside class="cf-contact-aside" aria-label="{{ 'general.craftsman.contact.aside_label' | t }}">
+            {%- if section.settings.phone != blank -%}
+              <div class="cf-info-card cf-reveal">
+                {% render 'icon-craftsman', icon: 'phone' %}
+                <div>
+                  <h3 class="cf-info-card__title">{{ 'general.craftsman.contact.phone_label' | t }}</h3>
+                  <p class="cf-info-card__body"><a href="tel:{{ phone_tel }}">{{ section.settings.phone | escape }}</a></p>
+                </div>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.email != blank -%}
+              <div class="cf-info-card cf-reveal">
+                {% render 'icon-craftsman', icon: 'mail' %}
+                <div>
+                  <h3 class="cf-info-card__title">{{ 'general.craftsman.contact.email_label' | t }}</h3>
+                  <p class="cf-info-card__body"><a href="mailto:{{ section.settings.email }}">{{ section.settings.email | escape }}</a></p>
+                </div>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.address != blank -%}
+              <div class="cf-info-card cf-reveal">
+                {% render 'icon-craftsman', icon: 'map-pin' %}
+                <div>
+                  <h3 class="cf-info-card__title">{{ 'general.craftsman.contact.address_label' | t }}</h3>
+                  <div class="cf-info-card__body">{{ section.settings.address }}</div>
+                </div>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.hours != blank -%}
+              <div class="cf-info-card cf-reveal">
+                {% render 'icon-craftsman', icon: 'clock' %}
+                <div>
+                  <h3 class="cf-info-card__title">{{ 'general.craftsman.contact.hours_label' | t }}</h3>
+                  <div class="cf-info-card__body">{{ section.settings.hours }}</div>
+                </div>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.map_image != blank -%}
+              {%- assign map_alt = section.settings.map_image.alt | default: section.settings.heading | escape -%}
+              {%- if section.settings.map_link != blank -%}
+                <a class="cf-map cf-reveal" href="{{ section.settings.map_link }}" target="_blank" rel="noopener">
+                  {{
+                    section.settings.map_image
+                    | image_url: width: 1000
+                    | image_tag: widths: '480, 750, 1000', sizes: '(min-width: 990px) 40vw, 100vw', alt: map_alt, loading: 'lazy'
+                  }}
+                  <span class="cf-map__hint">{{ 'general.craftsman.contact.map_hint' | t }}</span>
+                </a>
+              {%- else -%}
+                <div class="cf-map cf-reveal">
+                  {{
+                    section.settings.map_image
+                    | image_url: width: 1000
+                    | image_tag: widths: '480, 750, 1000', sizes: '(min-width: 990px) 40vw, 100vw', alt: map_alt, loading: 'lazy'
+                  }}
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    {%- comment -%} ------------------------------ ZIP service area check {%- endcomment -%}
+    {%- if section.settings.show_zip_check and section.settings.zip_list != blank -%}
+      <section class="cf-band cf-band--tint cf-band--grid-bg">
+        <div class="page-width">
+          <cf-zip-check
+            class="cf-zip"
+            data-zips="{{ section.settings.zip_list | strip_html | escape }}"
+            data-success-text="{{ section.settings.zip_success | escape }}"
+            data-fail-text="{{ section.settings.zip_fail | escape }}"
+          >
+            {% render 'cf-section-head', kicker: section.settings.zip_kicker, heading: section.settings.zip_heading, text: section.settings.zip_text, align: 'center' %}
+            <form class="cf-zip__form">
+              <label class="visually-hidden" for="CfZipInput-{{ section.id }}">{{ 'general.craftsman.contact.zip_label' | t }}</label>
+              <input
+                class="cf-zip__input"
+                type="text"
+                id="CfZipInput-{{ section.id }}"
+                inputmode="numeric"
+                autocomplete="postal-code"
+                placeholder="{{ 'general.craftsman.zip.placeholder' | t }}"
+              >
+              <button type="submit" class="cf-btn">{{ 'general.craftsman.zip.check' | t }}</button>
+            </form>
+            <p class="cf-zip__result" data-zip-result aria-live="polite"></p>
+          </cf-zip-check>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ FAQ {%- endcomment -%}
+    {%- if faq_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.faq_kicker, heading: section.settings.faq_heading, align: 'center' %}
+          <div class="cf-faq">
+            {%- for block in faq_blocks -%}
+              {% render 'cf-faq-item', question: block.settings.question, answer: block.settings.answer, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+  </cf-reveal-group>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.page-contact.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.page-contact.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_intro"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.contact_kicker"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.contact_heading"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.cf.text",
+      "default": "t:sections.cf.defaults.contact_text"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_form"
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.form_heading"
+    },
+    {
+      "type": "richtext",
+      "id": "privacy_text",
+      "label": "t:sections.cf.privacy_text",
+      "info": "t:sections.cf.privacy_text_info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_contact_details"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "t:sections.cf.phone"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "t:sections.cf.email"
+    },
+    {
+      "type": "richtext",
+      "id": "address",
+      "label": "t:sections.cf.address"
+    },
+    {
+      "type": "richtext",
+      "id": "hours",
+      "label": "t:sections.cf.hours"
+    },
+    {
+      "type": "image_picker",
+      "id": "map_image",
+      "label": "t:sections.cf.map_image",
+      "info": "t:sections.cf.map_image_info"
+    },
+    {
+      "type": "url",
+      "id": "map_link",
+      "label": "t:sections.cf.map_link"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_emergency"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_emergency",
+      "label": "t:sections.cf.show_emergency",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "emergency_text",
+      "label": "t:sections.cf.emergency_text",
+      "default": "t:sections.cf.defaults.emergency_text"
+    },
+    {
+      "type": "text",
+      "id": "emergency_phone",
+      "label": "t:sections.cf.phone"
+    },
+    {
+      "type": "range",
+      "id": "emergency_open",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "label": "t:sections.cf.emergency_open",
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "emergency_close",
+      "min": 1,
+      "max": 24,
+      "step": 1,
+      "label": "t:sections.cf.emergency_close",
+      "default": 17
+    },
+    {
+      "type": "text",
+      "id": "emergency_days",
+      "label": "t:sections.cf.emergency_days",
+      "info": "t:sections.cf.emergency_days_info",
+      "default": "1,2,3,4,5"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_zip"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_zip_check",
+      "label": "t:sections.cf.show_zip_check",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "zip_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.zip_kicker"
+    },
+    {
+      "type": "text",
+      "id": "zip_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.zip_heading"
+    },
+    {
+      "type": "textarea",
+      "id": "zip_text",
+      "label": "t:sections.cf.text"
+    },
+    {
+      "type": "textarea",
+      "id": "zip_list",
+      "label": "t:sections.cf.zip_list",
+      "info": "t:sections.cf.zip_list_info"
+    },
+    {
+      "type": "text",
+      "id": "zip_success",
+      "label": "t:sections.cf.zip_success",
+      "default": "t:sections.cf.defaults.zip_success"
+    },
+    {
+      "type": "text",
+      "id": "zip_fail",
+      "label": "t:sections.cf.zip_fail",
+      "default": "t:sections.cf.defaults.zip_fail"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_faq"
+    },
+    {
+      "type": "text",
+      "id": "faq_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.faq_kicker"
+    },
+    {
+      "type": "text",
+      "id": "faq_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.faq_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service_option",
+      "name": "t:sections.cf.blocks.service_option.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.cf.label",
+          "default": "t:sections.cf.defaults.service_title"
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "name": "t:sections.cf.blocks.faq.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:sections.cf.question",
+          "default": "t:sections.cf.defaults.faq_question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "t:sections.cf.answer",
+          "default": "t:sections.cf.defaults.faq_answer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.page-contact.preset_name",
+      "blocks": [
+        { "type": "service_option" },
+        { "type": "service_option" },
+        { "type": "service_option" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" }
+      ]
+    }
+  ]
+}
+{% endschema %}

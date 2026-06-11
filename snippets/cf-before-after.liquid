@@ -1,0 +1,61 @@
+{%- comment -%}
+  Interactive before/after image comparison (clip-path + range input).
+
+  Accepts:
+  - before_image: {Image} image object for the "before" state
+  - after_image: {Image} image object for the "after" state
+  - caption: {String} optional caption below the slider
+  - loading: {String} 'lazy' (default) or 'eager'
+  - attrs: {String} optional block.shopify_attributes
+
+  Usage:
+  {% render 'cf-before-after', before_image: block.settings.before, after_image: block.settings.after, attrs: block.shopify_attributes %}
+{%- endcomment -%}
+{%- liquid
+  assign img_loading = loading | default: 'lazy'
+  assign before_fallback = 'general.before_after.before_label' | t
+  assign after_fallback = 'general.before_after.after_label' | t
+  assign before_alt = before_image.alt | default: before_fallback | escape
+  assign after_alt = after_image.alt | default: after_fallback | escape
+-%}
+<figure class="cf-ba-figure" {{ attrs }}>
+  <cf-before-after>
+    <div class="cf-ba">
+      {%- if before_image != blank -%}
+        {{
+          before_image
+          | image_url: width: 1400
+          | image_tag: widths: '480, 750, 1100, 1400', sizes: '(min-width: 990px) 60vw, 100vw', alt: before_alt, loading: img_loading
+        }}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'cf-ba__placeholder' }}
+      {%- endif -%}
+      <span class="cf-ba__label cf-ba__label--before" aria-hidden="true">{{ 'general.before_after.before_label' | t }}</span>
+      <div class="cf-ba__after-wrap">
+        {%- if after_image != blank -%}
+          {{
+            after_image
+            | image_url: width: 1400
+            | image_tag: widths: '480, 750, 1100, 1400', sizes: '(min-width: 990px) 60vw, 100vw', alt: after_alt, loading: img_loading
+          }}
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'cf-ba__placeholder' }}
+        {%- endif -%}
+        <span class="cf-ba__label cf-ba__label--after" aria-hidden="true">{{ 'general.before_after.after_label' | t }}</span>
+      </div>
+      <div class="cf-ba__handle" aria-hidden="true"></div>
+      <input
+        type="range"
+        class="cf-ba__range"
+        min="0"
+        max="100"
+        value="50"
+        step="1"
+        aria-label="{{ 'general.before_after.slider_label' | t }}"
+      >
+    </div>
+  </cf-before-after>
+  {%- if caption != blank -%}
+    <figcaption class="cf-ba-caption">{{ caption | escape }}</figcaption>
+  {%- endif -%}
+</figure>

@@ -1997,6 +1997,15 @@
               "label": "Inventarbestand"
             }
           }
+        },
+        "trust_row": {
+          "name": "Vertrauens-Badges"
+        },
+        "quote_cta": {
+          "name": "Angebots-Anfrage"
+        },
+        "specs_table": {
+          "name": "Technische Daten"
         }
       },
       "settings": {
@@ -3395,6 +3404,319 @@
       },
       "presets": {
         "name": "Schnelle Bestellliste"
+      }
+    },
+    "cf": {
+      "kicker": "Kicker (kleine Zeile)",
+      "heading": "Überschrift",
+      "text": "Text",
+      "image": "Bild",
+      "icon": "Icon",
+      "icon_fallback_info": "Wird angezeigt, wenn kein Bild gewählt ist.",
+      "title": "Titel",
+      "link": "Link",
+      "link_label": "Link-Text",
+      "button_label": "Button-Text",
+      "button_link": "Button-Link",
+      "button_label_2": "Zweiter Button-Text",
+      "button_link_2": "Zweiter Button-Link",
+      "phone": "Telefonnummer",
+      "email": "E-Mail-Adresse",
+      "address": "Adresse",
+      "hours": "Öffnungszeiten",
+      "tag": "Badge",
+      "badge_text": "Badge-Text",
+      "rating_text": "Bewertungszeile",
+      "category": "Kategorie",
+      "category_info": "Projekte mit gleicher Kategorie werden im Filter gruppiert.",
+      "location": "Ort",
+      "year": "Jahr",
+      "rating": "Sterne-Bewertung",
+      "quote": "Zitat",
+      "author": "Name",
+      "meta": "Rolle / Ort / Quelle",
+      "name": "Name",
+      "role": "Position",
+      "quals": "Qualifikationen",
+      "question": "Frage",
+      "answer": "Antwort",
+      "value": "Zahl",
+      "prefix": "Präfix",
+      "suffix": "Suffix",
+      "label": "Beschriftung",
+      "before_image": "Vorher-Bild",
+      "before_image_info": "Wenn gesetzt, zeigt die Karte einen interaktiven Vorher/Nachher-Regler.",
+      "after_image": "Nachher-Bild",
+      "caption": "Bildunterschrift",
+      "logo_image": "Logo-Bild",
+      "logo_image_info": "Ersetzt das Icon.",
+      "features": "Leistungsliste",
+      "features_info": "Ein Punkt pro Zeile.",
+      "price_hint": "Preishinweis",
+      "price_min": "Preis ab (pro Einheit)",
+      "price_min_info": "Wird vom Preis-Schätzer genutzt. Leer lassen, um die Leistung auszuschließen.",
+      "price_max": "Preis bis (pro Einheit)",
+      "price_unit": "Einheit",
+      "specs_rows": "Zeilen",
+      "specs_rows_info": "Eine Zeile pro Angabe, Bezeichnung und Wert mit | getrennt (z. B. Material|Eiche).",
+      "privacy_text": "Datenschutz-Hinweis",
+      "privacy_text_info": "Wird unter dem Formular angezeigt. Hier die Datenschutzerklärung verlinken.",
+      "map_image": "Karten-Bild",
+      "map_image_info": "Statischer Karten-Ausschnitt Ihres Standorts.",
+      "map_link": "Karten-Link",
+      "zip_list": "PLZ im Einzugsgebiet",
+      "zip_list_info": "Komma- oder zeilengetrennt. * für Präfixe (z. B. 10* trifft 10115).",
+      "zip_success": "Erfolgs-Meldung",
+      "zip_fail": "Meldung außerhalb",
+      "show_filter": "Kategorie-Filter anzeigen",
+      "show_estimator": "Preis-Schätzer anzeigen",
+      "show_estimator_info": "Nutzt die Preisfelder der Leistungs-Blöcke.",
+      "show_emergency": "Notdienst-Leiste anzeigen",
+      "emergency_text": "Notdienst-Text",
+      "emergency_open": "Erreichbar ab (Stunde)",
+      "emergency_close": "Erreichbar bis (Stunde)",
+      "emergency_days": "Erreichbare Tage",
+      "emergency_days_info": "Kommagetrennte Wochentage, 0 = Sonntag (z. B. 1,2,3,4,5).",
+      "show_zip_check": "Einzugsgebiets-Check anzeigen",
+      "enable_review_schema": "Bewertungs-Rich-Snippet (SEO)",
+      "enable_review_schema_info": "Gibt strukturierte Daten basierend auf den Bewertungs-Blöcken aus.",
+      "group_intro": "Intro",
+      "group_services": "Bereich: Leistungen",
+      "group_process": "Bereich: Ablauf",
+      "group_before_after": "Bereich: Vorher/Nachher",
+      "group_projects": "Bereich: Projekte",
+      "group_testimonials": "Bereich: Bewertungen",
+      "group_faq": "Bereich: FAQ",
+      "group_values": "Bereich: Werte",
+      "group_timeline": "Bereich: Meilensteine",
+      "group_team": "Bereich: Team",
+      "group_certificates": "Bereich: Zertifikate",
+      "group_logos": "Bereich: Partner",
+      "group_estimator": "Preis-Schätzer",
+      "group_form": "Anfrage-Formular",
+      "group_contact_details": "Kontaktdaten",
+      "group_emergency": "Notdienst",
+      "group_zip": "Einzugsgebiet",
+      "icons": {
+        "award": "Auszeichnung / Meister",
+        "shield": "Schild",
+        "certificate": "Zertifikat",
+        "handshake": "Handschlag",
+        "clock": "Uhr",
+        "truck": "Fahrzeug",
+        "euro": "Euro",
+        "check": "Haken",
+        "star": "Stern",
+        "users": "Team",
+        "leaf": "Blatt",
+        "wrench": "Schraubenschlüssel",
+        "hammer": "Hammer",
+        "helmet": "Bauhelm",
+        "roof": "Dach",
+        "paint": "Farbrolle",
+        "bolt": "Blitz",
+        "drop": "Wassertropfen",
+        "flame": "Flamme",
+        "wood": "Holz",
+        "ruler": "Zollstock",
+        "house": "Haus",
+        "gear": "Zahnrad"
+      },
+      "blocks": {
+        "hero": {
+          "name": "Hero"
+        },
+        "trust": {
+          "name": "Vertrauens-Badge"
+        },
+        "service": {
+          "name": "Leistungs-Karte"
+        },
+        "service_detail": {
+          "name": "Leistung (ausführlich)"
+        },
+        "step": {
+          "name": "Ablauf-Schritt"
+        },
+        "stat": {
+          "name": "Kennzahl"
+        },
+        "before_after": {
+          "name": "Vorher / Nachher"
+        },
+        "project": {
+          "name": "Projekt"
+        },
+        "testimonial": {
+          "name": "Kundenstimme"
+        },
+        "faq": {
+          "name": "FAQ-Eintrag"
+        },
+        "cta": {
+          "name": "CTA-Banner"
+        },
+        "story": {
+          "name": "Story"
+        },
+        "value": {
+          "name": "Wert"
+        },
+        "timeline": {
+          "name": "Meilenstein"
+        },
+        "team_member": {
+          "name": "Teammitglied"
+        },
+        "certificate": {
+          "name": "Zertifikat"
+        },
+        "logo": {
+          "name": "Partner-Logo"
+        },
+        "service_option": {
+          "name": "Leistung (Formular-Auswahl)"
+        }
+      },
+      "defaults": {
+        "hero_badge": "Meisterbetrieb",
+        "hero_heading": "Handwerk, auf das Sie bauen können",
+        "hero_text": "Von der ersten Beratung bis zum fertigen Projekt: Qualität, Termintreue und ein fester Ansprechpartner.",
+        "hero_button": "Kostenloses Angebot anfordern",
+        "hero_button_2": "Unsere Leistungen",
+        "hero_rating": "4,9/5 aus über 120 Kundenbewertungen",
+        "trust_title": "Meisterbetrieb",
+        "trust_text": "Geprüfte Qualität seit 1995",
+        "services_kicker": "Unsere Leistungen",
+        "services_heading": "Alles aus einer Hand",
+        "service_title": "Beispiel-Leistung",
+        "service_text": "Beschreiben Sie diese Leistung in zwei bis drei kurzen Sätzen.",
+        "service_detail_text": "<p>Beschreiben Sie die Leistung im Detail: Umfang, Materialien, typische Projektdauer.</p>",
+        "service_features": "Kostenlose Vor-Ort-Beratung\nFestpreis-Angebot\n5 Jahre Gewährleistung",
+        "service_button": "Leistung anfragen",
+        "process_kicker": "So läuft's ab",
+        "process_heading": "In vier Schritten zum Projekt",
+        "step_title": "Beratung",
+        "step_text": "Beschreiben Sie, was in diesem Schritt passiert.",
+        "stat_label": "Jahre Erfahrung",
+        "ba_kicker": "Vorher / Nachher",
+        "ba_heading": "Ergebnisse, die für sich sprechen",
+        "projects_kicker": "Referenzen",
+        "projects_heading": "Unsere neuesten Projekte",
+        "references_heading": "Projekte & Referenzen",
+        "project_title": "Beispiel-Projekt",
+        "project_category": "Sanierung",
+        "testimonials_kicker": "Kundenstimmen",
+        "testimonials_heading": "Das sagen unsere Kunden",
+        "testimonial_quote": "<p>Zuverlässig, sauber und pünktlich – wir sind mit dem Ergebnis sehr zufrieden.</p>",
+        "testimonial_author": "M. Mustermann",
+        "testimonial_meta": "Einfamilienhaus, Berlin",
+        "faq_kicker": "FAQ",
+        "faq_heading": "Häufige Fragen",
+        "faq_question": "Wie schnell können Sie starten?",
+        "faq_answer": "<p>Je nach Saison starten wir in der Regel innerhalb von 2–4 Wochen.</p>",
+        "cta_heading": "Bereit für Ihr Projekt?",
+        "cta_text": "Holen Sie sich noch heute Ihr kostenloses, unverbindliches Angebot.",
+        "cta_button": "Angebot anfordern",
+        "about_kicker": "Über uns",
+        "about_heading": "Handwerk mit Tradition",
+        "values_kicker": "Unsere Werte",
+        "values_heading": "Wofür wir stehen",
+        "value_title": "Qualität",
+        "value_text": "Wir liefern nur Arbeit ab, die unserem eigenen Anspruch genügt.",
+        "timeline_kicker": "Meilensteine",
+        "timeline_heading": "Unsere Geschichte",
+        "timeline_year": "1995",
+        "timeline_title": "Gründung",
+        "team_kicker": "Team",
+        "team_heading": "Die Menschen hinter der Arbeit",
+        "team_name": "Vor- und Nachname",
+        "team_role": "Meister",
+        "certs_kicker": "Ausgezeichnet",
+        "certs_heading": "Zertifikate & Mitgliedschaften",
+        "certificate_label": "Zertifikat",
+        "logos_kicker": "Partner",
+        "logos_heading": "Marken, mit denen wir arbeiten",
+        "story_kicker": "Seit 1995",
+        "story_heading": "Vom Ein-Mann-Betrieb zum Meisterbetrieb",
+        "story_text": "<p>Erzählen Sie hier Ihre Firmengeschichte.</p>",
+        "estimator_kicker": "Sofort-Schätzung",
+        "estimator_heading": "Was kostet Ihr Projekt?",
+        "estimator_text": "Leistung und Menge wählen – wir zeigen Ihnen eine realistische Preisspanne.",
+        "estimator_button": "Exaktes Festpreis-Angebot anfordern",
+        "price_unit": "m²",
+        "contact_kicker": "Kontakt",
+        "contact_heading": "Sprechen wir über Ihr Projekt",
+        "contact_text": "Wir antworten innerhalb eines Werktags – versprochen.",
+        "form_heading": "Angebot anfragen",
+        "emergency_text": "24h-Notdienst",
+        "zip_kicker": "Einzugsgebiet",
+        "zip_heading": "Sind wir bei Ihnen vor Ort?",
+        "zip_success": "Ja! Wir sind in Ihrer Region im Einsatz – fragen Sie jetzt Ihr Angebot an.",
+        "zip_fail": "Diese Region liegt aktuell außerhalb unseres Gebiets – schreiben Sie uns trotzdem, oft finden wir eine Lösung.",
+        "product_trust_1": "Meisterqualität",
+        "product_trust_2": "Schnelle Lieferung",
+        "product_trust_3": "5 Jahre Garantie",
+        "product_quote_heading": "Mit Montage gewünscht?",
+        "product_quote_text": "Fordern Sie ein persönliches Angebot inklusive fachgerechter Montage an.",
+        "product_quote_button": "Angebot anfragen",
+        "product_specs_title": "Technische Daten",
+        "product_specs_rows": "Material|Eiche\nMaße|120 × 80 cm"
+      }
+    },
+    "page-landing": {
+      "name": "Landing Page",
+      "info": "Komplette Startseite in einer Section – jeder Bereich ist ein eigener Block.",
+      "preset_name": "Landing Page"
+    },
+    "page-services": {
+      "name": "Leistungen (Seite)",
+      "info": "Komplette Leistungsseite in einer Section – jeder Bereich ist ein eigener Block.",
+      "preset_name": "Leistungen (Seite)"
+    },
+    "page-about": {
+      "name": "Über uns (Seite)",
+      "info": "Komplette Über-uns-Seite in einer Section – jeder Bereich ist ein eigener Block.",
+      "preset_name": "Über uns (Seite)"
+    },
+    "page-references": {
+      "name": "Referenzen (Seite)",
+      "info": "Komplette Referenzen-Seite mit filterbarer Projektgalerie.",
+      "preset_name": "Referenzen (Seite)"
+    },
+    "page-contact": {
+      "name": "Kontakt (Seite)",
+      "info": "Komplette Kontaktseite mit Anfrage-Formular, Einzugsgebiets-Check und Notdienst-Leiste.",
+      "preset_name": "Kontakt (Seite)"
+    },
+    "page-legal": {
+      "name": "Rechtsseite (AGB etc.)",
+      "info": "Gestaltet Rechtsseiten (AGB, Impressum, Datenschutz) inkl. automatischem Inhaltsverzeichnis aus dem Seiteninhalt.",
+      "show_toc": "Inhaltsverzeichnis anzeigen",
+      "show_toc_info": "Wird automatisch aus den H2-Überschriften des Seiteninhalts erzeugt.",
+      "show_date": "Stand-Datum anzeigen",
+      "show_print": "Druck-Button anzeigen",
+      "contact_box": "Kontakt-Box",
+      "contact_box_info": "Optionale hervorgehobene Box unter dem Rechtstext.",
+      "preset_name": "Rechtsseite"
+    },
+    "sticky-action-bar": {
+      "name": "Mobile Aktionsleiste",
+      "info": "Fixierte Leiste am unteren Rand mit Anrufen / Angebot / WhatsApp. Standardmäßig nur mobil sichtbar.",
+      "quote_link": "Link zur Angebotsseite",
+      "whatsapp": "WhatsApp-Nummer",
+      "whatsapp_info": "Internationales Format ohne +, z. B. 4915123456789.",
+      "show_on_desktop": "Auch am Desktop anzeigen",
+      "availability_heading": "Erreichbarkeit",
+      "show_status": "Erreichbarkeits-Status anzeigen"
+    },
+    "main-404": {
+      "name": "404-Seite",
+      "show_search": "Suche anzeigen",
+      "blocks": {
+        "link": {
+          "name": "Schnell-Link"
+        }
       }
     }
   }

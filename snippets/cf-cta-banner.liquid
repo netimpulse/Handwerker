@@ -1,0 +1,40 @@
+{%- comment -%}
+  Dark call-to-action banner with hazard stripe, button and phone link.
+
+  Accepts:
+  - heading: {String} CTA heading
+  - text: {String} supporting text
+  - button_label: {String} button label
+  - button_link: {Url} button target
+  - phone: {String} phone number (rendered as tel: link)
+  - attrs: {String} optional block.shopify_attributes
+
+  Usage:
+  {% render 'cf-cta-banner', heading: block.settings.heading, button_label: block.settings.button_label, button_link: block.settings.button_link, phone: block.settings.phone, attrs: block.shopify_attributes %}
+{%- endcomment -%}
+{%- liquid
+  assign tel = phone | remove: ' ' | remove: '/' | remove: '-' | remove: '(' | remove: ')'
+-%}
+<div class="cf-cta cf-reveal" {{ attrs }}>
+  <div class="cf-cta__inner">
+    <div>
+      {%- if heading != blank -%}
+        <h2 class="cf-heading">{{ heading | escape }}</h2>
+      {%- endif -%}
+      {%- if text != blank -%}
+        <p class="cf-cta__text">{{ text }}</p>
+      {%- endif -%}
+    </div>
+    <div class="cf-cta__actions">
+      {%- if button_label != blank -%}
+        <a href="{{ button_link | default: '#' }}" class="cf-btn">{{ button_label | escape }}</a>
+      {%- endif -%}
+      {%- if phone != blank -%}
+        <a href="tel:{{ tel }}" class="cf-phone-link">
+          {% render 'icon-craftsman', icon: 'phone' %}
+          {{ phone | escape }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+{%- comment -%}
+  Trust bar item (icon or logo image + title + text).
+
+  Accepts:
+  - icon: {String} icon name for 'icon-craftsman'
+  - image: {Image} optional logo image (takes precedence over icon)
+  - title: {String} short claim, e.g. "Meisterbetrieb"
+  - text: {String} supporting line
+  - attrs: {String} optional block.shopify_attributes
+
+  Usage:
+  {% render 'cf-trust-item', icon: block.settings.icon, title: block.settings.title, attrs: block.shopify_attributes %}
+{%- endcomment -%}
+{%- liquid
+  assign img_alt = image.alt | default: title | escape
+-%}
+<div class="cf-trustbar__item cf-reveal" {{ attrs }}>
+  {%- if image != blank -%}
+    {{ image | image_url: width: 64 | image_tag: widths: '32, 64', alt: img_alt, loading: 'lazy' }}
+  {%- else -%}
+    {% render 'icon-craftsman', icon: icon %}
+  {%- endif -%}
+  <div>
+    {%- if title != blank -%}
+      <p class="cf-trustbar__title">{{ title | escape }}</p>
+    {%- endif -%}
+    {%- if text != blank -%}
+      <p class="cf-trustbar__text">{{ text | escape }}</p>
+    {%- endif -%}
+  </div>
+</div>

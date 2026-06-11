@@ -1,0 +1,25 @@
+{%- comment -%}
+  Animated counter stat.
+
+  Accepts:
+  - value: {Number} target number
+  - prefix: {String} optional prefix (e.g. ">")
+  - suffix: {String} optional suffix (e.g. "+", "%", "Jahre")
+  - label: {String} stat label
+  - attrs: {String} optional block.shopify_attributes
+
+  Usage:
+  {% render 'cf-stat', value: block.settings.value, suffix: block.settings.suffix, label: block.settings.label, attrs: block.shopify_attributes %}
+{%- endcomment -%}
+<div class="cf-stat cf-reveal" {{ attrs }}>
+  <cf-count-up data-target="{{ value | default: 0 }}">
+    <span class="cf-stat__value">
+      {%- if prefix != blank -%}{{ prefix | escape }}{%- endif -%}
+      <span data-count-value>{{ value | default: 0 }}</span>
+      {%- if suffix != blank -%}{{ suffix | escape }}{%- endif -%}
+    </span>
+  </cf-count-up>
+  {%- if label != blank -%}
+    <span class="cf-stat__label">{{ label | escape }}</span>
+  {%- endif -%}
+</div>

@@ -1,0 +1,49 @@
+{
+  "sections": {
+    "main": {
+      "type": "page-references",
+      "blocks": {
+        "project_1": { "type": "project", "settings": {} },
+        "project_2": { "type": "project", "settings": {} },
+        "project_3": { "type": "project", "settings": {} },
+        "project_4": { "type": "project", "settings": {} },
+        "project_5": { "type": "project", "settings": {} },
+        "project_6": { "type": "project", "settings": {} },
+        "ba_1": { "type": "before_after", "settings": {} },
+        "testimonial_1": { "type": "testimonial", "settings": {} },
+        "testimonial_2": { "type": "testimonial", "settings": {} },
+        "testimonial_3": { "type": "testimonial", "settings": {} },
+        "logo_1": { "type": "logo", "settings": {} },
+        "logo_2": { "type": "logo", "settings": {} },
+        "logo_3": { "type": "logo", "settings": {} },
+        "logo_4": { "type": "logo", "settings": {} },
+        "cta": { "type": "cta", "settings": {} }
+      },
+      "block_order": [
+        "project_1",
+        "project_2",
+        "project_3",
+        "project_4",
+        "project_5",
+        "project_6",
+        "ba_1",
+        "testimonial_1",
+        "testimonial_2",
+        "testimonial_3",
+        "logo_1",
+        "logo_2",
+        "logo_3",
+        "logo_4",
+        "cta"
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "show_filter": true,
+        "enable_review_schema": true,
+        "padding_top": 48,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": ["main"]
+}

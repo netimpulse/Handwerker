@@ -1,0 +1,127 @@
+{{ 'craftsman-pages.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'craftsman-pages.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign phone_tel = section.settings.phone | remove: ' ' | remove: '/' | remove: '-' | remove: '(' | remove: ')'
+  assign wa_number = section.settings.whatsapp | remove: ' ' | remove: '/' | remove: '-' | remove: '(' | remove: ')' | remove: '+'
+-%}
+
+{%- if section.settings.phone != blank or section.settings.quote_link != blank or wa_number != blank -%}
+  <cf-availability
+    class="cf-actionbar{% if section.settings.show_on_desktop %} cf-actionbar--desktop{% endif %} color-{{ section.settings.color_scheme.id }} gradient"
+    data-open="{{ section.settings.open_hour }}"
+    data-close="{{ section.settings.close_hour }}"
+    data-days="{{ section.settings.open_days | escape }}"
+  >
+    {%- if section.settings.show_status -%}
+      <div class="cf-actionbar__status">
+        <span data-when-open>
+          <span class="cf-actionbar__dot cf-actionbar__dot--open" aria-hidden="true"></span>
+          {{ 'general.craftsman.contact.reachable_now' | t }}
+        </span>
+        <span data-when-closed hidden>
+          <span class="cf-actionbar__dot" aria-hidden="true"></span>
+          {{ 'general.craftsman.contact.callback_hint' | t }}
+        </span>
+      </div>
+    {%- endif -%}
+    <div class="cf-actionbar__buttons">
+      {%- if section.settings.phone != blank -%}
+        <a href="tel:{{ phone_tel }}" class="cf-actionbar__btn">
+          {% render 'icon-craftsman', icon: 'phone' %}
+          <span>{{ 'general.craftsman.actionbar.call' | t }}</span>
+        </a>
+      {%- endif -%}
+      {%- if section.settings.quote_link != blank -%}
+        <a href="{{ section.settings.quote_link }}" class="cf-actionbar__btn cf-actionbar__btn--primary">
+          {% render 'icon-craftsman', icon: 'document' %}
+          <span>{{ 'general.craftsman.actionbar.quote' | t }}</span>
+        </a>
+      {%- endif -%}
+      {%- if wa_number != blank -%}
+        <a href="https://wa.me/{{ wa_number }}" class="cf-actionbar__btn" target="_blank" rel="noopener">
+          {% render 'icon-craftsman', icon: 'mail' %}
+          <span>{{ 'general.craftsman.actionbar.whatsapp' | t }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+  </cf-availability>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.sticky-action-bar.name",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.sticky-action-bar.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-4"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "t:sections.cf.phone"
+    },
+    {
+      "type": "url",
+      "id": "quote_link",
+      "label": "t:sections.sticky-action-bar.quote_link"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp",
+      "label": "t:sections.sticky-action-bar.whatsapp",
+      "info": "t:sections.sticky-action-bar.whatsapp_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_desktop",
+      "label": "t:sections.sticky-action-bar.show_on_desktop",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.sticky-action-bar.availability_heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_status",
+      "label": "t:sections.sticky-action-bar.show_status",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "open_hour",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "label": "t:sections.cf.emergency_open",
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "close_hour",
+      "min": 1,
+      "max": 24,
+      "step": 1,
+      "label": "t:sections.cf.emergency_close",
+      "default": 17
+    },
+    {
+      "type": "text",
+      "id": "open_days",
+      "label": "t:sections.cf.emergency_days",
+      "info": "t:sections.cf.emergency_days_info",
+      "default": "1,2,3,4,5"
+    }
+  ]
+}
+{% endschema %}

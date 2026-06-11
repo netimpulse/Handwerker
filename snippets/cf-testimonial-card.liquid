@@ -1,0 +1,36 @@
+{%- comment -%}
+  Testimonial card with star rating.
+
+  Accepts:
+  - rating: {Number} 1-5 stars
+  - quote: {String} testimonial text (richtext or plain)
+  - author: {String} customer name
+  - meta: {String} role / location / source line
+  - attrs: {String} optional block.shopify_attributes
+
+  Usage:
+  {% render 'cf-testimonial-card', rating: block.settings.rating, quote: block.settings.quote, author: block.settings.author, attrs: block.shopify_attributes %}
+{%- endcomment -%}
+{%- liquid
+  assign stars = rating | default: 5 | at_most: 5 | at_least: 1
+-%}
+<blockquote class="cf-quote cf-reveal" {{ attrs }}>
+  <span class="cf-quote__stars" role="img" aria-label="{{ 'general.craftsman.rating_label' | t: rating: stars }}">
+    {%- for i in (1..stars) -%}
+      {% render 'icon-craftsman', icon: 'star' %}
+    {%- endfor -%}
+  </span>
+  {%- if quote != blank -%}
+    <div class="cf-quote__text">{{ quote }}</div>
+  {%- endif -%}
+  {%- if author != blank or meta != blank -%}
+    <footer class="cf-quote__author">
+      {%- if author != blank -%}
+        <cite class="cf-quote__name">{{ author | escape }}</cite>
+      {%- endif -%}
+      {%- if meta != blank -%}
+        <span class="cf-quote__role">{{ meta | escape }}</span>
+      {%- endif -%}
+    </footer>
+  {%- endif -%}
+</blockquote>

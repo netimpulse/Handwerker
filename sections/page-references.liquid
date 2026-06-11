@@ -1,0 +1,472 @@
+{{ 'craftsman-pages.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'craftsman-pages.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign project_blocks = section.blocks | where: 'type', 'project'
+  assign ba_blocks = section.blocks | where: 'type', 'before_after'
+  assign testimonial_blocks = section.blocks | where: 'type', 'testimonial'
+  assign logo_blocks = section.blocks | where: 'type', 'logo'
+  assign cta_blocks = section.blocks | where: 'type', 'cta'
+
+  assign category_handles = ''
+  assign category_labels = ''
+  for block in project_blocks
+    if block.settings.category != blank
+      assign cat_handle = block.settings.category | handleize
+      assign check = category_handles | split: '|||'
+      unless check contains cat_handle
+        if category_handles == ''
+          assign category_handles = cat_handle
+          assign category_labels = block.settings.category
+        else
+          assign category_handles = category_handles | append: '|||' | append: cat_handle
+          assign category_labels = category_labels | append: '|||' | append: block.settings.category
+        endif
+      endunless
+    endif
+  endfor
+  assign cat_handle_list = category_handles | split: '|||'
+  assign cat_label_list = category_labels | split: '|||'
+-%}
+
+<div class="cf-page color-{{ section.settings.color_scheme.id }} gradient section-{{ section.id }}-padding">
+  <cf-reveal-group>
+    {%- comment -%} ------------------------------ Intro + gallery {%- endcomment -%}
+    <section class="cf-band">
+      <div class="page-width">
+        {% render 'cf-section-head', kicker: section.settings.kicker, heading: section.settings.heading, text: section.settings.text, heading_tag: 'h1', align: 'center' %}
+
+        {%- if project_blocks.size > 0 -%}
+          <cf-filter-grid>
+            {%- if section.settings.show_filter and cat_handle_list.size > 1 -%}
+              <div class="cf-filter" role="group" aria-label="{{ 'general.craftsman.filter_label' | t }}">
+                <button type="button" class="cf-filter__chip" data-filter="*" aria-pressed="true">
+                  {{ 'general.craftsman.filter_all' | t }}
+                </button>
+                {%- for handle in cat_handle_list -%}
+                  <button type="button" class="cf-filter__chip" data-filter="{{ handle }}" aria-pressed="false">
+                    {{ cat_label_list[forloop.index0] | escape }}
+                  </button>
+                {%- endfor -%}
+              </div>
+              <p class="visually-hidden" aria-live="polite" data-filter-live data-label="{{ 'general.craftsman.filter_results' | t }}"></p>
+            {%- endif -%}
+            <div class="cf-grid cf-grid--3">
+              {%- for block in project_blocks -%}
+                {% render 'cf-project-card', image: block.settings.image, before_image: block.settings.before_image, title: block.settings.title, category: block.settings.category, location: block.settings.location, year: block.settings.year, text: block.settings.text, link: block.settings.link, attrs: block.shopify_attributes %}
+              {%- endfor -%}
+            </div>
+          </cf-filter-grid>
+        {%- endif -%}
+      </div>
+    </section>
+
+    {%- comment -%} ------------------------------ Before / After {%- endcomment -%}
+    {%- if ba_blocks.size > 0 -%}
+      <section class="cf-band cf-band--tint">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.ba_kicker, heading: section.settings.ba_heading, align: 'center' %}
+          <div class="cf-grid {% if ba_blocks.size > 1 %}cf-grid--2{% endif %}">
+            {%- for block in ba_blocks -%}
+              {% render 'cf-before-after', before_image: block.settings.before_image, after_image: block.settings.after_image, caption: block.settings.caption, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Testimonials {%- endcomment -%}
+    {%- if testimonial_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.testimonials_kicker, heading: section.settings.testimonials_heading, align: 'center' %}
+          <div class="cf-grid cf-grid--3">
+            {%- for block in testimonial_blocks -%}
+              {% render 'cf-testimonial-card', rating: block.settings.rating, quote: block.settings.quote, author: block.settings.author, meta: block.settings.meta, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+      {%- if section.settings.enable_review_schema -%}
+        {%- liquid
+          assign rating_sum = 0
+          for block in testimonial_blocks
+            assign rating_sum = rating_sum | plus: block.settings.rating
+          endfor
+          assign rating_avg = rating_sum | times: 1.0 | divided_by: testimonial_blocks.size | round: 1
+        -%}
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": {{ shop.name | json }},
+            "url": {{ shop.url | json }},
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": {{ rating_avg }},
+              "bestRating": 5,
+              "reviewCount": {{ testimonial_blocks.size }}
+            }
+          }
+        </script>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Partner logos {%- endcomment -%}
+    {%- if logo_blocks.size > 0 -%}
+      <section class="cf-band cf-band--tint">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.logos_kicker, heading: section.settings.logos_heading, align: 'center' %}
+          <div class="cf-logos">
+            {%- for block in logo_blocks -%}
+              <div class="cf-logos__item cf-reveal" {{ block.shopify_attributes }}>
+                {%- if block.settings.image != blank -%}
+                  {%- assign logo_alt = block.settings.image.alt | default: block.settings.label | escape -%}
+                  {{ block.settings.image | image_url: width: 240 | image_tag: widths: '120, 240', alt: logo_alt, loading: 'lazy' }}
+                {%- else -%}
+                  {% render 'icon-craftsman', icon: 'award' %}
+                {%- endif -%}
+                {%- if block.settings.label != blank -%}
+                  <span class="cf-logos__label">{{ block.settings.label | escape }}</span>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ CTA {%- endcomment -%}
+    {%- if cta_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {%- for block in cta_blocks -%}
+            {% render 'cf-cta-banner', heading: block.settings.heading, text: block.settings.text, button_label: block.settings.button_label, button_link: block.settings.button_link, phone: block.settings.phone, attrs: block.shopify_attributes %}
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  </cf-reveal-group>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.page-references.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.page-references.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter",
+      "label": "t:sections.cf.show_filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_review_schema",
+      "label": "t:sections.cf.enable_review_schema",
+      "info": "t:sections.cf.enable_review_schema_info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_intro"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.projects_kicker"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.references_heading"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.cf.text"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_before_after"
+    },
+    {
+      "type": "text",
+      "id": "ba_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.ba_kicker"
+    },
+    {
+      "type": "text",
+      "id": "ba_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.ba_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_testimonials"
+    },
+    {
+      "type": "text",
+      "id": "testimonials_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.testimonials_kicker"
+    },
+    {
+      "type": "text",
+      "id": "testimonials_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.testimonials_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_logos"
+    },
+    {
+      "type": "text",
+      "id": "logos_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.logos_kicker"
+    },
+    {
+      "type": "text",
+      "id": "logos_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.logos_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "project",
+      "name": "t:sections.cf.blocks.project.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.cf.image"
+        },
+        {
+          "type": "image_picker",
+          "id": "before_image",
+          "label": "t:sections.cf.before_image",
+          "info": "t:sections.cf.before_image_info"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.cf.title",
+          "default": "t:sections.cf.defaults.project_title"
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "t:sections.cf.category",
+          "info": "t:sections.cf.category_info",
+          "default": "t:sections.cf.defaults.project_category"
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "t:sections.cf.location"
+        },
+        {
+          "type": "text",
+          "id": "year",
+          "label": "t:sections.cf.year"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.cf.text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.cf.link"
+        }
+      ]
+    },
+    {
+      "type": "before_after",
+      "name": "t:sections.cf.blocks.before_after.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "before_image",
+          "label": "t:sections.cf.before_image"
+        },
+        {
+          "type": "image_picker",
+          "id": "after_image",
+          "label": "t:sections.cf.after_image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "t:sections.cf.caption"
+        }
+      ]
+    },
+    {
+      "type": "testimonial",
+      "name": "t:sections.cf.blocks.testimonial.name",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "t:sections.cf.rating",
+          "default": 5
+        },
+        {
+          "type": "richtext",
+          "id": "quote",
+          "label": "t:sections.cf.quote",
+          "default": "t:sections.cf.defaults.testimonial_quote"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "t:sections.cf.author",
+          "default": "t:sections.cf.defaults.testimonial_author"
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "t:sections.cf.meta",
+          "default": "t:sections.cf.defaults.testimonial_meta"
+        }
+      ]
+    },
+    {
+      "type": "logo",
+      "name": "t:sections.cf.blocks.logo.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.cf.logo_image"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.cf.label"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "name": "t:sections.cf.blocks.cta.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.cf.heading",
+          "default": "t:sections.cf.defaults.cta_heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.cta_text"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:sections.cf.button_label",
+          "default": "t:sections.cf.defaults.cta_button"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.cf.button_link"
+        },
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "t:sections.cf.phone"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.page-references.preset_name",
+      "blocks": [
+        { "type": "project" },
+        { "type": "project" },
+        { "type": "project" },
+        { "type": "project" },
+        { "type": "project" },
+        { "type": "project" },
+        { "type": "before_after" },
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "cta" }
+      ]
+    }
+  ]
+}
+{% endschema %}

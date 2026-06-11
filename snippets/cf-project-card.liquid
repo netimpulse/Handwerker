@@ -1,0 +1,66 @@
+{%- comment -%}
+  Project / reference card. Renders a before/after slider when a
+  before_image is provided, otherwise a single image.
+
+  Accepts:
+  - image: {Image} main ("after") image
+  - before_image: {Image} optional "before" image → renders comparison slider
+  - title: {String} project title
+  - category: {String} category label (also used for filtering)
+  - location: {String} optional location label
+  - year: {String} optional year label
+  - text: {String} optional short description
+  - link: {Url} optional target url
+  - loading: {String} 'lazy' (default) or 'eager'
+  - attrs: {String} optional block.shopify_attributes
+
+  Usage:
+  {% render 'cf-project-card', image: block.settings.image, title: block.settings.title, category: block.settings.category, attrs: block.shopify_attributes %}
+{%- endcomment -%}
+{%- liquid
+  assign img_loading = loading | default: 'lazy'
+  assign img_alt = image.alt | default: title | escape
+  assign category_handle = category | handleize
+-%}
+<article class="cf-card cf-project cf-reveal" data-category="{{ category_handle }}" {{ attrs }}>
+  {%- if category != blank -%}
+    <span class="cf-card__tag">{{ category | escape }}</span>
+  {%- endif -%}
+  {%- if before_image != blank -%}
+    <div class="cf-card__media cf-card__media--ba">
+      {% render 'cf-before-after', before_image: before_image, after_image: image, loading: img_loading %}
+    </div>
+  {%- else -%}
+    <div class="cf-card__media">
+      {%- if image != blank -%}
+        {{
+          image
+          | image_url: width: 900
+          | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 990px) 30vw, (min-width: 750px) 45vw, 100vw', alt: img_alt, loading: img_loading
+        }}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'cf-card__placeholder' }}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+  <div class="cf-card__body">
+    {%- if title != blank -%}
+      <h3 class="cf-card__title">
+        {%- if link != blank -%}
+          <a href="{{ link }}">{{ title | escape }}</a>
+        {%- else -%}
+          {{ title | escape }}
+        {%- endif -%}
+      </h3>
+    {%- endif -%}
+    {%- if location != blank or year != blank -%}
+      <p class="cf-project__meta">
+        {%- if location != blank -%}<span>{{ location | escape }}</span>{%- endif -%}
+        {%- if year != blank -%}<span>{{ year | escape }}</span>{%- endif -%}
+      </p>
+    {%- endif -%}
+    {%- if text != blank -%}
+      <p class="cf-card__text">{{ text }}</p>
+    {%- endif -%}
+  </div>
+</article>

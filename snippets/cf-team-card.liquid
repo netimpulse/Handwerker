@@ -1,0 +1,42 @@
+{%- comment -%}
+  Team member card.
+
+  Accepts:
+  - image: {Image} portrait
+  - name: {String} member name
+  - role: {String} job title
+  - quals: {String} optional qualifications line (e.g. "Meister, seit 2008")
+  - loading: {String} 'lazy' (default) or 'eager'
+  - attrs: {String} optional block.shopify_attributes
+
+  Usage:
+  {% render 'cf-team-card', image: block.settings.image, name: block.settings.name, role: block.settings.role, attrs: block.shopify_attributes %}
+{%- endcomment -%}
+{%- liquid
+  assign img_loading = loading | default: 'lazy'
+  assign img_alt = image.alt | default: name | escape
+-%}
+<article class="cf-card cf-team-card cf-reveal" {{ attrs }}>
+  <div class="cf-card__media">
+    {%- if image != blank -%}
+      {{
+        image
+        | image_url: width: 700
+        | image_tag: widths: '280, 420, 560, 700', sizes: '(min-width: 990px) 22vw, (min-width: 750px) 45vw, 100vw', alt: img_alt, loading: img_loading
+      }}
+    {%- else -%}
+      {{ 'detailed-apparel-1' | placeholder_svg_tag: 'cf-card__placeholder' }}
+    {%- endif -%}
+  </div>
+  <div class="cf-card__body">
+    {%- if name != blank -%}
+      <h3 class="cf-card__title">{{ name | escape }}</h3>
+    {%- endif -%}
+    {%- if role != blank -%}
+      <p class="cf-team-card__role">{{ role | escape }}</p>
+    {%- endif -%}
+    {%- if quals != blank -%}
+      <p class="cf-team-card__quals">{{ quals | escape }}</p>
+    {%- endif -%}
+  </div>
+</article>

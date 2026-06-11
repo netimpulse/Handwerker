@@ -1,0 +1,34 @@
+{%- comment -%}
+  Section group header (kicker + heading + lead text).
+
+  Accepts:
+  - kicker: {String} small uppercase label (optional)
+  - heading: {String} group heading (optional)
+  - text: {String} lead text (optional)
+  - align: {String} 'left' (default) or 'center'
+  - heading_tag: {String} 'h1'..'h3', default 'h2'
+  - heading_class: {String} extra class for the heading (optional)
+
+  Usage:
+  {% render 'cf-section-head', kicker: s.kicker, heading: s.heading, align: 'center' %}
+{%- endcomment -%}
+{%- liquid
+  assign tag = heading_tag | default: 'h2'
+  assign h_class = 'cf-heading'
+  if heading_class != blank
+    assign h_class = h_class | append: ' ' | append: heading_class
+  endif
+-%}
+{%- if kicker != blank or heading != blank or text != blank -%}
+  <header class="cf-section-head{% if align == 'center' %} cf-section-head--center{% endif %}">
+    {%- if kicker != blank -%}
+      <p class="cf-kicker">{{ kicker | escape }}</p>
+    {%- endif -%}
+    {%- if heading != blank -%}
+      <{{ tag }} class="{{ h_class }}">{{ heading | escape }}</{{ tag }}>
+    {%- endif -%}
+    {%- if text != blank -%}
+      <p class="cf-lead">{{ text }}</p>
+    {%- endif -%}
+  </header>
+{%- endif -%}

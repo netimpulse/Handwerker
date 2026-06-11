@@ -1,23 +1,76 @@
-<style type="text/css">
-  .template-404 .title + * {
-    margin-top: 1rem;
-  }
+{{ 'craftsman-pages.css' | asset_url | stylesheet_tag }}
 
-  @media screen and (min-width: 750px) {
-    .template-404 .title + * {
-      margin-top: 2rem;
-    }
-  }
-</style>
+<div class="cf-page color-{{ section.settings.color_scheme.id }} gradient">
+  <div class="cf-404 page-width">
+    <span class="cf-404__code" aria-hidden="true">404</span>
+    <div class="cf-404__stripe" aria-hidden="true"></div>
+    <h1 class="cf-heading">{{ 'templates.404.title' | t }}</h1>
+    <p class="cf-404__text">{{ 'templates.404.subtext' | t }}</p>
 
-<div class="template-404 page-width page-margin center">
-  <p>
-    {{ 'templates.404.subtext' | t }}
-  </p>
-  <h1 class="title">
-    {{ 'templates.404.title' | t }}
-  </h1>
-  <a href="{{ routes.all_products_collection_url }}" class="button">
-    {{ 'general.continue_shopping' | t }}
-  </a>
+    {%- if section.settings.show_search -%}
+      <form action="{{ routes.search_url }}" method="get" role="search" class="cf-404__search">
+        <label class="visually-hidden" for="Cf404Search-{{ section.id }}">{{ 'general.search.search' | t }}</label>
+        <input
+          type="search"
+          id="Cf404Search-{{ section.id }}"
+          name="q"
+          placeholder="{{ 'general.search.search' | t }}"
+        >
+        <button type="submit" class="cf-btn" aria-label="{{ 'general.search.search' | t }}">
+          {% render 'icon-craftsman', icon: 'search' %}
+        </button>
+      </form>
+    {%- endif -%}
+
+    <div class="cf-404__links">
+      <a href="{{ routes.root_url }}" class="cf-btn">{{ 'general.craftsman.not_found.home' | t }}</a>
+      {%- for block in section.blocks -%}
+        {%- if block.settings.label != blank and block.settings.link != blank -%}
+          <a href="{{ block.settings.link }}" class="cf-btn cf-btn--secondary" {{ block.shopify_attributes }}>
+            {{ block.settings.label | escape }}
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
 </div>
+
+{% schema %}
+{
+  "name": "t:sections.main-404.name",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "t:sections.main-404.show_search",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "t:sections.main-404.blocks.link.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.cf.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.cf.link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

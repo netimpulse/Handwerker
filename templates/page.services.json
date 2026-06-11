@@ -1,0 +1,40 @@
+{
+  "sections": {
+    "main": {
+      "type": "page-services",
+      "blocks": {
+        "service_1": { "type": "service_detail", "settings": {} },
+        "service_2": { "type": "service_detail", "settings": {} },
+        "service_3": { "type": "service_detail", "settings": {} },
+        "step_1": { "type": "step", "settings": {} },
+        "step_2": { "type": "step", "settings": {} },
+        "step_3": { "type": "step", "settings": {} },
+        "step_4": { "type": "step", "settings": {} },
+        "faq_1": { "type": "faq", "settings": {} },
+        "faq_2": { "type": "faq", "settings": {} },
+        "faq_3": { "type": "faq", "settings": {} },
+        "cta": { "type": "cta", "settings": {} }
+      },
+      "block_order": [
+        "service_1",
+        "service_2",
+        "service_3",
+        "step_1",
+        "step_2",
+        "step_3",
+        "step_4",
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "cta"
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "show_estimator": true,
+        "padding_top": 48,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": ["main"]
+}

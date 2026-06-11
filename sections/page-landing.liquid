@@ -1,0 +1,767 @@
+{{ 'craftsman-pages.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'craftsman-pages.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign hero_blocks = section.blocks | where: 'type', 'hero'
+  assign trust_blocks = section.blocks | where: 'type', 'trust'
+  assign service_blocks = section.blocks | where: 'type', 'service'
+  assign step_blocks = section.blocks | where: 'type', 'step'
+  assign stat_blocks = section.blocks | where: 'type', 'stat'
+  assign ba_blocks = section.blocks | where: 'type', 'before_after'
+  assign project_blocks = section.blocks | where: 'type', 'project'
+  assign testimonial_blocks = section.blocks | where: 'type', 'testimonial'
+  assign faq_blocks = section.blocks | where: 'type', 'faq'
+  assign cta_blocks = section.blocks | where: 'type', 'cta'
+-%}
+
+<div class="cf-page color-{{ section.settings.color_scheme.id }} gradient section-{{ section.id }}-padding">
+  <cf-reveal-group>
+    {%- comment -%} ------------------------------ Hero {%- endcomment -%}
+    {%- for block in hero_blocks -%}
+      <section class="cf-hero" {{ block.shopify_attributes }}>
+        {%- if block.settings.image != blank -%}
+          {%- assign hero_alt = block.settings.image.alt | default: block.settings.heading | escape -%}
+          <div class="cf-hero__media">
+            {{
+              block.settings.image
+              | image_url: width: 2200
+              | image_tag: widths: '750, 1100, 1500, 1800, 2200', sizes: '100vw', alt: hero_alt, loading: 'eager', fetchpriority: 'high'
+            }}
+          </div>
+        {%- else -%}
+          <div class="cf-hero__placeholder">
+            {{ 'lifestyle-2' | placeholder_svg_tag }}
+          </div>
+        {%- endif -%}
+        <div class="cf-hero__content">
+          <div class="page-width">
+            {%- if block.settings.badge_text != blank -%}
+              <p class="cf-hero__badge">
+                {% render 'icon-craftsman', icon: 'award' %}
+                {{ block.settings.badge_text | escape }}
+              </p>
+            {%- endif -%}
+            {%- if block.settings.heading != blank -%}
+              <h1 class="cf-heading cf-heading--xl">{{ block.settings.heading | escape }}</h1>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="cf-hero__text">{{ block.settings.text }}</p>
+            {%- endif -%}
+            <div class="cf-actions">
+              {%- if block.settings.button_label != blank -%}
+                <a href="{{ block.settings.button_link | default: '#' }}" class="cf-btn">{{ block.settings.button_label | escape }}</a>
+              {%- endif -%}
+              {%- if block.settings.button_label_2 != blank -%}
+                <a href="{{ block.settings.button_link_2 | default: '#' }}" class="cf-btn cf-btn--secondary">{{ block.settings.button_label_2 | escape }}</a>
+              {%- endif -%}
+            </div>
+            {%- if block.settings.rating_text != blank -%}
+              <p class="cf-hero__rating">
+                <span class="cf-hero__stars" aria-hidden="true">
+                  {%- for i in (1..5) -%}
+                    {% render 'icon-craftsman', icon: 'star' %}
+                  {%- endfor -%}
+                </span>
+                {{ block.settings.rating_text | escape }}
+              </p>
+            {%- endif -%}
+          </div>
+        </div>
+        <div class="cf-hero__stripe" aria-hidden="true"></div>
+      </section>
+    {%- endfor -%}
+
+    {%- comment -%} ------------------------------ Trust bar {%- endcomment -%}
+    {%- if trust_blocks.size > 0 -%}
+      <section class="cf-band cf-band--tint" aria-label="{{ 'general.craftsman.trust_label' | t }}">
+        <div class="page-width">
+          <div class="cf-trustbar">
+            {%- for block in trust_blocks -%}
+              {% render 'cf-trust-item', icon: block.settings.icon, image: block.settings.image, title: block.settings.title, text: block.settings.text, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Services {%- endcomment -%}
+    {%- if service_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.services_kicker, heading: section.settings.services_heading, align: 'center' %}
+          <div class="cf-grid cf-grid--3">
+            {%- for block in service_blocks -%}
+              {% render 'cf-service-card', image: block.settings.image, icon: block.settings.icon, title: block.settings.title, text: block.settings.text, link: block.settings.link, tag: block.settings.tag, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Process steps {%- endcomment -%}
+    {%- if step_blocks.size > 0 -%}
+      <section class="cf-band cf-band--tint cf-band--grid-bg">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.process_kicker, heading: section.settings.process_heading, align: 'center' %}
+          <div class="cf-steps">
+            {%- for block in step_blocks -%}
+              {% render 'cf-step', title: block.settings.title, text: block.settings.text, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Stats {%- endcomment -%}
+    {%- if stat_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          <div class="cf-stats">
+            {%- for block in stat_blocks -%}
+              {% render 'cf-stat', value: block.settings.value, prefix: block.settings.prefix, suffix: block.settings.suffix, label: block.settings.label, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Before / After {%- endcomment -%}
+    {%- if ba_blocks.size > 0 -%}
+      <section class="cf-band cf-band--tint">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.ba_kicker, heading: section.settings.ba_heading, align: 'center' %}
+          <div class="cf-grid {% if ba_blocks.size > 1 %}cf-grid--2{% endif %}">
+            {%- for block in ba_blocks -%}
+              {% render 'cf-before-after', before_image: block.settings.before_image, after_image: block.settings.after_image, caption: block.settings.caption, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Projects {%- endcomment -%}
+    {%- if project_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.projects_kicker, heading: section.settings.projects_heading, align: 'center' %}
+          <div class="cf-grid cf-grid--3">
+            {%- for block in project_blocks -%}
+              {% render 'cf-project-card', image: block.settings.image, title: block.settings.title, category: block.settings.category, location: block.settings.location, year: block.settings.year, link: block.settings.link, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ Testimonials {%- endcomment -%}
+    {%- if testimonial_blocks.size > 0 -%}
+      <section class="cf-band cf-band--tint">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.testimonials_kicker, heading: section.settings.testimonials_heading, align: 'center' %}
+          <div class="cf-grid cf-grid--3">
+            {%- for block in testimonial_blocks -%}
+              {% render 'cf-testimonial-card', rating: block.settings.rating, quote: block.settings.quote, author: block.settings.author, meta: block.settings.meta, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+      {%- if section.settings.enable_review_schema -%}
+        {%- liquid
+          assign rating_sum = 0
+          for block in testimonial_blocks
+            assign rating_sum = rating_sum | plus: block.settings.rating
+          endfor
+          assign rating_avg = rating_sum | times: 1.0 | divided_by: testimonial_blocks.size | round: 1
+        -%}
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": {{ shop.name | json }},
+            "url": {{ shop.url | json }},
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": {{ rating_avg }},
+              "bestRating": 5,
+              "reviewCount": {{ testimonial_blocks.size }}
+            }
+          }
+        </script>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ FAQ {%- endcomment -%}
+    {%- if faq_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {% render 'cf-section-head', kicker: section.settings.faq_kicker, heading: section.settings.faq_heading, align: 'center' %}
+          <div class="cf-faq">
+            {%- for block in faq_blocks -%}
+              {% render 'cf-faq-item', question: block.settings.question, answer: block.settings.answer, attrs: block.shopify_attributes %}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- comment -%} ------------------------------ CTA {%- endcomment -%}
+    {%- if cta_blocks.size > 0 -%}
+      <section class="cf-band">
+        <div class="page-width">
+          {%- for block in cta_blocks -%}
+            {% render 'cf-cta-banner', heading: block.settings.heading, text: block.settings.text, button_label: block.settings.button_label, button_link: block.settings.button_link, phone: block.settings.phone, attrs: block.shopify_attributes %}
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  </cf-reveal-group>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.page-landing.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.page-landing.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_review_schema",
+      "label": "t:sections.cf.enable_review_schema",
+      "info": "t:sections.cf.enable_review_schema_info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_services"
+    },
+    {
+      "type": "text",
+      "id": "services_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.services_kicker"
+    },
+    {
+      "type": "text",
+      "id": "services_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.services_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_process"
+    },
+    {
+      "type": "text",
+      "id": "process_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.process_kicker"
+    },
+    {
+      "type": "text",
+      "id": "process_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.process_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_before_after"
+    },
+    {
+      "type": "text",
+      "id": "ba_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.ba_kicker"
+    },
+    {
+      "type": "text",
+      "id": "ba_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.ba_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_projects"
+    },
+    {
+      "type": "text",
+      "id": "projects_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.projects_kicker"
+    },
+    {
+      "type": "text",
+      "id": "projects_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.projects_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_testimonials"
+    },
+    {
+      "type": "text",
+      "id": "testimonials_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.testimonials_kicker"
+    },
+    {
+      "type": "text",
+      "id": "testimonials_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.testimonials_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.cf.group_faq"
+    },
+    {
+      "type": "text",
+      "id": "faq_kicker",
+      "label": "t:sections.cf.kicker",
+      "default": "t:sections.cf.defaults.faq_kicker"
+    },
+    {
+      "type": "text",
+      "id": "faq_heading",
+      "label": "t:sections.cf.heading",
+      "default": "t:sections.cf.defaults.faq_heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "hero",
+      "name": "t:sections.cf.blocks.hero.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.cf.image"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "t:sections.cf.badge_text",
+          "default": "t:sections.cf.defaults.hero_badge"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.cf.heading",
+          "default": "t:sections.cf.defaults.hero_heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.hero_text"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:sections.cf.button_label",
+          "default": "t:sections.cf.defaults.hero_button"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.cf.button_link"
+        },
+        {
+          "type": "text",
+          "id": "button_label_2",
+          "label": "t:sections.cf.button_label_2",
+          "default": "t:sections.cf.defaults.hero_button_2"
+        },
+        {
+          "type": "url",
+          "id": "button_link_2",
+          "label": "t:sections.cf.button_link_2"
+        },
+        {
+          "type": "text",
+          "id": "rating_text",
+          "label": "t:sections.cf.rating_text",
+          "default": "t:sections.cf.defaults.hero_rating"
+        }
+      ]
+    },
+    {
+      "type": "trust",
+      "name": "t:sections.cf.blocks.trust.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.cf.icon",
+          "default": "award",
+          "options": [
+            { "value": "award", "label": "t:sections.cf.icons.award" },
+            { "value": "shield", "label": "t:sections.cf.icons.shield" },
+            { "value": "certificate", "label": "t:sections.cf.icons.certificate" },
+            { "value": "handshake", "label": "t:sections.cf.icons.handshake" },
+            { "value": "clock", "label": "t:sections.cf.icons.clock" },
+            { "value": "truck", "label": "t:sections.cf.icons.truck" },
+            { "value": "euro", "label": "t:sections.cf.icons.euro" },
+            { "value": "check", "label": "t:sections.cf.icons.check" },
+            { "value": "star", "label": "t:sections.cf.icons.star" },
+            { "value": "users", "label": "t:sections.cf.icons.users" },
+            { "value": "leaf", "label": "t:sections.cf.icons.leaf" },
+            { "value": "wrench", "label": "t:sections.cf.icons.wrench" }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.cf.logo_image",
+          "info": "t:sections.cf.logo_image_info"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.cf.title",
+          "default": "t:sections.cf.defaults.trust_title"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.trust_text"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "name": "t:sections.cf.blocks.service.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.cf.image"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.cf.icon",
+          "info": "t:sections.cf.icon_fallback_info",
+          "default": "wrench",
+          "options": [
+            { "value": "wrench", "label": "t:sections.cf.icons.wrench" },
+            { "value": "hammer", "label": "t:sections.cf.icons.hammer" },
+            { "value": "helmet", "label": "t:sections.cf.icons.helmet" },
+            { "value": "roof", "label": "t:sections.cf.icons.roof" },
+            { "value": "paint", "label": "t:sections.cf.icons.paint" },
+            { "value": "bolt", "label": "t:sections.cf.icons.bolt" },
+            { "value": "drop", "label": "t:sections.cf.icons.drop" },
+            { "value": "flame", "label": "t:sections.cf.icons.flame" },
+            { "value": "wood", "label": "t:sections.cf.icons.wood" },
+            { "value": "ruler", "label": "t:sections.cf.icons.ruler" },
+            { "value": "house", "label": "t:sections.cf.icons.house" },
+            { "value": "gear", "label": "t:sections.cf.icons.gear" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.cf.title",
+          "default": "t:sections.cf.defaults.service_title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.service_text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.cf.link"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "t:sections.cf.tag"
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "name": "t:sections.cf.blocks.step.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.cf.title",
+          "default": "t:sections.cf.defaults.step_title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.step_text"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "name": "t:sections.cf.blocks.stat.name",
+      "settings": [
+        {
+          "type": "number",
+          "id": "value",
+          "label": "t:sections.cf.value",
+          "default": 25
+        },
+        {
+          "type": "text",
+          "id": "prefix",
+          "label": "t:sections.cf.prefix"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "t:sections.cf.suffix",
+          "default": "+"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.cf.label",
+          "default": "t:sections.cf.defaults.stat_label"
+        }
+      ]
+    },
+    {
+      "type": "before_after",
+      "name": "t:sections.cf.blocks.before_after.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "before_image",
+          "label": "t:sections.cf.before_image"
+        },
+        {
+          "type": "image_picker",
+          "id": "after_image",
+          "label": "t:sections.cf.after_image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "t:sections.cf.caption"
+        }
+      ]
+    },
+    {
+      "type": "project",
+      "name": "t:sections.cf.blocks.project.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.cf.image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.cf.title",
+          "default": "t:sections.cf.defaults.project_title"
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "t:sections.cf.category",
+          "default": "t:sections.cf.defaults.project_category"
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "t:sections.cf.location"
+        },
+        {
+          "type": "text",
+          "id": "year",
+          "label": "t:sections.cf.year"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.cf.link"
+        }
+      ]
+    },
+    {
+      "type": "testimonial",
+      "name": "t:sections.cf.blocks.testimonial.name",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "t:sections.cf.rating",
+          "default": 5
+        },
+        {
+          "type": "richtext",
+          "id": "quote",
+          "label": "t:sections.cf.quote",
+          "default": "t:sections.cf.defaults.testimonial_quote"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "t:sections.cf.author",
+          "default": "t:sections.cf.defaults.testimonial_author"
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "t:sections.cf.meta",
+          "default": "t:sections.cf.defaults.testimonial_meta"
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "name": "t:sections.cf.blocks.faq.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:sections.cf.question",
+          "default": "t:sections.cf.defaults.faq_question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "t:sections.cf.answer",
+          "default": "t:sections.cf.defaults.faq_answer"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "name": "t:sections.cf.blocks.cta.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.cf.heading",
+          "default": "t:sections.cf.defaults.cta_heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.cf.text",
+          "default": "t:sections.cf.defaults.cta_text"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:sections.cf.button_label",
+          "default": "t:sections.cf.defaults.cta_button"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.cf.button_link"
+        },
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "t:sections.cf.phone"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.page-landing.preset_name",
+      "blocks": [
+        { "type": "hero" },
+        { "type": "trust" },
+        { "type": "trust" },
+        { "type": "trust" },
+        { "type": "trust" },
+        { "type": "service" },
+        { "type": "service" },
+        { "type": "service" },
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "stat" },
+        { "type": "stat" },
+        { "type": "stat" },
+        { "type": "stat" },
+        { "type": "before_after" },
+        { "type": "project" },
+        { "type": "project" },
+        { "type": "project" },
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "cta" }
+      ]
+    }
+  ]
+}
+{% endschema %}

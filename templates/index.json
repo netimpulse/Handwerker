@@ -1,58 +1,79 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
+    "landing": {
+      "type": "page-landing",
       "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
-          }
-        },
-        "button": {
-          "type": "buttons",
-          "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
-          }
-        }
+        "hero": { "type": "hero", "settings": {} },
+        "trust_1": { "type": "trust", "settings": { "icon": "award" } },
+        "trust_2": { "type": "trust", "settings": { "icon": "shield" } },
+        "trust_3": { "type": "trust", "settings": { "icon": "clock" } },
+        "trust_4": { "type": "trust", "settings": { "icon": "handshake" } },
+        "service_1": { "type": "service", "settings": { "icon": "roof" } },
+        "service_2": { "type": "service", "settings": { "icon": "wrench" } },
+        "service_3": { "type": "service", "settings": { "icon": "paint" } },
+        "step_1": { "type": "step", "settings": {} },
+        "step_2": { "type": "step", "settings": {} },
+        "step_3": { "type": "step", "settings": {} },
+        "step_4": { "type": "step", "settings": {} },
+        "stat_1": { "type": "stat", "settings": { "value": 25, "suffix": "+" } },
+        "stat_2": { "type": "stat", "settings": { "value": 850, "suffix": "+" } },
+        "stat_3": { "type": "stat", "settings": { "value": 12 } },
+        "stat_4": { "type": "stat", "settings": { "value": 100, "suffix": "%" } },
+        "ba_1": { "type": "before_after", "settings": {} },
+        "project_1": { "type": "project", "settings": {} },
+        "project_2": { "type": "project", "settings": {} },
+        "project_3": { "type": "project", "settings": {} },
+        "testimonial_1": { "type": "testimonial", "settings": {} },
+        "testimonial_2": { "type": "testimonial", "settings": {} },
+        "testimonial_3": { "type": "testimonial", "settings": {} },
+        "faq_1": { "type": "faq", "settings": {} },
+        "faq_2": { "type": "faq", "settings": {} },
+        "faq_3": { "type": "faq", "settings": {} },
+        "faq_4": { "type": "faq", "settings": {} },
+        "cta": { "type": "cta", "settings": {} }
       },
       "block_order": [
-        "heading",
-        "button"
+        "hero",
+        "trust_1",
+        "trust_2",
+        "trust_3",
+        "trust_4",
+        "service_1",
+        "service_2",
+        "service_3",
+        "step_1",
+        "step_2",
+        "step_3",
+        "step_4",
+        "stat_1",
+        "stat_2",
+        "stat_3",
+        "stat_4",
+        "ba_1",
+        "project_1",
+        "project_2",
+        "project_3",
+        "testimonial_1",
+        "testimonial_2",
+        "testimonial_3",
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "cta"
       ],
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "image_behavior": "none",
-        "desktop_content_position": "bottom-center",
-        "desktop_content_alignment": "center",
-        "show_text_box": false,
-        "color_scheme": "scheme-3",
-        "stack_images_on_mobile": false,
-        "mobile_content_alignment": "center",
-        "show_text_below": false
+        "color_scheme": "scheme-1",
+        "enable_review_schema": true,
+        "padding_top": 0,
+        "padding_bottom": 0
       }
     },
     "featured_collection": {
       "type": "featured-collection",
       "settings": {
         "collection": "all",
-        "products_to_show": 8,
+        "products_to_show": 4,
         "title": "Featured products",
         "heading_size": "h2",
         "description": "",
@@ -73,95 +94,9 @@
         "columns_mobile": "2",
         "swipe_on_mobile": false,
         "padding_top": 44,
-        "padding_bottom": 36
-      }
-    },
-    "blog_featured_cxkrE3": {
-      "type": "blog-featured",
-      "name": "Blog Featured",
-      "settings": {
-        "color_scheme": "",
-        "label_text": "Blog",
-        "heading": "Aktuelles & Wissenswertes",
-        "subheading": "Tipps, Neuigkeiten und Einblicke rund um unser Handwerk",
-        "blog": "news",
-        "articles_count": 4,
-        "layout": "featured",
-        "text_alignment": "center",
-        "max_width": 1400,
-        "show_author": true,
-        "show_view_all": true,
-        "view_all_text": "Alle Beiträge ansehen",
-        "padding_top": 60,
-        "padding_bottom": 60
-      }
-    },
-    "project_gallery_C4yEnd": {
-      "type": "project-gallery",
-      "blocks": {
-        "project_VWj3z7": {
-          "type": "project",
-          "settings": {
-            "title": "Heritage Restoration",
-            "category": "Restoration",
-            "description": "Meticulous restoration of historic timber details",
-            "link_url": "",
-            "link_text": "View Project"
-          }
-        },
-        "project_pHqDBp": {
-          "type": "project",
-          "settings": {
-            "title": "Custom Cabinetry",
-            "category": "Cabinetry",
-            "description": "Hand-crafted kitchen and living room solutions",
-            "link_url": "",
-            "link_text": "View Project"
-          }
-        },
-        "project_MVLxcJ": {
-          "type": "project",
-          "settings": {
-            "title": "Bespoke Doors",
-            "category": "Carpentry",
-            "description": "Elegant custom-made entrance and interior doors",
-            "link_url": "",
-            "link_text": "View Project"
-          }
-        }
-      },
-      "block_order": [
-        "project_VWj3z7",
-        "project_pHqDBp",
-        "project_MVLxcJ"
-      ],
-      "name": "Project Gallery",
-      "settings": {
-        "color_scheme": "",
-        "heading": "Our Projects",
-        "heading_level": "h2",
-        "heading_alignment": "center",
-        "subheading": "Showcasing our finest craftsmanship",
-        "layout": "grid-3",
-        "show_filter_bar": true,
-        "filter_animation": "fade",
-        "hover_overlay": "slide-up",
-        "image_aspect_ratio": "3:2",
-        "show_lightbox": true,
-        "corner_radius": 8,
-        "initial_show_count": 9,
-        "show_view_all": false,
-        "view_all_url": "",
-        "gap": 16,
-        "padding_top": 40,
-        "padding_bottom": 40
+        "padding_bottom": 52
       }
     }
   },
-  "order": [
-    "image_banner",
-    "featured_collection",
-    "blog_featured_cxkrE3",
-    "project_gallery_C4yEnd"
-  ]
+  "order": ["landing", "featured_collection"]
 }
