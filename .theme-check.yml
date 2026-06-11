@@ -1,1 +1,9 @@
 extends: theme-check:recommended
+
+ignore:
+  - node_modules/**
+  - tests/**
+  - playwright/**
+  - playwright-report/**
+  - test-results/**
+  - qa-screenshots/**
