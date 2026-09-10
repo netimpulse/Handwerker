@@ -39,16 +39,7 @@
         <div class="before-after-slider__single">
           {% for block in section.blocks %}
             {% if block.type == 'comparison' %}
-              {% include 'before-after-comparison' with
-                block: block,
-                section_id: section.id,
-                handle_style: section.settings.handle_style,
-                start_position: section.settings.start_position,
-                before_label: section.settings.before_label,
-                after_label: section.settings.after_label,
-                show_labels: section.settings.show_labels,
-                corner_radius: section.settings.corner_radius
-              %}
+              {% include 'before-after-comparison' with block, block: block, section_id: section.id, handle_style: section.settings.handle_style, start_position: section.settings.start_position, before_label: section.settings.before_label, after_label: section.settings.after_label, show_labels: section.settings.show_labels, corner_radius: section.settings.corner_radius %}
               {% break %}
             {% endif %}
           {% endfor %}
@@ -57,16 +48,7 @@
         <div class="before-after-slider__grid" data-layout="{{ section.settings.layout }}">
           {% for block in section.blocks %}
             {% if block.type == 'comparison' %}
-              {% include 'before-after-comparison' with
-                block: block,
-                section_id: section.id,
-                handle_style: section.settings.handle_style,
-                start_position: section.settings.start_position,
-                before_label: section.settings.before_label,
-                after_label: section.settings.after_label,
-                show_labels: section.settings.show_labels,
-                corner_radius: section.settings.corner_radius
-              %}
+              {% include 'before-after-comparison' with block, block: block, section_id: section.id, handle_style: section.settings.handle_style, start_position: section.settings.start_position, before_label: section.settings.before_label, after_label: section.settings.after_label, show_labels: section.settings.show_labels, corner_radius: section.settings.corner_radius %}
             {% endif %}
           {% endfor %}
         </div>
@@ -83,7 +65,7 @@
 </before-after-slider>
 
 {% comment %} Before/After Comparison Include {% endcomment %}
-{% capture 'before-after-comparison' %}
+{% capture before-after-comparison %}
   <div class="before-after-slider__item" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
     <before-after-slider
       role="slider"
@@ -837,3 +819,47 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {% include 'before-after-comparison' with
+                    block: block,
+                    section_id: section.id,
+                    handle_style: section.settings.handle_style,
+                    start_position: section.settings.start_position,
+                    before_label: section.settings.before_label,
+                    after_label: section.settings.after_label,
+                    show_labels: section.settings.show_labels,
+                    corner_radius: section.settings.corner_radius
+                  %}
+  to: "{% include 'before-after-comparison' with block, block: block, section_id:
+    section.id, handle_style: section.settings.handle_style, start_position: section.settings.start_position,
+    before_label: section.settings.before_label, after_label: section.settings.after_label,
+    show_labels: section.settings.show_labels, corner_radius: section.settings.corner_radius
+    %}"
+  position: 1844..2204
+- from: |-
+    {% include 'before-after-comparison' with
+                    block: block,
+                    section_id: section.id,
+                    handle_style: section.settings.handle_style,
+                    start_position: section.settings.start_position,
+                    before_label: section.settings.before_label,
+                    after_label: section.settings.after_label,
+                    show_labels: section.settings.show_labels,
+                    corner_radius: section.settings.corner_radius
+                  %}
+  to: "{% include 'before-after-comparison' with block, block: block, section_id:
+    section.id, handle_style: section.settings.handle_style, start_position: section.settings.start_position,
+    before_label: section.settings.before_label, after_label: section.settings.after_label,
+    show_labels: section.settings.show_labels, corner_radius: section.settings.corner_radius
+    %}"
+  position: 2508..2868
+- from: "{% capture 'before-after-comparison' %}"
+  to: "{% capture before-after-comparison %}"
+  position: 3266..3303
+{% endcomment %}
